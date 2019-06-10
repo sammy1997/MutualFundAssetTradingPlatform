@@ -47,3 +47,10 @@ Support team should be able to add funds to the database. They should be able to
 
 UI must give out the flexibility to store user preferences for each user. As of now, only base currency is part of user preferences. However in future there may appear other user preferences as well. 
 In case of no activity for 15 minutes, user should be logged out from UI. As part of security, a proper rate limiting system should be implemented. Any unauthorized user should not get access to any of the service. Even if user is authorized, if user doesn’t have proper access, shouldn’t be allowed to access those services. Support team should get only support screen. Trading user should not see support screen.
+
+## Page UI Designs
+
+![1 1-Screen 1](https://user-images.githubusercontent.com/24635701/59175994-406f9600-8b75-11e9-811e-422464a41478.png)
+![2 1-Screen 2](https://user-images.githubusercontent.com/24635701/59175995-406f9600-8b75-11e9-9e85-f7cbae69f18b.png)
+![3 1-Screen 3](https://user-images.githubusercontent.com/24635701/59175996-406f9600-8b75-11e9-84dc-07b181678f00.png)
+![4 1-Screen 4](https://user-images.githubusercontent.com/24635701/59175997-406f9600-8b75-11e9-9168-1a6695aecc46.png)
