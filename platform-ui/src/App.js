@@ -1,12 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import PostList from './components/PostList';
+import GetList from './components/PostList';
 
 function App() {
   return (
     <div className="App">
-      <PostList></PostList>
+      <GetList></GetList>
     </div>
   );
 }

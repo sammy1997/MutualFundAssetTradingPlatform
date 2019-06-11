@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
-class PostList extends Component {
+class GetList extends Component {
     constructor(props) {
         super(props)
     
@@ -36,4 +36,4 @@ class PostList extends Component {
     }
 }
 
-export default PostList
+export default GetList
