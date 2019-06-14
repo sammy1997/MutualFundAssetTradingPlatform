@@ -2,60 +2,94 @@ package com.mutualfundtrading.fundhandling.dao;
 
 import com.google.common.base.Optional;
 import com.jayway.jsonpath.Criteria;
-import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.FundRepository;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+import com.mutualfundtrading.fundhandling.models.*;
 import org.immutables.mongo.repository.RepositorySetup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FundDAO {
-    FundRepository repository;
-    FundRepository.Criteria where;
+//    Repository and query object setup
+    FundDBModelRepository repository;
+    FundDBModelRepository.Criteria where;
+
     public FundDAO(){
-        repository = new FundRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
+        repository = new FundDBModelRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
         where = repository.criteria();
     }
 
-    public String insert(String fundName, String fundNumber, String invManager, int setCycle,
-                         float nav, String invCurrency, float sAndPRating, float moodysRating){
+//    Insert query method
+    public String insert(Fund fund){
         String message = "Successfully added";
-        boolean exists = repository.findByFundNumber(fundNumber).fetchFirst().getUnchecked().isPresent();
+        boolean exists = repository.findByFundNumber(fund.fundNumber()).fetchFirst().getUnchecked().isPresent();
         if (exists){
             message = "Fund already exists";
         }else {
-            Fund f = ImmutableFund.builder()
-                    .fundName(fundName)
-                    .fundNumber(fundNumber)
-                    .invManager(invManager)
-                    .setCycle(setCycle)
-                    .nav(nav)
-                    .invCurrency(invCurrency)
-                    .sAndPRating(sAndPRating)
-                    .moodysRating(moodysRating)
-                    .build();
-            repository.insert(f);
+            if (fund.invManager().isPresent() && fund.setCycle().isPresent() &&
+                    fund.moodysRating().isPresent() && fund.sAndPRating().isPresent() &&
+                    fund.fundName().isPresent() && fund.invCurrency().isPresent() && fund.nav().isPresent()) {
+//                Constructing the fund
+                FundDBModel f = ImmutableFundDBModel.builder()
+                        .fundName(fund.fundName().get())
+                        .fundNumber(fund.fundNumber())
+                        .invCurrency(fund.invCurrency().get())
+                        .invManager(fund.invManager().get())
+                        .setCycle(fund.setCycle().get())
+                        .moodysRating(fund.moodysRating().get())
+                        .nav(fund.nav().get())
+                        .sAndPRating(fund.sAndPRating().get()).build();
+                repository.insert(f);
+            }else{
+                return "Some fields are missing";
+            }
         }
         return message;
     }
 
-    public ImmutableFund getFund(String fundNumber){
-        Optional<Fund> fund = repository.find(where.fundNumber(fundNumber)).fetchFirst().getUnchecked();
+//    Fetch fund query
+    public ImmutableFundDBModel getFund(String fundNumber){
+        Optional<FundDBModel> fund = repository.find(where.fundNumber(fundNumber)).fetchFirst().getUnchecked();
         if (fund.isPresent()){
-            ImmutableFund fund1 = ImmutableFund.builder().from(fund.get()).build();
-            System.out.println(fund1.fundName());
+            ImmutableFundDBModel fund1 = ImmutableFundDBModel.builder().from(fund.get()).build();
             return fund1;
         }
         return null;
     }
 
-    public List<ImmutableFund> getAll(){
-        List<Fund> funds = repository.findAll().fetchAll().getUnchecked();
-        List<ImmutableFund> f = new ArrayList<ImmutableFund>();
-        for (Fund fund: funds){
-            f.add(ImmutableFund.builder().from(fund).build());
+//    Fetch all funds query
+    public List<ImmutableFundDBModel> getAll(){
+        List<FundDBModel> funds = repository.findAll().fetchAll().getUnchecked();
+        List<ImmutableFundDBModel> f = new ArrayList<>();
+        for (FundDBModel fund: funds){
+            f.add(ImmutableFundDBModel.builder().from(fund).build());
         }
+        return f;
+    }
+
+//    Update fund query
+    public Optional<FundDBModel> update(Fund fund){
+        Optional<FundDBModel> f = repository.find(where.fundNumber(fund.fundNumber())).fetchFirst().getUnchecked();
+        if (f.isPresent()){
+            FundDBModel fundCurr = f.get();
+            repository.upsert(
+                    ImmutableFundDBModel.builder()
+                            .fundNumber(fund.fundNumber())
+                            .fundName(fund.fundName().isPresent()?fund.fundName().get():fundCurr.fundName())
+                            .invCurrency(fund.invCurrency().isPresent()?fund.invCurrency().get():fundCurr.invCurrency())
+                            .invManager(fund.invManager().isPresent()?fund.invManager().get():fundCurr.invManager())
+                            .moodysRating(fund.moodysRating().isPresent()?fund.moodysRating().get():fundCurr.moodysRating())
+                            .nav(fund.nav().isPresent()?fund.nav().get():fundCurr.nav())
+                            .setCycle(fund.setCycle().isPresent()?fund.setCycle().get():fundCurr.setCycle())
+                            .sAndPRating(fund.sAndPRating().isPresent()?fund.sAndPRating().get():fundCurr.sAndPRating())
+                            .build()
+            );
+        }
+        return f;
+    }
+
+//    Delete fund
+    public Optional<FundDBModel> delete(Fund fund){
+        Optional<FundDBModel> f = repository.findByFundNumber(fund.fundNumber()).deleteFirst().getUnchecked();
         return f;
     }
 }

@@ -1,53 +1,67 @@
 package com.mutualfundtrading.fundhandling.controllers;
 
 
+import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.sun.jersey.multipart.FormDataParam;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
 @Path("/funds")
-@Consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
 public class FundController{
     @Autowired
     FundService service;
-
     @Path("/create")
     @POST
-    public String createFund(@QueryParam("fundName") String fundName, @QueryParam("fundNumber") String fundNumber,
-                             @QueryParam("invManager") String invManager, @QueryParam("setCycle") int setCycle,
-                             @QueryParam("nav") float nav, @QueryParam("invCurrency") String invCurrency,
-                             @QueryParam("sAndPRating") float sAndPRating, @QueryParam("moodysRating") float moodysRating){
-//        System.out.println("Hello " + fundName + ", " + fundNumber);
-//        return null;
-        return service.addFundService(fundName, fundNumber, invManager, setCycle, nav, invCurrency, sAndPRating, moodysRating);
+    public String createFund(Fund fund){
+        return service.addFundService(fund);
     }
 
     @Path("/retrieve")
     @POST
-    public ImmutableFund getFund(@QueryParam("fundNumber") String fundNumber){
-        System.out.println("Hello " + fundNumber);
-        return service.getFund(fundNumber);
+    public ImmutableFundDBModel getFund(Fund fund){
+        return service.getFund(fund.fundNumber());
     }
-
-//    @Path("/retrieve")
-//    @POST
-//    public ImmutableFund getFund(@RequestBody ImmutableFund fund){
-//        System.out.println(fund.fundName());
-//        return null;
-////        return service.getFund(fundNumber);
-//    }
 
     @Path("/all")
     @GET
-    public List<ImmutableFund> getAll(){
+    public List<ImmutableFundDBModel> getAll(){
         return service.getAll();
+    }
+
+    @Path("/update")
+    @PATCH
+    public Message updateFund(Fund fund){
+        return service.update(fund);
+    }
+
+    @Path("/delete")
+    @DELETE
+    public Message delete(Fund fund){
+        return service.delete(fund);
+    }
+
+    @Path("/addFromFile")
+    @POST
+    @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.ALL_VALUE})
+    public Message addFromFile(@FormDataParam("file") InputStream fileInputStream){
+        System.out.println(fileInputStream.toString());
+//        System.out.println(file);
+        return null;
     }
 }

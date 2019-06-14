@@ -1,5 +1,8 @@
 package com.mutualfundtrading.fundhandling;
 
+import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -12,6 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Application;
 import java.io.IOException;
 
 @SpringBootApplication
@@ -37,7 +41,15 @@ public class FundhandlingApplication extends SpringBootServletInitializer{
 //		};
 //	}
 
+	@Bean
+	public EntitlementDAO createEntitlementDAO(){
+		return new EntitlementDAO();
+	}
+
 	public static void main(String[] args) {
+		final Application application = new ResourceConfig()
+				.packages("org.glassfish.jersey.examples.multipart")
+				.register(MultiPartFeature.class);
 		SpringApplication.run(FundhandlingApplication.class, args);
 	}
 

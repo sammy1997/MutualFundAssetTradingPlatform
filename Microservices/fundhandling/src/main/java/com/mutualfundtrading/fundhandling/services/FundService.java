@@ -1,8 +1,11 @@
 package com.mutualfundtrading.fundhandling.services;
 
+import com.google.common.base.Optional;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
+import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+import com.mutualfundtrading.fundhandling.models.FundDBModel;
+import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,16 +14,30 @@ import java.util.List;
 public class FundService {
     FundDAO dao = new FundDAO();
 
-    public String addFundService(String fundName, String fundNumber, String invManager, int setCycle,
-                                 float nav, String invCurrency, float sAndPRating, float moodysRating){
-        return dao.insert(fundName, fundNumber, invManager, setCycle, nav, invCurrency, sAndPRating, moodysRating);
+    public String addFundService(Fund fund){
+        return dao.insert(fund);
     }
 
-    public ImmutableFund getFund(String fundNumber){
+    public ImmutableFundDBModel getFund(String fundNumber){
         return dao.getFund(fundNumber);
     }
 
-    public List<ImmutableFund> getAll(){
+    public List<ImmutableFundDBModel> getAll(){
         return dao.getAll();
+    }
+
+    public Message update(Fund fund){
+        Optional<FundDBModel> f = dao.update(fund);
+        if (!f.isPresent()){
+            return new Message(404, "Fund with number " + fund.fundNumber() + " not found in db.");
+        }
+        return new Message(200, "Fund with number " + fund.fundNumber() + " updated.");
+    }
+
+    public Message delete(Fund fund){
+        if (dao.delete(fund).isPresent()){
+            return new Message(200, "Fund with fund number "+ fund.fundNumber() +" deleted");
+        }
+        return new Message(404, "Fund with fund number "+ fund.fundNumber() +" not found.");
     }
 }
