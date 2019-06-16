@@ -124,4 +124,35 @@ public class FundDAO {
                 .or().invManagerMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
                 .fetchAll().getUnchecked();
     }
+
+    public List<FundDBModel> searchFundNameInEntitlements(String searchTerm, List<String> entitlements){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNumberIn(entitlements).fundNameStartsWith(searchTerm)
+                .or().fundNumberIn(entitlements).fundNameMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchFundNumberInEntitlements(String searchTerm, List<String> entitlements){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNumberIn(entitlements).fundNumberStartsWith(searchTerm)
+                .or().fundNumberIn(entitlements).fundNumberMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchInvCurrencyInEntitlements(String searchTerm, List<String> entitlements){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNumberIn(entitlements).invCurrencyStartsWith(searchTerm)
+                .or().fundNumberIn(entitlements).invCurrencyMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchInvManagerInEntitlements(String searchTerm, List<String> entitlements){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNumberIn(entitlements).invManagerStartsWith(searchTerm)
+                .or().fundNumberIn(entitlements).invManagerMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
 }

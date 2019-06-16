@@ -6,13 +6,16 @@ import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class FundService {
-    FundDAO dao = new FundDAO();
+
+    @Autowired
+    FundDAO dao;
 
     public String addFundService(Fund fund){
         return dao.insert(fund);
