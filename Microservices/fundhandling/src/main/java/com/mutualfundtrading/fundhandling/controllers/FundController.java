@@ -3,6 +3,7 @@ package com.mutualfundtrading.fundhandling.controllers;
 
 import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
+import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
 import com.sun.jersey.multipart.FormDataParam;
@@ -26,35 +27,51 @@ import java.util.List;
 public class FundController{
     @Autowired
     FundService service;
+
+//    Fund creation url
     @Path("/create")
     @POST
     public String createFund(Fund fund){
+        System.out.println(fund.fundNumber());
         return service.addFundService(fund);
     }
 
+//    Fund details update URL
     @Path("/retrieve")
     @POST
     public ImmutableFundDBModel getFund(Fund fund){
         return service.getFund(fund.fundNumber());
     }
 
+//    Get all funds
     @Path("/all")
     @GET
     public List<ImmutableFundDBModel> getAll(){
         return service.getAll();
     }
 
+//    Update fund details
     @Path("/update")
     @PATCH
     public Message updateFund(Fund fund){
         return service.update(fund);
     }
 
+//    Delete funds
     @Path("/delete")
     @DELETE
     public Message delete(Fund fund){
         return service.delete(fund);
     }
+
+//    Search funds
+    @Path("/search")
+    @GET
+    public List<FundDBModel> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm){
+        return service.searchAllFunds(field, searchTerm);
+    }
+
+//    Add from CSV. TODO
 
     @Path("/addFromFile")
     @POST

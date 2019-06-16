@@ -40,4 +40,20 @@ public class FundService {
         }
         return new Message(404, "Fund with fund number "+ fund.fundNumber() +" not found.");
     }
+
+    public List<FundDBModel> searchAllFunds(String field, String searchTerm){
+//        System.out.println(field);
+        if (field.equals("Name")){
+            return dao.searchFundName(searchTerm);
+        }
+        else if (field.equals("Fund Number")){
+            return dao.searchFundNumber(searchTerm);
+        }
+        else if (field.equals("Currency")){
+            return dao.searchInvCurrency(searchTerm);
+        }else if (field.equals("Manager")){
+            return dao.searchInvManager(searchTerm);
+        }
+        return null;
+    }
 }

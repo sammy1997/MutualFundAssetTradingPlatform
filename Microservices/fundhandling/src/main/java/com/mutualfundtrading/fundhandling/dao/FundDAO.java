@@ -7,6 +7,7 @@ import org.immutables.mongo.repository.RepositorySetup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class FundDAO {
 //    Repository and query object setup
@@ -91,5 +92,36 @@ public class FundDAO {
     public Optional<FundDBModel> delete(Fund fund){
         Optional<FundDBModel> f = repository.findByFundNumber(fund.fundNumber()).deleteFirst().getUnchecked();
         return f;
+    }
+
+    public List<FundDBModel> searchFundName(String searchTerm){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNameStartsWith(searchTerm)
+                .or().fundNameMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchFundNumber(String searchTerm){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.fundNumberStartsWith(searchTerm)
+                .or().fundNumberMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchInvCurrency(String searchTerm){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.invCurrencyStartsWith(searchTerm)
+                .or().invCurrencyMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
+    }
+
+
+    public List<FundDBModel> searchInvManager(String searchTerm){
+        String pattern = ".*" + searchTerm + ".*";
+        return repository.find(where.invManagerStartsWith(searchTerm)
+                .or().invManagerMatches(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE)))
+                .fetchAll().getUnchecked();
     }
 }
