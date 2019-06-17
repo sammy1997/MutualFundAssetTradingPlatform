@@ -7,16 +7,11 @@ import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
 import com.sun.jersey.multipart.FormDataParam;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -32,7 +27,6 @@ public class FundController{
     @Path("/create")
     @POST
     public String createFund(Fund fund){
-        System.out.println(fund.fundNumber());
         return service.addFundService(fund);
     }
 
@@ -78,7 +72,6 @@ public class FundController{
     @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.ALL_VALUE})
     public Message addFromFile(@FormDataParam("file") InputStream fileInputStream){
         System.out.println(fileInputStream.toString());
-//        System.out.println(file);
         return null;
     }
 }

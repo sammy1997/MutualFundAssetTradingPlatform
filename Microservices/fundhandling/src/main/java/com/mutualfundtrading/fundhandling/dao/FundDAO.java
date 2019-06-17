@@ -1,10 +1,8 @@
 package com.mutualfundtrading.fundhandling.dao;
 
 import com.google.common.base.Optional;
-import com.jayway.jsonpath.Criteria;
 import com.mutualfundtrading.fundhandling.models.*;
 import org.immutables.mongo.repository.RepositorySetup;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
