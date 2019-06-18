@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 
 @Value.Immutable
@@ -14,5 +15,5 @@ import java.util.List;
 @JsonDeserialize(as = ImmutableEntitlements.class)
 public interface Entitlements {
     String userId();
-    List<String> entitledTo();
+    Optional<List<String>> entitledTo();
 }

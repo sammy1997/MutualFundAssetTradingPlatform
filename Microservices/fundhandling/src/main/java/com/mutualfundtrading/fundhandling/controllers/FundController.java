@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-@RestController
 @Path("/funds")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
