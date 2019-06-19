@@ -59,8 +59,8 @@ public class FundController{
 //    Delete funds
     @Path("/delete")
     @DELETE
-    public Message delete(Fund fund){
-        return service.delete(fund);
+    public Message delete(@QueryParam("fundNumber") String fundNumber){
+        return service.delete(fundNumber);
     }
 
 //    Search funds

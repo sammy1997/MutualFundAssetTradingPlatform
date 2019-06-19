@@ -2,8 +2,10 @@ package com.mutualfundtrading.fundhandling;
 
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
+import com.mutualfundtrading.fundhandling.models.FundDBModelRepository;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.immutables.mongo.repository.RepositorySetup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -36,6 +38,12 @@ public class FundhandlingApplication extends SpringBootServletInitializer{
 	public FundDAO createFundDAO(){
 		return new FundDAO();
 	}
+
+	@Bean
+	public FundDBModelRepository fundDBModelRepository(){
+		return new FundDBModelRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
+	}
+
 	public static void main(String[] args) {
 		final Application application = new ResourceConfig()
 				.packages("org.glassfish.jersey.examples.multipart")

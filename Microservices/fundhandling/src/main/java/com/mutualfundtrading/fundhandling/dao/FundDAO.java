@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.jayway.jsonpath.Criteria;
 import com.mutualfundtrading.fundhandling.models.*;
 import org.immutables.mongo.repository.RepositorySetup;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,13 @@ import java.util.regex.Pattern;
 
 public class FundDAO {
 //    Repository and query object setup
+
+    @Autowired
     FundDBModelRepository repository;
-    FundDBModelRepository.Criteria where;
+
+    private FundDBModelRepository.Criteria where;
 
     public FundDAO(){
-        repository = new FundDBModelRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
         where = repository.criteria();
     }
 
@@ -89,8 +92,8 @@ public class FundDAO {
     }
 
 //    Delete fund
-    public Optional<FundDBModel> delete(Fund fund){
-        Optional<FundDBModel> f = repository.findByFundNumber(fund.fundNumber()).deleteFirst().getUnchecked();
+    public Optional<FundDBModel> delete(String fundNumber){
+        Optional<FundDBModel> f = repository.findByFundNumber(fundNumber).deleteFirst().getUnchecked();
         return f;
     }
 
