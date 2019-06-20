@@ -13,12 +13,12 @@ import java.util.regex.Pattern;
 public class FundDAO {
 //    Repository and query object setup
 
-    @Autowired
-    FundDBModelRepository repository;
+    private FundDBModelRepository repository;
 
     private FundDBModelRepository.Criteria where;
 
     public FundDAO(){
+        repository = new FundDBModelRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
         where = repository.criteria();
     }
 

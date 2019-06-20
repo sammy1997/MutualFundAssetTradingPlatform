@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Application;
 import java.io.IOException;
 
 @SpringBootApplication
+@EnableEurekaClient
 public class FundhandlingApplication extends SpringBootServletInitializer{
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
@@ -38,16 +40,13 @@ public class FundhandlingApplication extends SpringBootServletInitializer{
 	public FundDAO createFundDAO(){
 		return new FundDAO();
 	}
-
-	@Bean
-	public FundDBModelRepository fundDBModelRepository(){
-		return new FundDBModelRepository(RepositorySetup.forUri("mongodb://localhost:27017/FundHandler"));
-	}
+//
+//	@Bean
+//	public FundDBModelRepository fundDBModelRepository(){
+//		return
+//	}
 
 	public static void main(String[] args) {
-		final Application application = new ResourceConfig()
-				.packages("org.glassfish.jersey.examples.multipart")
-				.register(MultiPartFeature.class);
 		SpringApplication.run(FundhandlingApplication.class, args);
 	}
 
