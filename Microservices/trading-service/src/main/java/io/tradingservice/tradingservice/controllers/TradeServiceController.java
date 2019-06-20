@@ -29,6 +29,7 @@ public class TradeServiceController {
     @Autowired
     UserTradeService userTradeService;
 
+    // Purchase/Sell trade Api
     @POST
     @Path("/purchase/{userId}")
     public Response purchaseTrade(@PathParam("userId") String userId, Trade trade) throws URISyntaxException {
@@ -40,39 +41,12 @@ public class TradeServiceController {
         else return Response.status(400).entity("Bad request").build();
     }
 
-    @POST
-    @Path("/add/{userId}")
-    public Response addTradeDirectly(@PathParam("userId") String userId, Trade trade) throws URISyntaxException {
-        userTradeService.addTradeDirectly(userId, trade);
-        return Response.status(201).entity("Added Trade").build();
-    }
-
-    @POST
-    @Path("/create/{userId}")
-    public Response createUser(@PathParam("userId") String userId) throws URISyntaxException {
-        if (userTradeService.createUser(userId)){
-            return Response.status(201).entity("New user created: "+ userId).build();
-        } else return Response.status(400).entity("Bad request").build();
-    }
-
+    // View Trades Api
     @GET
-    @Path("/users/all")
-    public List<User> getAllUsers(){
-        List<User> users = userTradeService.getAllUsers();
-        return users;
-    }
-
-    @GET
-    @Path("/users/{userId}")
-    public User getUserById(@PathParam("userId") String userId){
-        return userTradeService.getUserById(userId);
-    }
-
-    @DELETE
-    @Path("remove/{userId}")
-    public Response removeTradeDirectly(@PathParam("userId") String userId, String fundId){
-        userTradeService.removeTradeDirectly(userId, fundId);
-        return Response.status(200).entity("Removed " + fundId).build();
+    @Path("/view/{userId}")
+    public List<ImmutableTrade> getAllTrades(@PathParam("userId") String userId){
+        List<ImmutableTrade> trades = userTradeService.getAllTrades(userId);
+        return trades;
     }
 
 }

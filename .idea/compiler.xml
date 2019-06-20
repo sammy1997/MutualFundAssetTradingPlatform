@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="fundhandling" />
+        <module name="zuul" />
+        <module name="eureka-server" />
+        <module name="user-create-service" />
+        <module name="tradingservice" />
+        <module name="portfolio-service" />
+        <module name="auth-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="auth-service" target="1.8" />
+      <module name="eureka-server" target="1.8" />
+      <module name="fundhandling" target="1.8" />
+      <module name="portfolio-service" target="1.8" />
+      <module name="tradingservice" target="1.8" />
+      <module name="user-create-service" target="1.8" />
+      <module name="zuul" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="auth-service" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="fundhandling" options="-parameters" />
+      <module name="portfolio-service" options="-parameters" />
+      <module name="tradingservice" options="-parameters" />
+      <module name="user-create-service" options="-parameters" />
+      <module name="zuul" options="-parameters" />
+    </option>
+  </component>
+</project>
