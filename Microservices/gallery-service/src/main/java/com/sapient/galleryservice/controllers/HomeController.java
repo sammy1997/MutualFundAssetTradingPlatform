@@ -45,7 +45,7 @@ public class HomeController {
         gallery.setId(id);
 
         // get list of available images
-        List<Object> images = restTemplate.getForObject("http://image-service/images/", List.class);
+        List<Object> images = restTemplate.getForObject("http://image-servxice/images/", List.class);
         gallery.setImages(images);
 
         return gallery;
