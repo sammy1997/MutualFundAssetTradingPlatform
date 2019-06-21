@@ -24,62 +24,15 @@ public class UserAccessObject {
         userRepository = new UserRepository(RepositorySetup.forUri("mongodb://localhost:27017/UserTrades"));
     }
 
-
-//    private boolean findTradeById(List<ImmutableTrade> trades, String fundId){
-//        for (Trade t: trades ){
-//            if (t.fundNumber().equals(fundId)) return true;
-//            else return false;
-//        }
-//        return false;
-//    }
-
+    // Helper function to get specific fund info based on the userId and fundId(fundNumber)
     private ImmutableTrade getFundById(List<ImmutableTrade> trades, String fundId){
-        int count = 0;
         for (ImmutableTrade t: trades) {
             if (t.fundNumber().equals(fundId)) return t;
-            count++;
         }
         return null;
     }
 
-//    public int addUser(String userId){
-//        User newUser =
-//            ImmutableUser.builder()
-//                    .userId(userId)
-//                    .trades(new ArrayList<>())
-//                    .build();
-//        userRepository.insert(newUser);
-//        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) return 1;
-//        else return 0;
-//    }
-
-
-//    public List<User> getUsers(){
-//        List<User> outUsers = new ArrayList<>();
-//        List<User> users = userRepository.findAll().fetchAll().getUnchecked();
-//        for (User user: users){
-//            outUsers.add(user);
-//        }
-//        return users;
-//    }
-
-    // To get list of Trades of given user(userId)
-    public List<ImmutableTrade> getAllTradesByUserId(String userId){
-        List<Trade> outTrades = new ArrayList<>();
-        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-        List<ImmutableTrade> trades = user.trades();
-        for (Trade t: trades){
-            outTrades.add(t);
-        }
-        return trades;
-    }
-
-//    public User getUser(String userId){
-//        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-//        return user;
-//    }
-
-    // To directly add fund
+    // Helper function to directly add fund
     private void directAddFund(String userId, Trade trade){
         ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
         userRepository.findByUserId(userId)
@@ -88,17 +41,26 @@ public class UserAccessObject {
                 .upsert();
     }
 
-    // Remove fund only if exists
+    // Helper function to Remove fund only if exists
     private void directRemoveFund(String userId, String fundId){
         User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
         for (ImmutableTrade t: user.trades()){
             if (t.fundNumber().equals(fundId)){
-                userRepository.findByUserId(userId).andModifyFirst()
+                userRepository.findByUserId(userId)
+                        .andModifyFirst()
                         .removeTrades(t)
                         .upsert();
                 break;
             }
         }
+    }
+
+    // To get list of Trades of given user(userId)
+    public List<ImmutableTrade> getAllTradesByUserId(String userId){
+        boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
+        if (isPresent) {
+            return userRepository.findByUserId(userId).fetchFirst().getUnchecked().get().trades();
+        } return null;
     }
 
     // Update an existing fund
@@ -129,16 +91,18 @@ public class UserAccessObject {
                         .addTrades(newT).upsert();
                 userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
+                // currBal = currBal - trade.quantity()*trade.avgNav();
                 return 1;
             }
-        }else if (trade.status().equals("sell")){           // If the status is sell
+        } else if (trade.status().equals("sell")){           // If the status is sell
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
                 User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
                 List<ImmutableTrade> trades = user.trades();
                 ImmutableTrade t = getFundById(trades, fundId);
-                // If the quantity is zero, remove trade
+                // If the quantity is zero, remove trade directly
                 if (trade.quantity()==t.quantity()){
                     directRemoveFund(userId, fundId);
+                    // currBal = currBal + trade.quantity()*trade.avgNav();
                     return -1;
                 }
                 else if (trade.quantity()<t.quantity()){        // Condition that sell quantity strictly less than existent
@@ -161,6 +125,7 @@ public class UserAccessObject {
                             .removeTrades(t).upsert();
                     userRepository.findByUserId(userId).andModifyFirst()
                             .addTrades(newT).upsert();
+                    // currBal = currBal + trade.quantity()*trade.avgNav();
                     return -1;
                 } else return -5;   // Bad request wherein sell quantity strictly greater than existing
             }
@@ -175,7 +140,7 @@ public class UserAccessObject {
         int count = 0;
         for (ImmutableTrade t: trades){
             // Fund already exists
-            if (t.fundNumber().equals(fundId)){
+            if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
                 return updateFund(userId, trade, fundId);
             }
             count++;
@@ -190,3 +155,41 @@ public class UserAccessObject {
 
 
 }
+
+
+
+//    private boolean findTradeById(List<ImmutableTrade> trades, String fundId){
+//        for (Trade t: trades ){
+//            if (t.fundNumber().equals(fundId)) return true;
+//            else return false;
+//        }
+//        return false;
+//    }
+
+
+//    public int addUser(String userId){
+//        User newUser =
+//            ImmutableUser.builder()
+//                    .userId(userId)
+//                    .trades(new ArrayList<>())
+//                    .build();
+//        userRepository.insert(newUser);
+//        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) return 1;
+//        else return 0;
+//    }
+
+
+//    public List<User> getUsers(){
+//        List<User> outUsers = new ArrayList<>();
+//        List<User> users = userRepository.findAll().fetchAll().getUnchecked();
+//        for (User user: users){
+//            outUsers.add(user);
+//        }
+//        return users;
+//    }
+
+
+//    public User getUser(String userId){
+//        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
+//        return user;
+//    }
