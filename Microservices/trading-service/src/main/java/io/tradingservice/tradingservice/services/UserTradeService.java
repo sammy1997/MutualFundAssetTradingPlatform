@@ -9,44 +9,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@JsonSerialize(as = ImmutableTrade.class)
-@JsonDeserialize(as = ImmutableTrade.class)
+@Service                                        // Service annotation
+@JsonSerialize(as = ImmutableTrade.class)       // Serialisation
+@JsonDeserialize(as = ImmutableTrade.class)     //      and deserialization
 public class UserTradeService {
 
-
+    // Create an instance of DAO
     UserAccessObject userAccessObject = new UserAccessObject();
 
+    // To make a purchase method call by user(userId) and the requested trade(trade)
     public int purchaseTrade(String userId, Trade trade){
-
-         return  userAccessObject.addTrade(userId, trade);
+        return  userAccessObject.addTrade(userId, trade);
     }
 
-    public void addTradeDirectly(String userId, Trade trade){
-        userAccessObject.directAddFund(userId, trade);
-    }
-
-    public void removeTradeDirectly(String userId, String fundId){
-        userAccessObject.directRemoveFund(userId, fundId);
-    }
-
-//    public boolean createUser(String userId){
-//        if (userAccessObject.addUser(userId)==1){
-//            return true;
-//        } else {return false;}
-//    }
-
-    public boolean createUser(String userId){
-        if (userAccessObject.addUser(userId)==1) return true;
-        else return false;
-    }
-
-    public List<User> getAllUsers(){
-        return userAccessObject.getUsers();
-    }
-
-    public User getUserById(String userId){
-        return userAccessObject.getUser(userId);
+    // To call method(of the dao) to view all trades of given user by userId
+    public List<ImmutableTrade> getAllTrades(String userId){
+        return userAccessObject.getAllTradesByUserId(userId);
     }
 
 }
