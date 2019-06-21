@@ -55,6 +55,19 @@ public class UserAccessObject {
         }
     }
 
+    // Helper function to Create a new user
+    public int addUser(String userId){
+        User newUser =
+                ImmutableUser.builder()
+                        .userId(userId)
+                        .trades(new ArrayList<>())
+                        .build();
+        userRepository.insert(newUser);
+        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) return 1;
+        else return 0;
+    }
+
+
     // To get list of Trades of given user(userId)
     public List<ImmutableTrade> getAllTradesByUserId(String userId){
         boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
@@ -134,6 +147,11 @@ public class UserAccessObject {
 
     // Condition checks for adding a trade
     public int addTrade(String userId, Trade trade){
+        boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
+        if (!exists){
+            addUser(userId);
+        }
+        if (exists){
         User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
         List<ImmutableTrade> trades = user.trades();
         String fundId = trade.fundNumber();
@@ -149,7 +167,7 @@ public class UserAccessObject {
         if (count==trades.size()){
             directAddFund(userId, trade);
             return 1;
-        }
+        }}
         return -5;
     }
 
@@ -167,16 +185,7 @@ public class UserAccessObject {
 //    }
 
 
-//    public int addUser(String userId){
-//        User newUser =
-//            ImmutableUser.builder()
-//                    .userId(userId)
-//                    .trades(new ArrayList<>())
-//                    .build();
-//        userRepository.insert(newUser);
-//        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) return 1;
-//        else return 0;
-//    }
+
 
 
 //    public List<User> getUsers(){
