@@ -6,6 +6,7 @@ import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import com.sun.jersey.multipart.FormDataParam;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -47,8 +48,8 @@ public class FundController{
 //    Get all funds
     @Path("/all")
     @GET
-    public List<ImmutableFundDBModel> getAll(@HeaderParam("Authorization") String headers){
-        System.out.println(headers);
+    public List<ImmutableFundDBModel> getAll(@HeaderParam("Authorization") String header){
+        ServiceUtils.decodeJWTForUserId(header);
         return service.getAll();
     }
 
