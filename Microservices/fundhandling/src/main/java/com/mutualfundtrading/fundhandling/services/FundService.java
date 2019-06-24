@@ -37,11 +37,11 @@ public class FundService {
         return new Message(200, "Fund with number " + fund.fundNumber() + " updated.");
     }
 
-    public Message delete(Fund fund){
-        if (dao.delete(fund).isPresent()){
-            return new Message(200, "Fund with fund number "+ fund.fundNumber() +" deleted");
+    public Message delete(String fundNumber){
+        if (dao.delete(fundNumber).isPresent()){
+            return new Message(200, "Fund with fund number "+ fundNumber +" deleted");
         }
-        return new Message(404, "Fund with fund number "+ fund.fundNumber() +" not found.");
+        return new Message(404, "Fund with fund number "+ fundNumber +" not found.");
     }
 
     public List<FundDBModel> searchAllFunds(String field, String searchTerm){

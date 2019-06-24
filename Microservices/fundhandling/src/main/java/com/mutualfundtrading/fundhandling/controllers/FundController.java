@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-@RestController
 @Path("/funds")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
@@ -60,8 +59,8 @@ public class FundController{
 //    Delete funds
     @Path("/delete")
     @DELETE
-    public Message delete(Fund fund){
-        return service.delete(fund);
+    public Message delete(@QueryParam("fundNumber") String fundNumber){
+        return service.delete(fundNumber);
     }
 
 //    Search funds

@@ -4,10 +4,11 @@ import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 //import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.messages.Message;
+import com.mutualfundtrading.fundhandling.models.Entitlements;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+//import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
-import jdk.nashorn.internal.ir.annotations.Immutable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,33 +28,41 @@ public class EntitlementService {
     FundService fundService;
 
 //    Add entitlements
-    public Message addEntitlements(String userId, List<String> entitleTo){
-        List<String> temp = new ArrayList<>();
-        for (String fundId:entitleTo){
-            if (fundService.getFund(fundId) != null){
-                temp.add(fundId);
+    public Message addEntitlements(Entitlements entitlement){
+        if (entitlement.entitledTo().isPresent()) {
+            List<String> temp = new ArrayList<>();
+            for (String fundId : entitlement.entitledTo().get()) {
+                if (fundService.getFund(fundId) != null) {
+                    temp.add(fundId);
+                }
             }
-        }
-        if (temp.size() == 0){
-            return new Message(404, "None of the funds exists in the database");
-        }
+            if (temp.size() == 0) {
+                return new Message(404, "None of the funds exists in the database");
+            }
 
-        dao.insert(userId, temp);
+            dao.insert(entitlement.userId(), temp);
 
-        if ( temp.size() < entitleTo.size()){
-            return new Message(200, "Some of the funds were not found in the database. Remaining were added");
+            if (temp.size() < entitlement.entitledTo().get().size()) {
+                return new Message(200, "Some of the funds were not found in the database. Remaining were added");
+            }
+
+            return new Message(200, "All entitlements added");
+        }else {
+            return new Message(404, "Fund list cannot be empty");
         }
-
-        return new Message(200, "All entitlements added");
     }
 
 //    Delete entitlements
-    public Message deleteEntitlements(String userId, List<String> entitlementsToDelete){
-        String message = dao.delete(userId, entitlementsToDelete);
-        if (message == null){
-            return new Message(404, "User with user ID " + userId + " not found.");
+    public Message deleteEntitlements(Entitlements entitlement){
+        if (entitlement.entitledTo().isPresent()){
+            String message = dao.delete(entitlement.userId(), entitlement.entitledTo().get());
+            if (message == null){
+                return new Message(404, "User with user ID " + entitlement.userId() + " not found.");
+            }
+            return new Message(200, "The required entitlements for user "+ entitlement.userId() +" have been deleted.");
+        }else {
+            return  new Message(404, "Fund list cannot be empty");
         }
-        return new Message(200, "The required entitlements for user "+ userId +" have been deleted.");
     }
 
 //    Fetch entitlements

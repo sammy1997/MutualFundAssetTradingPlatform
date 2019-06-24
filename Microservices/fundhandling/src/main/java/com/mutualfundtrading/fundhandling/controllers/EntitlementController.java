@@ -1,6 +1,7 @@
 package com.mutualfundtrading.fundhandling.controllers;
 
 import com.mutualfundtrading.fundhandling.messages.Message;
+import com.mutualfundtrading.fundhandling.models.Entitlements;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableEntitlements;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
@@ -24,16 +25,16 @@ public class EntitlementController {
     EntitlementService service;
 
     @Path("/add")
-    @GET
-    public Message createEntitlement(@QueryParam("userId") String userId, @QueryParam("entitledTo") List<String> entitleTo){
-        return service.addEntitlements(userId, entitleTo);
+    @POST
+//    @QueryParam("userId") String userId, @QueryParam("entitledTo") List<String> entitleTo
+    public Message createEntitlement(Entitlements entitlement){
+        return service.addEntitlements(entitlement);
     }
 
     @Path("/delete")
-    @GET
-    public Message deleteEntitlements(@QueryParam("userId") String userId,
-                                      @QueryParam("deleteEntitlements") List<String> entitlementsToDelete){
-        return service.deleteEntitlements(userId, entitlementsToDelete);
+    @DELETE
+    public Message deleteEntitlements(Entitlements entitlement){
+        return service.deleteEntitlements(entitlement);
     }
 
     @Path("/get")
