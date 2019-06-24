@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -45,7 +47,8 @@ public class FundController{
 //    Get all funds
     @Path("/all")
     @GET
-    public List<ImmutableFundDBModel> getAll(){
+    public List<ImmutableFundDBModel> getAll(@HeaderParam("Authorization") String headers){
+        System.out.println(headers);
         return service.getAll();
     }
 
