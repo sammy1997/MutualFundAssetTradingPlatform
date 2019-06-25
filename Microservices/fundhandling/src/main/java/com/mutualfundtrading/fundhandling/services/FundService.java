@@ -2,13 +2,13 @@ package com.mutualfundtrading.fundhandling.services;
 
 import com.google.common.base.Optional;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
-import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Service
@@ -29,19 +29,19 @@ public class FundService {
         return dao.getAll();
     }
 
-    public Message update(Fund fund){
+    public Response update(Fund fund){
         Optional<FundDBModel> f = dao.update(fund);
         if (!f.isPresent()){
-            return new Message(404, "Fund with number " + fund.fundNumber() + " not found in db.");
+            return Response.status(404).entity("Fund with number " + fund.fundNumber() + " not found in db.").build();
         }
-        return new Message(200, "Fund with number " + fund.fundNumber() + " updated.");
+        return Response.status(200).entity("Fund with number " + fund.fundNumber() + " updated.").build();
     }
 
-    public Message delete(String fundNumber){
+    public Response delete(String fundNumber){
         if (dao.delete(fundNumber).isPresent()){
-            return new Message(200, "Fund with fund number "+ fundNumber +" deleted");
+            return Response.status(200).entity("Fund with fund number "+ fundNumber +" deleted").build();
         }
-        return new Message(404, "Fund with fund number "+ fundNumber +" not found.");
+        return Response.status(404).entity("Fund with fund number "+ fundNumber +" not found.").build();
     }
 
     public List<FundDBModel> searchAllFunds(String field, String searchTerm){
