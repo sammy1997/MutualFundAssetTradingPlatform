@@ -34,11 +34,13 @@ public class UserAccessObject {
 
     // Helper function to directly add fund
     private void directAddFund(String userId, Trade trade){
-        ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
-        userRepository.findByUserId(userId)
-                .andModifyFirst()
-                .addTrades(t)
-                .upsert();
+//        if (trade.status().equals("purchase")){
+            ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
+            userRepository.findByUserId(userId)
+                    .andModifyFirst()
+                    .addTrades(t)
+                    .upsert();
+//        }
     }
 
     // Helper function to Remove fund only if exists
@@ -148,7 +150,7 @@ public class UserAccessObject {
     // Condition checks for adding a trade
     public int addTrade(String userId, Trade trade){
         boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
-        if (!exists){
+        if (!exists && trade.status().equals("purchase")){
             addUser(userId);
             directAddFund(userId, trade);
             return 1;
@@ -171,7 +173,7 @@ public class UserAccessObject {
                 return 1;
             }
         }
-        return -5;
+        return 3;
     }
 
 

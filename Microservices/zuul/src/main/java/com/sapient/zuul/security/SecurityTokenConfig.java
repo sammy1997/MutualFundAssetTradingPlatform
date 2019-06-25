@@ -33,7 +33,7 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // all are allowed to access the auth service
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers("/trade/purchase/**").hasAnyRole("ADMIN", "TRADER")
+                .antMatchers("/trade/exchange/**").hasAnyRole("ADMIN", "TRADER")
                 .antMatchers("/fund-handling/api/funds/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/add/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/delete/**").hasRole("ADMIN")

@@ -7,6 +7,7 @@ import io.tradingservice.tradingservice.models.ImmutableUser;
 import io.tradingservice.tradingservice.models.Trade;
 import io.tradingservice.tradingservice.models.User;
 import io.tradingservice.tradingservice.services.UserTradeService;
+import io.tradingservice.tradingservice.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
@@ -31,10 +32,11 @@ public class TradeServiceController {
 
     // Purchase/Sell trade Api
     @POST
-    @Path("/purchase/{userId}")
-    public Response purchaseTrade(@PathParam("userId") String userId, Trade trade) throws URISyntaxException {
+    @Path("/exchange")
+    public Response exchangeTrade(@HeaderParam("Authorization") String header, Trade trade) throws URISyntaxException {
         // return userTradeService.purchaseTrade(userId, trade);
-        int res = userTradeService.purchaseTrade(userId, trade);
+        String userId = ServiceUtils.decodeJWTForUserId(header);
+        int res = userTradeService.exchangeTrade(userId, trade);
         if (res==1) return Response.status(201).entity("Purchased requested trade").build();
         else if (res==-1) return Response.status(200).entity("Sold requested trade").build();
         else if (res==-5) return Response.status(400).entity("Insufficient funds to sell").build();
@@ -43,8 +45,9 @@ public class TradeServiceController {
 
     // View Trades Api
     @GET
-    @Path("/view/{userId}")
-    public List<ImmutableTrade> getAllTrades(@PathParam("userId") String userId){
+    @Path("/view")
+    public List<ImmutableTrade> getAllTrades(@HeaderParam("Authorization") String header){
+        String userId = ServiceUtils.decodeJWTForUserId(header);
         List<ImmutableTrade> trades = userTradeService.getAllTrades(userId);
         return trades;
     }
