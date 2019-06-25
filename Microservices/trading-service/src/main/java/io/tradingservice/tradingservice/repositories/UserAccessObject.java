@@ -150,24 +150,27 @@ public class UserAccessObject {
         boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
         if (!exists){
             addUser(userId);
-        }
-        if (exists){
-        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-        List<ImmutableTrade> trades = user.trades();
-        String fundId = trade.fundNumber();
-        int count = 0;
-        for (ImmutableTrade t: trades){
-            // Fund already exists
-            if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
-                return updateFund(userId, trade, fundId);
-            }
-            count++;
-        }
-        // Fund doesn't exist
-        if (count==trades.size()){
             directAddFund(userId, trade);
             return 1;
-        }}
+        }
+        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+            User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
+            List<ImmutableTrade> trades = user.trades();
+            String fundId = trade.fundNumber();
+            int count = 0;
+            for (ImmutableTrade t: trades){
+                // Fund already exists
+                if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
+                    return updateFund(userId, trade, fundId);
+                }
+                count++;
+            }
+            // Fund doesn't exist
+            if (count==trades.size()){
+                directAddFund(userId, trade);
+                return 1;
+            }
+        }
         return -5;
     }
 
