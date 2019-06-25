@@ -34,11 +34,13 @@ public class UserAccessObject {
 
     // Helper function to directly add fund
     private void directAddFund(String userId, Trade trade){
-        ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
-        userRepository.findByUserId(userId)
-                .andModifyFirst()
-                .addTrades(t)
-                .upsert();
+//        if (trade.status().equals("purchase")){
+            ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
+            userRepository.findByUserId(userId)
+                    .andModifyFirst()
+                    .addTrades(t)
+                    .upsert();
+//        }
     }
 
     // Helper function to Remove fund only if exists
@@ -148,27 +150,30 @@ public class UserAccessObject {
     // Condition checks for adding a trade
     public int addTrade(String userId, Trade trade){
         boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
-        if (!exists){
+        if (!exists && trade.status().equals("purchase")){
             addUser(userId);
-        }
-        if (exists){
-        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-        List<ImmutableTrade> trades = user.trades();
-        String fundId = trade.fundNumber();
-        int count = 0;
-        for (ImmutableTrade t: trades){
-            // Fund already exists
-            if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
-                return updateFund(userId, trade, fundId);
-            }
-            count++;
-        }
-        // Fund doesn't exist
-        if (count==trades.size()){
             directAddFund(userId, trade);
             return 1;
-        }}
-        return -5;
+        }
+        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+            User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
+            List<ImmutableTrade> trades = user.trades();
+            String fundId = trade.fundNumber();
+            int count = 0;
+            for (ImmutableTrade t: trades){
+                // Fund already exists
+                if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
+                    return updateFund(userId, trade, fundId);
+                }
+                count++;
+            }
+            // Fund doesn't exist
+            if (count==trades.size()){
+                directAddFund(userId, trade);
+                return 1;
+            }
+        }
+        return 3;
     }
 
 

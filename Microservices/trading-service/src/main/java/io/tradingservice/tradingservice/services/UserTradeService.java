@@ -18,7 +18,7 @@ public class UserTradeService {
     UserAccessObject userAccessObject = new UserAccessObject();
 
     // To make a purchase method call by user(userId) and the requested trade(trade)
-    public int purchaseTrade(String userId, Trade trade){
+    public int exchangeTrade(String userId, Trade trade){
         return  userAccessObject.addTrade(userId, trade);
     }
 
