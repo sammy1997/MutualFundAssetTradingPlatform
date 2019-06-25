@@ -1,5 +1,6 @@
 package com.example.portfolioservice;
 
+import com.example.portfolioservice.DAO.UserDAO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -18,5 +19,10 @@ public class PortfolioServiceApplication {
 	@Bean
 	public RestTemplate getRestTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	public UserDAO newUserDAO(){
+		return new UserDAO();
 	}
 }
