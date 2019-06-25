@@ -37,19 +37,29 @@ public class TradeServiceController {
         // return userTradeService.purchaseTrade(userId, trade);
         String userId = ServiceUtils.decodeJWTForUserId(header);
         int res = userTradeService.exchangeTrade(userId, trade);
-        if (res==1) return Response.status(201).entity("Purchased requested trade").build();
-        else if (res==-1) return Response.status(200).entity("Sold requested trade").build();
-        else if (res==-5) return Response.status(400).entity("Insufficient funds to sell").build();
+        if (res == 1) return Response.status(201).entity("Purchased requested trade").build();
+        else if (res == -1) return Response.status(200).entity("Sold requested trade").build();
+        else if (res == -5) return Response.status(400).entity("Insufficient funds to sell").build();
         else return Response.status(400).entity("Bad request").build();
     }
 
     // View Trades Api
     @GET
     @Path("/view")
-    public List<ImmutableTrade> getAllTrades(@HeaderParam("Authorization") String header){
+    public List<ImmutableTrade> getAllTrades(@HeaderParam("Authorization") String header) {
         String userId = ServiceUtils.decodeJWTForUserId(header);
         List<ImmutableTrade> trades = userTradeService.getAllTrades(userId);
         return trades;
     }
 
+    // Add List of Trades
+    @POST
+    @Path("/purchase")
+    public Response purchaseTrade(@HeaderParam("Authorization") String header, List<Trade> trades) {
+        if (trades.size() <= 5) {
+            String userId = ServiceUtils.decodeJWTForUserId(header);
+            int res = userTradeService.purchaseTrade(userId, trades, header);
+            return Response.status(201).entity("Purchased requested Funds").build();
+        } else return Response.status(400).entity("Bad request").build();
+    }
 }
