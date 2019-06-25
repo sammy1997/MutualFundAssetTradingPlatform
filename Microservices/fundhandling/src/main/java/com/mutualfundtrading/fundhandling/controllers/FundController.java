@@ -6,6 +6,7 @@ import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import com.sun.jersey.multipart.FormDataParam;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -45,7 +48,8 @@ public class FundController{
 //    Get all funds
     @Path("/all")
     @GET
-    public List<ImmutableFundDBModel> getAll(){
+    public List<ImmutableFundDBModel> getAll(@HeaderParam("Authorization") String header){
+        ServiceUtils.decodeJWTForUserId(header);
         return service.getAll();
     }
 
