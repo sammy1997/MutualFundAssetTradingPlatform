@@ -14,6 +14,6 @@ import java.util.Optional;
 @JsonSerialize(as = ImmutableEntitlements.class)
 @JsonDeserialize(as = ImmutableEntitlements.class)
 public interface Entitlements {
-    String userId();
+    Optional<String> userId();
     Optional<List<String>> entitledTo();
 }
