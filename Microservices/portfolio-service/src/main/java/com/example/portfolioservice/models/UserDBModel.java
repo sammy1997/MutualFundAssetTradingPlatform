@@ -17,5 +17,6 @@ public interface UserDBModel
     @Mongo.Id
     String userId();
     float balance();
+    String baseCurr();
     List<Fund2> all_funds();
 }

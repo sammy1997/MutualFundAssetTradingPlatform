@@ -63,7 +63,8 @@ public class HomeController {
             // Use the token from above to update balance in portfolio service
             webClientBuilder.build()
                     .post()
-                    .uri("localhost:8762/portfolio/add/user?secret=ggmuekp69t11p6914qrl7pk4598679hm&balance="+user.currBal().get())
+                    .uri("localhost:8762/portfolio/add/user?secret=ggmuekp69t11p6914qrl7pk4598679hm&balance="+
+                            user.currBal().get()+ "&baseCurr="+user.baseCurr())
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", authHeader)
