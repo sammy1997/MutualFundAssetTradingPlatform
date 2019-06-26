@@ -17,7 +17,7 @@ public class UserTradeService {
     // Create an instance of DAO
     UserAccessObject userAccessObject = new UserAccessObject();
 
-    // To make a purchase method call by user(userId) and the requested trade(trade)
+    // To make a trade exchange method call by user(userId) and the requested trade(trade)
     public int exchangeTrade(String userId, Trade trade){
         return  userAccessObject.addTrade(userId, trade);
     }

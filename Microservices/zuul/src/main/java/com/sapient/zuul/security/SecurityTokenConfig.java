@@ -33,15 +33,11 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // all are allowed to access the auth service
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers("/trade/exchange/**").hasAnyRole("ADMIN", "TRADER")
                 .antMatchers("/fund-handling/api/funds/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/add/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/delete/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/search**").hasAnyRole("ADMIN", "TRADER")
                 .antMatchers("/fund-handling/api/entitlements/get**").hasAnyRole("ADMIN", "TRADER")
-                .antMatchers( "/gallery/viewer/**").hasAnyRole("USER", "ADMIN", "TRADER")
-                .antMatchers( "/gallery/trader/**").hasAnyRole("TRADER","ADMIN")
-                .antMatchers("/gallery/admin/**").hasRole("ADMIN")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }

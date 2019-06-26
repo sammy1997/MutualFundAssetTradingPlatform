@@ -27,7 +27,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
+        // 1. Get the authentication header. Tokens are supposed to be passed in the authentication header
         String header = request.getHeader(jwtConfig.getHeader());
 
         // 2. validate the header and check the prefix
@@ -69,7 +69,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // In case of failure, make sure the user won't be authenticated
+            // In case of failure, the user won't be authenticated
             SecurityContextHolder.clearContext();
         }
 
