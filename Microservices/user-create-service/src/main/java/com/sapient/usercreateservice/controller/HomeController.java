@@ -3,32 +3,80 @@ package com.sapient.usercreateservice.controller;
 import com.sapient.usercreateservice.entities.Users;
 import com.sapient.usercreateservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
-//@RestController
-//@RequestMapping("/")
+import java.util.List;
+
+
+
 @Path("/")
 public class HomeController {
 
     @Autowired
     private UserService userService;
 
-//    @PostMapping("/")
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
+    List<String> header;
+    String authHeader;
+
     @POST
     @Consumes("application/json")
-    public String addUser(@RequestBody Users user){
-//        System.out.println(user.username() + " added");
-        userService.addUser(user);
-        return user.userId() + " added to DB";
+    public String addUser(@RequestBody Users user) {
+        Response response = userService.addUser(user);
+        if (response.getStatus() == 200) {
+            String userCredentials = "{\"userId\": \"" + user.userId() + "\", \n" +
+                    "\"password\": \"" + user.password() + "\"\n" +
+                    "}";
+
+            String currBal = "{\"currBal\": \"" + user.currBal() + "\"\n" + "}";
+
+
+            //Make a post request to auth-service to generate a token that will be used to make a request to portfolio service
+            webClientBuilder.build()
+                    .post()
+                    .uri("localhost:8762/auth")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromObject(userCredentials))
+                    .exchange()
+                    .doOnSuccess(clientResponse -> {
+                        if (clientResponse.statusCode().value() == 200) {
+                            header = (clientResponse.headers().header("Authorization"));
+                        }
+                    })
+                    .block();
+
+            for (String temp : header) {
+                authHeader = temp;
+            }
+
+            // Use the token from above to update balance in portfolio service
+            webClientBuilder.build()
+                    .patch()
+                    .uri("localhost:8762/portfolio/updateBal")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromObject(currBal))
+                    .header("Authorization", authHeader)
+                    .exchange()
+                    .doOnSuccess(clientResponse -> {
+                        System.out.println(clientResponse.statusCode());
+                    }).block();
+            return user.userId() + " added to database";
+        } else if (response.getStatus() == 400) {
+            return "Some field(s) missing. If not, please validate your fields";
+        }else{
+            return user.userId() + " already exists in the database. Cannot add another instance.";
+        }
     }
-
-
-
 }

@@ -13,10 +13,8 @@ import java.util.List;
 @JsonDeserialize(as = ImmutableUsersDBModel.class)
 public interface UsersDBModel {
     @Mongo.Id
-    String username();
+    String userId();
     String password();
     String fullName();
-    double currBal();
-    String baseCurr();
     String role();
 }
