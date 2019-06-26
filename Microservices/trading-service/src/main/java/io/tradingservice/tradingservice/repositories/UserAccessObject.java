@@ -35,15 +35,13 @@ public class UserAccessObject {
         return null;
     }
 
-    // Helper function to directly add fund
+    // Helper function to directly add fund to corresponding userId
     private void directAddFund(String userId, Trade trade){
-//        if (trade.status().equals("purchase")){
-            ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
-            userRepository.findByUserId(userId)
-                    .andModifyFirst()
-                    .addTrades(t)
-                    .upsert();
-//        }
+        ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
+        userRepository.findByUserId(userId)
+            .andModifyFirst()
+            .addTrades(t)
+            .upsert();
     }
 
     // Helper function to Remove fund only if exists

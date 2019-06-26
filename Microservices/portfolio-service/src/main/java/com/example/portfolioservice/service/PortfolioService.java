@@ -1,13 +1,11 @@
 package com.example.portfolioservice.service;
 
 
-import java.util.*;
-
-import com.example.portfolioservice.DAO.FundDAO;
 import com.example.portfolioservice.DAO.UserDAO;
-import com.example.portfolioservice.models.Fund;
-import com.example.portfolioservice.models.User;
-import com.example.portfolioservice.models.UserUpdate;
+import com.example.portfolioservice.models.ImmutableUserDBModel;
+import com.example.portfolioservice.models.User2;
+import com.example.portfolioservice.models.UserDBModel;
+import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,40 +13,40 @@ import org.springframework.stereotype.Service;
 @Service
 public class PortfolioService
 {
-    @Autowired
-    private FundDAO fundDAO;
 
     @Autowired
-    private UserDAO userDAO;
+    UserDAO userDAO;
 
-    public Collection<Fund> getFunds()
+
+
+    public void createUser(User2 user)
     {
-        return fundDAO.getFunds();
+        userDAO.createUser(user);
     }
 
-    public Collection<User> getUser()
+    public ImmutableUserDBModel getUser(String id)
     {
-        return userDAO.getUsers();
+        return userDAO.getUser(id);
     }
 
-    public User createUser(User user)
+    public Optional<UserDBModel> update(User2 user)
     {
-         userDAO.createUser(user);
-         return user;
+        return userDAO.update(user);
     }
 
-    public Optional<User> getUserById(String id)
+    public Optional<UserDBModel> delete(String userId)
     {
-        return userDAO.getUserById(id);
+        return userDAO.delete(userId);
     }
 
-    public Optional<User> deleteUserById(String id)
+
+    public float getBalanceById(String userId)
     {
-        return userDAO.deleteUserById(id);
+        return userDAO.getBalance(userId);
     }
 
-    public Optional<User> updateUserById(String userId, UserUpdate userUpdate)
+    public void updateBalance(String userId, float balance)
     {
-        return userDAO.updateUser(userId, userUpdate);
+        userDAO.updateBalance(userId, balance);
     }
 }

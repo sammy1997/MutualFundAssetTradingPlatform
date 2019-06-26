@@ -14,7 +14,5 @@ public interface UsersDBModel {
     String userId();
     String password();
     String fullName();
-    double currBal();
-    String baseCurr();
     String role();
 }

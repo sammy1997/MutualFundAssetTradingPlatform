@@ -28,11 +28,6 @@ public class UserTradeService {
     @Autowired
     WebClient.Builder webClientBuilder;
 
-    // To make a purchase method call by user(userId) and the requested trade(trade)
-    // public int exchangeTrade(String userId, Trade trade){
-        // return  userAccessObject.addTrade(userId, trade);
-    //}
-
     // To call method(of the dao) to view all trades of given user by userId
     public List<ImmutableTrade> getAllTrades(String userId){
         return userAccessObject.getAllTradesByUserId(userId);
