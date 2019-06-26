@@ -1,9 +1,6 @@
 package com.example.portfolioservice.DAO;
 
-import com.example.portfolioservice.models.ImmutableUserDBModel;
-import com.example.portfolioservice.models.User2;
-import com.example.portfolioservice.models.UserDBModel;
-import com.example.portfolioservice.models.UserDBModelRepository;
+import com.example.portfolioservice.models.*;
 import com.google.common.base.Optional;
 import org.immutables.mongo.repository.RepositorySetup;
 
@@ -28,6 +25,7 @@ public class UserDAO
         UserDBModel userDB;
         userDB = ImmutableUserDBModel.builder()
                 .userId(user.userId().get())
+                .baseCurr(user.baseCurr().get())
                 .balance(user.balance())
                 .all_funds(user.all_funds().get()).build();
 
@@ -53,8 +51,9 @@ public class UserDAO
             UserDBModel updated_user = userDB.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                    .userId(user.userId().get()).balance(user.balance())
-                    .all_funds(user.all_funds().isPresent()? user.all_funds().get():updated_user.all_funds())
+                    .userId(updated_user.userId()).balance(user.balance())
+                            .baseCurr(user.baseCurr().isPresent()? user.baseCurr().get(): updated_user.baseCurr())
+                            .all_funds(user.all_funds().isPresent()? user.all_funds().get():updated_user.all_funds())
                     .build()
             );
         }
@@ -66,14 +65,17 @@ public class UserDAO
         return repository.findByUserId(userId).deleteFirst().getUnchecked();
     }
 
-    public float getBalance(String userId)
+    public BalanceInfo getBalance(String userId)
     {
         Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
-            return user.get().balance();
+            BalanceInfo balance = new BalanceInfo();
+            balance.setBalance(user.get().balance());
+            balance.setBaseCurr(user.get().baseCurr());
+            return balance;
         }
-        return -1;
+        return null;
     }
 
     public void updateBalance(String userId, float balance)
