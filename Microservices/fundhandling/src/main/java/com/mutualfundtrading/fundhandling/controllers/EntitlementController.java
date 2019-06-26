@@ -59,4 +59,17 @@ public class EntitlementController {
         return service.searchEntitlements(ServiceUtils.decodeJWTForUserId(token), field, searchTerm);
     }
 
+    @Path("/get/fund")
+    @GET
+    public FundDBModel getEntitledFundDetail(@HeaderParam("Authorization") String token, @QueryParam("fundNumber") String fundId){
+        List<FundDBModel> result = service.searchEntitlements(ServiceUtils.decodeJWTForUserId(token), "Fund Number", fundId);
+        if (result!=null){
+            if (result.size()>0){
+                return result.get(0);
+            }
+            return null;
+        }
+        return null;
+    }
+
 }
