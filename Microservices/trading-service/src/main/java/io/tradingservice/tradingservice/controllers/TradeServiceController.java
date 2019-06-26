@@ -9,8 +9,11 @@ import io.tradingservice.tradingservice.models.User;
 import io.tradingservice.tradingservice.services.UserTradeService;
 import io.tradingservice.tradingservice.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.swing.text.html.parser.Entity;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,19 +33,6 @@ public class TradeServiceController {
     @Autowired
     UserTradeService userTradeService;
 
-    // Purchase/Sell trade Api
-    @POST
-    @Path("/exchange")
-    public Response exchangeTrade(@HeaderParam("Authorization") String header, Trade trade) throws URISyntaxException {
-        // return userTradeService.purchaseTrade(userId, trade);
-        String userId = ServiceUtils.decodeJWTForUserId(header);
-        int res = userTradeService.exchangeTrade(userId, trade);
-        if (res == 1) return Response.status(201).entity("Purchased requested trade").build();
-        else if (res == -1) return Response.status(200).entity("Sold requested trade").build();
-        else if (res == -5) return Response.status(400).entity("Insufficient funds to sell").build();
-        else return Response.status(400).entity("Bad request").build();
-    }
-
     // View Trades Api
     @GET
     @Path("/view")
@@ -52,14 +42,21 @@ public class TradeServiceController {
         return trades;
     }
 
-    // Add List of Trades
+    // Purchase / sell trades
     @POST
-    @Path("/purchase")
-    public Response purchaseTrade(@HeaderParam("Authorization") String header, List<Trade> trades) {
+    @Path("/exchange")
+    public Response exchangeTrade(@HeaderParam("Authorization") String header, List<Trade> trades) {
         if (trades.size() <= 5) {
-            String userId = ServiceUtils.decodeJWTForUserId(header);
-            int res = userTradeService.purchaseTrade(userId, trades, header);
-            return Response.status(201).entity("Purchased requested Funds").build();
-        } else return Response.status(400).entity("Bad request").build();
+                String userId = ServiceUtils.decodeJWTForUserId(header);
+                int res = userTradeService.exchangeTrade(userId, trades, header);
+
+            if (res == 1) return Response.status(201).entity("Purchased requested trade").build();
+            else if (res == -1) return Response.status(200).entity("Sold requested trade").build();
+            else if (res == -5) return Response.status(400).entity("Insufficient funds to sell").build();
+            else return Response.status(400).entity("Bad request").build();
+        } else return Response.status(400).entity("Max trade request is 5").build();
     }
+
+
+
 }

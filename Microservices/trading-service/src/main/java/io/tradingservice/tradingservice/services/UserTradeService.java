@@ -7,6 +7,7 @@ import io.tradingservice.tradingservice.repositories.UserAccessObject;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -37,12 +38,12 @@ public class UserTradeService {
         return userAccessObject.getAllTradesByUserId(userId);
     }
 
-    public int purchaseTrade(String userId, List<Trade> trades, String header) {
+    public int exchangeTrade(String userId, List<Trade> trades, String header) {
         float balance = webClientBuilder.build()
                 .get()
                 .uri("http://portfolio-service/{view}" )
                 .retrieve()
-                .bodyToMono(float.class)
+                .bodyToMono(Float.class)
                 .block();
         for (Trade t: trades ){
             balance += userAccessObject.addTrade(userId, t);
@@ -51,8 +52,7 @@ public class UserTradeService {
         User2 user2 =
                 ImmutableUser2.builder()
                         .userId(userId)
-                        .balance(balance)
-                        .trades(updatedTrades)
+                        .balance(balance)   // .trades()
                         .build();
         webClientBuilder.build()
                 .post()
@@ -61,4 +61,5 @@ public class UserTradeService {
                 .header(header);
         return 1;
     }
+
 }

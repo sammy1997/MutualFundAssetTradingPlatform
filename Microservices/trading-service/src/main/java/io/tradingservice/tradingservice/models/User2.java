@@ -8,6 +8,6 @@ import java.util.List;
 public interface User2 {
     String userId();
     float balance();
-    List<ImmutableTrade> trades();
+//    List<ImmutableTrade> trades();
 
 }

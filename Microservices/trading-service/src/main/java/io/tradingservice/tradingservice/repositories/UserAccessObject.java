@@ -72,31 +72,6 @@ public class UserAccessObject {
         else return 0;
     }
 
-//    // Helper funtion to get current balance
-//    private float getBalance(String userId){
-//        float currBal = webClientBuilder.build()
-//                .get()
-//                .uri("http://portfolio-service/{x}" + Constants.SECRET_KEY )
-//                .retrieve()
-//                .bodyToMono(float.class)
-//                .block();
-//        return currBal;
-//    }
-//
-//    // Helper function to update Balance
-//    private void updateBalance(String userId, float newbalance){
-//        User2 user2 = ImmutableUser2.builder()
-//                            .userId(userId)
-//                            .balance(newbalance)
-//                            .tr
-//
-//        webClientBuilder.build()
-//                .post()
-//                .body(User2)
-//    }
-
-
-
     // To get list of Trades of given user(userId)
     public List<ImmutableTrade> getAllTradesByUserId(String userId){
         boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
@@ -206,32 +181,3 @@ public class UserAccessObject {
     }
 
 }
-
-
-
-//    private boolean findTradeById(List<ImmutableTrade> trades, String fundId){
-//        for (Trade t: trades ){
-//            if (t.fundNumber().equals(fundId)) return true;
-//            else return false;
-//        }
-//        return false;
-//    }
-
-
-
-
-
-//    public List<User> getUsers(){
-//        List<User> outUsers = new ArrayList<>();
-//        List<User> users = userRepository.findAll().fetchAll().getUnchecked();
-//        for (User user: users){
-//            outUsers.add(user);
-//        }
-//        return users;
-//    }
-
-
-//    public User getUser(String userId){
-//        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-//        return user;
-//    }
