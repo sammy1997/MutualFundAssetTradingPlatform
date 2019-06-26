@@ -162,7 +162,6 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/getFunds/")
-    //
     public List<Fund2> getFunds(@HeaderParam("Authorization") String token)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);

@@ -40,32 +40,30 @@ public class UserDAO
         Optional<UserDBModel> user =repository.find(where.userId(id)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
-            ImmutableUserDBModel userd =ImmutableUserDBModel.builder().from(user.get()).build();
-            return userd;
+            return (ImmutableUserDBModel) user.get();
         }
         return null;
     }
 
     public Optional<UserDBModel> update(User2 user)
     {
-        Optional<UserDBModel> u = repository.find(where.userId(user.userId().get())).fetchFirst().getUnchecked();
-        if(u.isPresent())
+        Optional<UserDBModel> userDB = repository.find(where.userId(user.userId().get())).fetchFirst().getUnchecked();
+        if(userDB.isPresent())
         {
-            UserDBModel updated_user = u.get();
+            UserDBModel updated_user = userDB.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
                     .userId(user.userId().get()).balance(user.balance())
-                    .all_funds(user.all_funds().isPresent()?user.all_funds().get():updated_user.all_funds())
+                    .all_funds(user.all_funds().isPresent()? user.all_funds().get():updated_user.all_funds())
                     .build()
             );
         }
-        return u;
+        return userDB;
     }
 
     public Optional<UserDBModel> delete(String userId)
     {
-        Optional<UserDBModel> u = repository.findByUserId(userId).deleteFirst().getUnchecked();
-        return u;
+        return repository.findByUserId(userId).deleteFirst().getUnchecked();
     }
 
     public float getBalance(String userId)
@@ -73,22 +71,20 @@ public class UserDAO
         Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
-            ImmutableUserDBModel userd =ImmutableUserDBModel.builder().from(user.get()).build();
-            return userd.balance();
+            return user.get().balance();
         }
-        return 0;
+        return -1;
     }
 
     public void updateBalance(String userId, float balance)
     {
-        Optional<UserDBModel> u = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
-        if(u.isPresent())
+        Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        if(user.isPresent())
         {
-            UserDBModel updated_user = u.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                            .userId(u.get().userId())
-                            .all_funds(u.get().all_funds())
+                            .userId(user.get().userId())
+                            .all_funds(user.get().all_funds())
                             .balance(balance)
                             .build()
             );

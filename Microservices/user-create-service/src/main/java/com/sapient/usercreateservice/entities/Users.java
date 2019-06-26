@@ -13,6 +13,6 @@ public interface Users {
     String userId();
     String password();
     Optional<String> fullName();
-    Optional<Double> currBal();
+    Optional<Float> currBal();
     Optional<String> role();
 }
