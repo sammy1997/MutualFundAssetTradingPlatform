@@ -12,7 +12,7 @@ import java.util.Optional;
 @JsonDeserialize(as = ImmutableUser2.class)
 public interface User2
 {
-    String userId();
+    Optional<String> userId();
     float balance();
     Optional<List<Fund2>> all_funds();
 }

@@ -27,7 +27,7 @@ public class UserDAO
     {
         UserDBModel userDB;
         userDB = ImmutableUserDBModel.builder()
-                .userId(user.userId())
+                .userId(user.userId().get())
                 .balance(user.balance())
                 .all_funds(user.all_funds().get()).build();
 
@@ -48,13 +48,13 @@ public class UserDAO
 
     public Optional<UserDBModel> update(User2 user)
     {
-        Optional<UserDBModel> u = repository.find(where.userId(user.userId())).fetchFirst().getUnchecked();
+        Optional<UserDBModel> u = repository.find(where.userId(user.userId().get())).fetchFirst().getUnchecked();
         if(u.isPresent())
         {
             UserDBModel updated_user = u.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                    .userId(user.userId())
+                    .userId(user.userId().get()).balance(user.balance())
                     .all_funds(user.all_funds().isPresent()?user.all_funds().get():updated_user.all_funds())
                     .build()
             );

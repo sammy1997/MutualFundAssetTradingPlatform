@@ -8,20 +8,25 @@ import com.example.portfolioservice.utils.ServiceUtils;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyExtractor;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
-@Path("/portfolio")
+@Path("/")
 public class PortfolioController
 {
 
     @Autowired
     private PortfolioService portfolioService;
+
+    @Autowired
+    private WebClient client;
 
     // Fetch user details
     @GET
@@ -47,12 +52,14 @@ public class PortfolioController
     @PATCH
     @Produces("application/json")
     @Path("/update")
-    public void updateBalance(@HeaderParam("Authorization") String token, @QueryParam("balance") float balance,
+    public Response updateBalance(@HeaderParam("Authorization") String token, @QueryParam("balance") float balance,
                               @QueryParam("secret") String secret_key)
     {
         if (Constants.SECRET_TOKEN.equals(secret_key)){
             portfolioService.updateBalance(ServiceUtils.decodeJWTForUserId(token), balance);
+            return Response.status(200).entity("Balance updated").build();
         }
+        return Response.status(400).entity("Secret key is wrong").build();
     }
 
 
@@ -72,19 +79,54 @@ public class PortfolioController
     @PATCH
     @Produces("application/json")
     @Path("/update/user")
-    public Optional<UserDBModel> updateUserById(@QueryParam("secret") String secret_key, User2 user)
+    public Response updateUserById(@HeaderParam("Authorization") String token,
+                                                @QueryParam("secret") String secret_key, User2 user)
     {
+        String userId = ServiceUtils.decodeJWTForUserId(token);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
-            if (user.all_funds().isPresent()){
+            if (user.all_funds().isPresent() && userId!=null){
                 List<Fund2> currFunds = user.all_funds().get();
                 List<Fund2> updateProfitsOfFunds = new ArrayList<>();
                 for (Fund2 fund: currFunds){
+                    ClientResponse response =
+                            client.get()
+                            .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=" + fund.fundNumber())
+                            .header("Authorization", "Bearer " + token)
+                            .exchange()
+                            .block();
 
+                    FundParser parsedFund = response.bodyToMono(FundParser.class).block();
+
+                    System.out.println(parsedFund.nav());
+                    System.out.println(fund.originalNav());
+                    System.out.println(fund.quantity());
+
+                    if (parsedFund!=null){
+                        float profit = (parsedFund.nav().get() - fund.originalNav().get())*fund.quantity().get();
+                        float profitPercent = (parsedFund.nav().get() - fund.originalNav().get())/fund.originalNav().get();
+                        Fund2 updatedFund = ImmutableFund2.builder().fundNumber(fund.fundNumber())
+                                .fundName(parsedFund.fundName()).invCurrency(parsedFund.invCurrency())
+                                .invManager(parsedFund.invManager())
+                                .moodysRating(parsedFund.moodysRating())
+                                .originalNav(fund.originalNav())
+                                .presentNav(parsedFund.nav())
+                                .quantity(fund.quantity())
+                                .sAndPRating(parsedFund.sAndPRating())
+                                .setCycle(parsedFund.setCycle())
+                                .profitAmount(profit).profitPercent(profitPercent)
+                                .build();
+                        updateProfitsOfFunds.add(updatedFund);
+                    }
                 }
+                user = ImmutableUser2.builder().userId(userId).balance(user.balance())
+                        .all_funds(updateProfitsOfFunds).build();
+                portfolioService.update(user);
+                return Response.status(200).entity("Updated profile successfully").build();
             }
-            return portfolioService.update(user);
+
+            return Response.status(400).entity("Invalid request body").build();
         }
-        return null;
+        return Response.status(400).entity("Wrong secret key").build();
     }
 
 
@@ -94,26 +136,29 @@ public class PortfolioController
     @POST
     @Produces("application/json")
     @Path("/add/user/")
-    public void addUser(@HeaderParam("Authorization") String token, @QueryParam("secret") String secret_key,
-                        @QueryParam("balance") float balance)
+    public Response addUser(@HeaderParam("Authorization") String token, @QueryParam("secret") String secret_key,
+                            @QueryParam("balance") float balance)
     {
-        if (Constants.SECRET_TOKEN.equals(secret_key)){
-            return;
+        if (!Constants.SECRET_TOKEN.equals(secret_key)){
+            return Response.status(400).entity("Secret key not correct").build();
         }
+
         String userId = ServiceUtils.decodeJWTForUserId(token);
         if (portfolioService.getUser(userId) != null){
-            return;
+            return Response.status(400).entity("User already exists").build();
         }
+
         User2 user = ImmutableUser2.builder()
                 .userId(userId)
                 .all_funds(new ArrayList<>())
                 .balance(balance)
                 .build();
         portfolioService.createUser(user);
+        return Response.status(200).entity("User added to DB").build();
     }
 
 
-    //get the funds of user. If user does not exist in DB add user.
+    // Get the funds of user. If user does not exist in DB add user.
     @GET
     @Produces("application/json")
     @Path("/getFunds/")
@@ -121,41 +166,10 @@ public class PortfolioController
     public List<Fund2> getFunds(@HeaderParam("Authorization") String token)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
-
         ImmutableUserDBModel user = portfolioService.getUser(userId);
-
+        if (user==null)
+            return null;
         return user.all_funds();
-
-//            float f1 = 4.2f;
-//            float profit = f1-(fund.originalNav().get());
-//            float profitPercent = ((profit)/(fund.originalNav().get())) * 100;
-//            Fund2 fun2 = ImmutableFund2.builder()
-//                    .fundNumber(fund.fundNumber())
-//                    .fundName(fund.fundName())
-//                    .invManager(fund.invManager())
-//                    .originalNav(fund.originalNav())
-//                    .sAndPRating(fund.sAndPRating())
-//                    .moodysRating(fund.moodysRating())
-//                    .invCurrency(fund.invCurrency())
-//                    .setCycle(fund.setCycle())
-//                    .presentNav((float)(4.2))
-//                    .profitAmount(profit)
-//                    .profitPercent(profitPercent)
-//                    .build();
-//            newFunds.add(fun2);
-//            return fun2;
-//
-//        }).collect(Collectors.toList());
-//
-//        User2 user = ImmutableUser2.builder()
-//                    .userId(userId)
-//                    .all_funds(newFunds)
-//                    .balance((float)(10000))
-//                    .build();
-//
-//        portfolioService.createUser(user);
-//
-//        return user.all_funds().get();
     }
 
 }
