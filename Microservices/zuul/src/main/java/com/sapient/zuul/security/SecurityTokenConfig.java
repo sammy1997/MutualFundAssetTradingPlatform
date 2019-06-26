@@ -36,8 +36,9 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/fund-handling/api/funds/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/add/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/delete/**").hasRole("ADMIN")
-                .antMatchers("/fund-handling/api/entitlements/search**").hasAnyRole("ADMIN", "TRADER")
-                .antMatchers("/fund-handling/api/entitlements/get**").hasAnyRole("ADMIN", "TRADER")
+                .antMatchers("/portfolio/update**").hasAnyRole( "TRADER", "VIEWER")
+                .antMatchers("/portfolio/add/user**").hasAnyRole( "TRADER", "VIEWER")
+                .antMatchers("/portfolio/delete/**").hasRole( "ADMIN")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }
