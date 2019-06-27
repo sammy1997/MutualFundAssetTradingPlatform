@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './css/materialize.css'
+import 'materialize-css/dist/css/materialize.min.css'
 import './css/header.css'
 
 class Header extends Component {
@@ -17,7 +17,7 @@ class Header extends Component {
     render() {
         return (
             <nav>
-                <div className="nav-wrapper deep-purple lighten-1">
+                <div className="nav-wrapper">
                     <a href="x.html" className="right username">{this.state.user}</a>
                     <ul id="nav-mobile" className="left hide-on-med-and-down">
                         <li><a href="sass.html">{this.state.li1}</a></li>

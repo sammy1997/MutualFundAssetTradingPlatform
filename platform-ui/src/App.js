@@ -4,12 +4,14 @@ import './App.css';
 import GetList from './components/PostList';
 import Header from './components/HeaderCustomerService';
 import AddFund from './components/AddFund';
+import SearchBar from './components/SearchBar';
+import FundFinder from './components/FundFinder';
 
 function App() {
   return (
     <div className="App">
       <Header></Header>
-      <AddFund></AddFund>
+      <FundFinder></FundFinder>
     </div>
   );
 }
