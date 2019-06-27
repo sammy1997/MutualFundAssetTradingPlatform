@@ -6,7 +6,7 @@ class AddFund extends Component {
     render() {
         return (
             <div className="form-container center-align">
-                <a className="waves-effect waves-light btn deep-purple lighten-2">Add Funds from CSV File</a>
+                {/* <a className="waves-effect waves-light btn deep-purple lighten-2">Add Funds from CSV File</a> */}
                 <div className="form-card">
                     <div className="row"></div>
                 </div>
