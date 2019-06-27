@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.utils.Constants;
+import org.apache.tomcat.util.bcel.Const;
 import org.immutables.mongo.Mongo;
 import org.immutables.mongo.repository.RepositorySetup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,12 @@ public class UserAccessObject {
         else return 0;
     }
 
+    // Helper function for conversion rate
+    private float getConversionRate(String baseCurr, String tradeCurr){
+        float convRate = Constants.FX_USD.get(baseCurr)/ Constants.FX_USD.get(tradeCurr);
+        return convRate;
+    }
+
     // To get list of Trades of given user(userId)
     public List<ImmutableTrade> getAllTradesByUserId(String userId){
         boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
@@ -79,9 +86,15 @@ public class UserAccessObject {
     }
 
     // Update an existing fund
-    public float updateFund(String userId, Trade trade, String fundId){
+    public float updateFund(String userId, Trade trade, String fundId, float balance, String baseCurr){
         // If status is purchase
         if (trade.status().equals("purchase")) {
+            float debit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                debit = trade.avgNav() * trade.quantity() * convRate;
+            } else debit = trade.avgNav() * trade.quantity();
+            if (debit > balance) return 0;
             // Trade already exists, so no need for non existence case
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) {
                 User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
@@ -106,10 +119,14 @@ public class UserAccessObject {
                         .addTrades(newT).upsert();
                 userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
-                float debit = - trade.quantity()*trade.avgNav();
-                return debit;
+                return -debit;
             }
         } else if (trade.status().equals("sell")){           // If the status is sell
+            float credit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                credit = trade.avgNav() * trade.quantity() * convRate;
+            } else credit = trade.avgNav() * trade.quantity();
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
                 User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
                 List<ImmutableTrade> trades = user.trades();
@@ -117,7 +134,7 @@ public class UserAccessObject {
                 // If the quantity is zero, remove trade directly
                 if (trade.quantity()==t.quantity()){
                     directRemoveFund(userId, fundId);
-                    float credit = trade.quantity()*trade.avgNav();
+                    credit = trade.quantity()*trade.avgNav();
                     return credit;
                 }
                 else if (trade.quantity()<t.quantity()){        // Condition that sell quantity strictly less than existent
@@ -140,7 +157,6 @@ public class UserAccessObject {
                             .removeTrades(t).upsert();
                     userRepository.findByUserId(userId).andModifyFirst()
                             .addTrades(newT).upsert();
-                    float credit =  trade.quantity()*trade.avgNav();
                     return credit;
                 } else return 0;   // Bad request wherein sell quantity strictly greater than existing
             }
@@ -148,13 +164,19 @@ public class UserAccessObject {
     }
 
     // Condition checks for adding a trade
-    public float addTrade(String userId, Trade trade){
+    public float addTrade(String userId, Trade trade, float balance, String baseCurr){
         boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
         if (!exists && trade.status().equals("purchase")){
             addUser(userId);
-            directAddFund(userId, trade);
-            float debit = -trade.quantity()*trade.avgNav();
-            return debit;
+            float debit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                debit = trade.avgNav() * trade.quantity() * convRate ;
+            } else  debit = trade.quantity() * trade.avgNav();
+            if (debit<=balance) {
+                directAddFund(userId, trade);
+                return -debit;
+            }
         }
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
@@ -164,7 +186,7 @@ public class UserAccessObject {
             for (ImmutableTrade t: trades){
                 // Fund already exists
                 if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
-                    return updateFund(userId, trade, fundId);
+                    return updateFund(userId, trade, fundId, balance, baseCurr);
                 }
                 count++;
             }
