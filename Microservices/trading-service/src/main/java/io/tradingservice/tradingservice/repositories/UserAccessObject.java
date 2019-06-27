@@ -85,6 +85,37 @@ public class UserAccessObject {
         } return null;
     }
 
+    // Verify Trades
+    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr){
+        int count = 0;
+        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+            User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
+            List<ImmutableTrade> currTrades = user.trades();
+            for (Trade t: newTrades){
+                if (t.status().equals("purchase")){
+                    float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                    balance -= debit;
+                    count++;
+                }
+                if (t.status().equals("sell")){
+                    for (ImmutableTrade tradeExist: currTrades){
+                        if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
+                            float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                            balance += credit;
+                            count++;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (count == newTrades.size() && balance >= 0){
+                return true;
+            }
+            else return false;
+        }
+        return false;
+    }
+
     // Update an existing fund
     public float updateFund(String userId, Trade trade, String fundId, float balance, String baseCurr){
         // If status is purchase

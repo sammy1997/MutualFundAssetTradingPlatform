@@ -19,4 +19,5 @@ public class Constants {
                                                             put("JPY", (float) 107.6890);
                                                         }
                                                     };
+
 }
