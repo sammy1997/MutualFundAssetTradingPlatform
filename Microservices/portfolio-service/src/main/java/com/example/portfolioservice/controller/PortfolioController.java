@@ -7,6 +7,7 @@ import com.example.portfolioservice.utils.Constants;
 import com.example.portfolioservice.utils.ServiceUtils;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -41,10 +42,9 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/getBalance")
-    public float getBalanceById(@HeaderParam("Authorization") String token)
+    public BalanceInfo getBalanceById(@HeaderParam("Authorization") String token)
     {
         return portfolioService.getBalanceById(ServiceUtils.decodeJWTForUserId(token));
-
     }
 
     // Update user balance
@@ -137,7 +137,7 @@ public class PortfolioController
     @Produces("application/json")
     @Path("/add/user/")
     public Response addUser(@HeaderParam("Authorization") String token, @QueryParam("secret") String secret_key,
-                            @QueryParam("balance") float balance)
+                            @QueryParam("balance") float balance, @QueryParam("baseCurr") String baseCurr)
     {
         if (!Constants.SECRET_TOKEN.equals(secret_key)){
             return Response.status(400).entity("Secret key not correct").build();
@@ -150,6 +150,7 @@ public class PortfolioController
 
         User2 user = ImmutableUser2.builder()
                 .userId(userId)
+                .baseCurr(baseCurr)
                 .all_funds(new ArrayList<>())
                 .balance(balance)
                 .build();
@@ -162,7 +163,6 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/getFunds/")
-    //
     public List<Fund2> getFunds(@HeaderParam("Authorization") String token)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);

@@ -33,7 +33,7 @@ public class HomeController {
     @Consumes("application/json")
     public String addUser(@RequestBody Users user) {
         Response response = userService.addUser(user);
-        if (response.getStatus() == 200) {
+        if (response.getStatus() == 200 && !user.role().get().equals("ROLE_ADMIN")) {
             String userCredentials = "{\"userId\": \"" + user.userId() + "\", \n" +
                     "\"password\": \"" + user.password() + "\"\n" +
                     "}";
@@ -63,7 +63,8 @@ public class HomeController {
             // Use the token from above to update balance in portfolio service
             webClientBuilder.build()
                     .post()
-                    .uri("localhost:8762/portfolio/add/user?secret=ggmuekp69t11p6914qrl7pk4598679hm&balance="+user.currBal().get())
+                    .uri("localhost:8762/portfolio/add/user?secret=ggmuekp69t11p6914qrl7pk4598679hm&balance="+
+                            user.currBal().get()+ "&baseCurr="+user.baseCurr())
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", authHeader)
@@ -74,6 +75,8 @@ public class HomeController {
             return user.userId() + " added to database";
         } else if (response.getStatus() == 400) {
             return "Some field(s) missing. If not, please validate your fields";
+        }else if (user.role().get().equals("ROLE_ADMIN")) {
+            return "Admin role created";
         }else{
             return user.userId() + " already exists in the database. Cannot add another instance.";
         }

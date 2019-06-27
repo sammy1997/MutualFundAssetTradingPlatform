@@ -2,6 +2,7 @@ package com.example.portfolioservice.service;
 
 
 import com.example.portfolioservice.DAO.UserDAO;
+import com.example.portfolioservice.models.BalanceInfo;
 import com.example.portfolioservice.models.ImmutableUserDBModel;
 import com.example.portfolioservice.models.User2;
 import com.example.portfolioservice.models.UserDBModel;
@@ -40,7 +41,7 @@ public class PortfolioService
     }
 
 
-    public float getBalanceById(String userId)
+    public BalanceInfo getBalanceById(String userId)
     {
         return userDAO.getBalance(userId);
     }

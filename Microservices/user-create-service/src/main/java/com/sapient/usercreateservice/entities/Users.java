@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface Users {
     String userId();
     String password();
+    String baseCurr();
     Optional<String> fullName();
-    Optional<Double> currBal();
+    Optional<Float> currBal();
     Optional<String> role();
 }

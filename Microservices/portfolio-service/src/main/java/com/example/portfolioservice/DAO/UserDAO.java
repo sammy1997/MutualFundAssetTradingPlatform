@@ -1,9 +1,6 @@
 package com.example.portfolioservice.DAO;
 
-import com.example.portfolioservice.models.ImmutableUserDBModel;
-import com.example.portfolioservice.models.User2;
-import com.example.portfolioservice.models.UserDBModel;
-import com.example.portfolioservice.models.UserDBModelRepository;
+import com.example.portfolioservice.models.*;
 import com.google.common.base.Optional;
 import org.immutables.mongo.repository.RepositorySetup;
 
@@ -28,6 +25,7 @@ public class UserDAO
         UserDBModel userDB;
         userDB = ImmutableUserDBModel.builder()
                 .userId(user.userId().get())
+                .baseCurr(user.baseCurr().get())
                 .balance(user.balance())
                 .all_funds(user.all_funds().get()).build();
 
@@ -40,55 +38,55 @@ public class UserDAO
         Optional<UserDBModel> user =repository.find(where.userId(id)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
-            ImmutableUserDBModel userd =ImmutableUserDBModel.builder().from(user.get()).build();
-            return userd;
+            return (ImmutableUserDBModel) user.get();
         }
         return null;
     }
 
     public Optional<UserDBModel> update(User2 user)
     {
-        Optional<UserDBModel> u = repository.find(where.userId(user.userId().get())).fetchFirst().getUnchecked();
-        if(u.isPresent())
+        Optional<UserDBModel> userDB = repository.find(where.userId(user.userId().get())).fetchFirst().getUnchecked();
+        if(userDB.isPresent())
         {
-            UserDBModel updated_user = u.get();
+            UserDBModel updated_user = userDB.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                    .userId(user.userId().get()).balance(user.balance())
-                    .all_funds(user.all_funds().isPresent()?user.all_funds().get():updated_user.all_funds())
+                    .userId(updated_user.userId()).balance(user.balance())
+                            .baseCurr(user.baseCurr().isPresent()? user.baseCurr().get(): updated_user.baseCurr())
+                            .all_funds(user.all_funds().isPresent()? user.all_funds().get():updated_user.all_funds())
                     .build()
             );
         }
-        return u;
+        return userDB;
     }
 
     public Optional<UserDBModel> delete(String userId)
     {
-        Optional<UserDBModel> u = repository.findByUserId(userId).deleteFirst().getUnchecked();
-        return u;
+        return repository.findByUserId(userId).deleteFirst().getUnchecked();
     }
 
-    public float getBalance(String userId)
+    public BalanceInfo getBalance(String userId)
     {
         Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
-            ImmutableUserDBModel userd =ImmutableUserDBModel.builder().from(user.get()).build();
-            return userd.balance();
+            BalanceInfo balance = new BalanceInfo();
+            balance.setBalance(user.get().balance());
+            balance.setBaseCurr(user.get().baseCurr());
+            return balance;
         }
-        return 0;
+        return null;
     }
 
     public void updateBalance(String userId, float balance)
     {
-        Optional<UserDBModel> u = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
-        if(u.isPresent())
+        Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        if(user.isPresent())
         {
-            UserDBModel updated_user = u.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                            .userId(u.get().userId())
-                            .all_funds(u.get().all_funds())
+                            .userId(user.get().userId())
+                            .all_funds(user.get().all_funds())
                             .balance(balance)
                             .build()
             );

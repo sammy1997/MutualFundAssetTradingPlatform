@@ -14,5 +14,6 @@ public interface User2
 {
     Optional<String> userId();
     float balance();
+    Optional<String> baseCurr();
     Optional<List<Fund2>> all_funds();
 }
