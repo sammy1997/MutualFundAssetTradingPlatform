@@ -7,6 +7,10 @@ import com.sapient.authservice.entities.UsersDBModel;
 import com.sapient.authservice.entities.UsersDBModelRepository;
 import org.immutables.mongo.repository.RepositorySetup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class UsersDAO {
     UsersDBModelRepository repository;
     UsersDBModelRepository.Criteria where;

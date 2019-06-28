@@ -33,7 +33,7 @@ class Login extends Component {
             url: baseUrl + "auth",
             data: payload
         }).then(function (response){
-            console.log(response);  
+            console.log(response.headers['authorization']);  
         }).catch(function(error){
             console.log(error);
         })
@@ -51,13 +51,13 @@ class Login extends Component {
                         <form className="form-custom" onSubmit={this.handleSubmit}>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="userId" type="text" className="validate" value={this.state.userId} onChange={this.handleChange}/>
+                                    <input id="userId" type="text" value={this.state.userId} onChange={this.handleChange}/>
                                     <label htmlFor="userId">User Id</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="password" type="password" className="validate" value={this.state.password} onChange={this.handleChange}/>
+                                    <input id="password" type="password" value={this.state.password} onChange={this.handleChange}/>
                                     <label htmlFor="password">Password</label>
                                 </div>
                             </div>

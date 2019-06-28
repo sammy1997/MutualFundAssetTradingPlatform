@@ -9,6 +9,8 @@ import org.immutables.mongo.repository.RepositorySetup;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsersDAO {
 
@@ -39,5 +41,14 @@ public class UsersDAO {
                 return Response.status(400).entity("Bad Request").build();
             }
         }
+    }
+
+    public List<ImmutableUsersDBModel> getAllUsers() {
+        List<UsersDBModel> users = repository.findAll().fetchAll().getUnchecked();
+        List<ImmutableUsersDBModel> tempList = new ArrayList<>();
+        for (UsersDBModel allUsers: users){
+            tempList.add(ImmutableUsersDBModel.builder().from(allUsers).build());
+        }
+        return tempList;
     }
 }

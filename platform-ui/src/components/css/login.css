@@ -18,6 +18,11 @@
     margin: 100px auto;
 }
 
+.form-custom input{
+    border-bottom-color: #26a69a;
+    box-shadow: 0 0 #26a69a;
+}
+
 .button-container{
     text-align: center;
 }
