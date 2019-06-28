@@ -6,12 +6,13 @@ import Header from './components/HeaderCustomerService';
 import AddFund from './components/AddFund';
 import SearchBar from './components/SearchBar';
 import FundFinder from './components/FundFinder';
+import AddEntitlements from './components/AddEntitlements';
 
 function App() {
   return (
     <div className="App">
       <Header></Header>
-      <FundFinder></FundFinder>
+      <AddEntitlements></AddEntitlements>
     </div>
   );
 }

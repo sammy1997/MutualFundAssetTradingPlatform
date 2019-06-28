@@ -8,6 +8,7 @@
     "jquery": "^3.4.1",
     "materialize-css": "^1.0.0-rc.2",
     "react": "^16.8.6",
+    "react-chips": "^0.8.0",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
   },
