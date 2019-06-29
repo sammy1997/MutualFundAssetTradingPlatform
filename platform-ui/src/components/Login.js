@@ -46,7 +46,7 @@ class Login extends Component {
                 <div className="top">
                     <h1>Login</h1>
                 </div>
-                <div className="">
+                <div>
                     <div className="row form-container-custom">
                         <form className="form-custom" onSubmit={this.handleSubmit}>
                             <div className="row">

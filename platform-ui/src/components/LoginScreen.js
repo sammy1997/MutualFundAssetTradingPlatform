@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
-// import M from 'materialize-css';
 import Login from './Login';
 
 class LoginScreen extends Component{
@@ -15,7 +14,6 @@ class LoginScreen extends Component{
     
     componentDidMount(){
         var loginScreen = [];
-        // loginScreen.push(<Login parentContext={this} appContext={this.props.parentContext}/>);
         loginScreen.push(<Login key="1"/>);
         this.setState({
             loginScreen:loginScreen

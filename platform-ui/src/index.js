@@ -7,6 +7,7 @@ import App from './App';
 // import Login from './components/Login';
 import LoginScreen from './components/LoginScreen';
 import * as serviceWorker from './serviceWorker';
+import PreferencesScreen from './components/PreferencesScreen';
 
 
 const routing = (
@@ -14,6 +15,7 @@ const routing = (
       <div>
         <Route path="/" exact component={LoginScreen} />
         <Route path="/portfolio" exact component={App} />
+        <Route path="/preferences" exact component={PreferencesScreen} />
       </div>
     </Router>
   )
