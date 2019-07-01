@@ -79,13 +79,24 @@
     color: #ffffff; 
   }
 
-  ul li{
-      margin: 5px;
+  #selected-funds li, #added-funds li{
+      /* margin: 5px; */
       text-align: left;
-      padding: 5px;
+      padding: 10px;
       border-bottom: #BDBDBD 1px solid;
   }
 
   ul li i{
       float: right;
   }
+
+  .finalized-funds{
+      height: 100%;
+      padding: 10px;
+  }
+  #added-funds{
+      margin: 10px;
+      height: 90%;
+      background-color: #F5F5F5;
+  }
+

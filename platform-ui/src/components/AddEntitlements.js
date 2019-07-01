@@ -96,6 +96,18 @@ class AddEntitlements extends Component {
         var ul = document.getElementById("selected-funds")
         ul.innerHTML+="<li>" + content +"<i class='fa fa-times' onclick='alert(1)'></i></li>";
     }
+
+    selectFunds(){
+        var list = document.getElementById("selected-funds").getElementsByTagName("li")
+        var newHTMLContent = "";
+        for(var i=0; i<list.length; i++){
+            var elem = list[i].innerText;
+            newHTMLContent+="<li>" + elem.split("<i")[0].trim() + "<i class='fa fa-trash'/></li>"
+        }
+        document.getElementById("selected-funds").innerHTML = "";
+        newHTMLContent=document.getElementById("added-funds").innerHTML + newHTMLContent;
+        document.getElementById("added-funds").innerHTML = newHTMLContent;
+    }
     
     render() {
         return (
@@ -116,10 +128,17 @@ class AddEntitlements extends Component {
                                 <ul id="selected-funds">
                                 </ul>
                             </div>
-                            <button className="btn waves-effect waves-light" id="csv-add" name="action">Select funds
+                            <button className="btn waves-effect waves-light" id="csv-add" onClick={this.selectFunds}>
+                                Select funds
                             </button>
                         </div>
-                        <div className="finalized-funds"></div>
+                        <div className="finalized-funds">
+                            <ul id="added-funds">
+
+                            </ul>
+                            <button className="btn waves-effect waves-light" id="csv-add">Add Entitlements to Users
+                            </button>
+                        </div>
                     </div>    
                 </div>           
             </div>

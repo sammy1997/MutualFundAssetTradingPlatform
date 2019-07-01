@@ -20,9 +20,9 @@ class Header extends Component {
                 <div className="nav-wrapper">
                     <a href="x.html" className="right username">{this.state.user}</a>
                     <ul id="nav-mobile" className="left hide-on-med-and-down">
-                        <li><a href="sass.html">{this.state.li1}</a></li>
-                        <li><a href="badges.html">{this.state.li2}</a></li>
-                        <li><a href="collapsible.html">{this.state.li3}</a></li>
+                        <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                        <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
+                        <li onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
                     </ul>
                 </div>
             </nav>

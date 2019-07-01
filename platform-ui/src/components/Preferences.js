@@ -8,7 +8,7 @@ class Preferences extends Component {
         super(props);
 
         this.state={
-            userId:'User ID here',
+            userId:'Sammy',
             fullName:'',
             baseCurr:''
         }
@@ -32,7 +32,7 @@ class Preferences extends Component {
                     <div className="card-container">
                     <div className="card ">
                         <div className="card-action">
-                            <b><span id="info">Your Details</span></b>
+                            <b><span id="info">Preferences</span></b>
                             <span id="userId">{this.state.userId}</span>
                         </div>
                         <div className="card-content black-text">
