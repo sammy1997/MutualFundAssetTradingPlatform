@@ -103,7 +103,6 @@ public class UserTradeService {
 
         // Set verification status
         if (exchangePossible && isEntitled){
-            Constants.VERIFIED.put(userId, true);
             return true;
         }
         else return false;
@@ -134,6 +133,17 @@ public class UserTradeService {
         // Create the updated attributes of funds' list
         List<ImmutableTrade> updatedTrades = getAllTrades(userId);
         System.out.println(updatedTrades);
+
+        // Maintain consistency
+        int count = 0;
+        while(count <=1){
+            while(updatedTrades!=getAllTrades(userId)){
+                updatedTrades = getAllTrades(userId);
+                break;
+            }
+            count++;
+        }
+
         List<FundParser> funds = new ArrayList<>();
         for (ImmutableTrade t : updatedTrades) {
             FundParser fund = new FundParser();
@@ -142,7 +152,6 @@ public class UserTradeService {
             fund.setQuantity((int) t.quantity());        // We are only considering integral quantities for now
             funds.add(fund);
         }
-
 
         // Create the updated user
         User2 updatedUser = ImmutableUser2.builder()

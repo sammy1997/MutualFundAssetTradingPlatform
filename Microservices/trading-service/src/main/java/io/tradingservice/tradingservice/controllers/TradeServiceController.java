@@ -51,7 +51,7 @@ public class TradeServiceController {
             if (res == 0) return Response.status(400).entity("Trades not verified").build();
             else {
                 userTradeService.updateUser(userId, header, res);
-                return Response.status(400).entity("Exchanged Requested trade").build();
+                return Response.status(201).entity("Exchanged Requested trade").build();
             }
         } else return Response.status(400).entity("Max trade request is 5").build();
     }
