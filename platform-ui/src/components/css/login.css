@@ -1,0 +1,28 @@
+*{
+    font-family: "Raleway";
+}
+.top{
+    text-align: center;
+    background-color: #26a69a;
+    padding: 15px 0px;
+    color: white;
+}
+
+.top h1{
+    margin-top:0;
+    margin-bottom: 0;
+}
+
+.form-custom{
+    width: 50%;
+    margin: 100px auto;
+}
+
+.form-custom input{
+    border-bottom-color: #26a69a;
+    box-shadow: 0 0 #26a69a;
+}
+
+.button-container{
+    text-align: center;
+}

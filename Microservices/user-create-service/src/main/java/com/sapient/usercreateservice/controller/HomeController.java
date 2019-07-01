@@ -1,5 +1,6 @@
 package com.sapient.usercreateservice.controller;
 
+import com.sapient.usercreateservice.entities.ImmutableUsersDBModel;
 import com.sapient.usercreateservice.entities.Users;
 import com.sapient.usercreateservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import java.util.List;
@@ -28,6 +27,13 @@ public class HomeController {
 
     List<String> header;
     String authHeader;
+//
+    @Path("/list-all")
+    @GET
+    @Produces("application/json")
+    public List<ImmutableUsersDBModel> getAllUsers(){
+        return userService.getAllUsers();
+    }
 
     @POST
     @Consumes("application/json")
@@ -38,7 +44,7 @@ public class HomeController {
                     "\"password\": \"" + user.password() + "\"\n" +
                     "}";
 
-            String currBal = "{\"currBal\": \"" + user.currBal() + "\"\n" + "}";
+//            String currBal = "{\"currBal\": \"" + user.currBal() + "\"\n" + "}";
 
 
             //Make a post request to auth-service to generate a token that will be used to make a request to portfolio service
@@ -75,10 +81,12 @@ public class HomeController {
             return user.userId() + " added to database";
         } else if (response.getStatus() == 400) {
             return "Some field(s) missing. If not, please validate your fields";
+        }else if(response.getStatus() == 406){
+            return user.userId() + " already exists in the database. Cannot add another instance.";
         }else if (user.role().get().equals("ROLE_ADMIN")) {
             return "Admin role created";
-        }else{
-            return user.userId() + " already exists in the database. Cannot add another instance.";
+        }else {
+            return "Some unknown error occurred";
         }
     }
 }
