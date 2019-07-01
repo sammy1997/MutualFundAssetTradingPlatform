@@ -94,19 +94,55 @@ class AddEntitlements extends Component {
 
     handleSearchItemClick(content){
         var ul = document.getElementById("selected-funds")
-        ul.innerHTML+="<li>" + content +"<i class='fa fa-times' onclick='alert(1)'></i></li>";
+        var length = ul.getElementsByTagName("li").length;
+        var li = document.createElement("li");
+        li.id = 'select' + length;
+        var i = document.createElement('i');
+        i.className = 'fa fa-times';
+        li.innerHTML = content;
+        li.append(i);
+        i.onclick = event => {
+            // console.log(event.target.parentNode.id)
+            var elem = event.target.parentNode;
+            var parent = elem.parentNode;
+            parent.removeChild(elem);
+            var updateIdList = parent.getElementsByTagName("li")
+            for(var i=0; i<updateIdList.length; i++){
+                updateIdList[i].id = 'select' + i;
+            }
+        }
+        ul.appendChild(li);
     }
 
     selectFunds(){
         var list = document.getElementById("selected-funds").getElementsByTagName("li")
-        var newHTMLContent = "";
-        for(var i=0; i<list.length; i++){
-            var elem = list[i].innerText;
-            newHTMLContent+="<li>" + elem.split("<i")[0].trim() + "<i class='fa fa-trash'/></li>"
+        for(var it=0; it<list.length; it++){
+            var currentList = document.getElementById("added-funds");
+            var length = currentList.getElementsByTagName('li').length;
+            var elem = list[it].innerText;
+            elem = elem.split("<i")[0].trim();
+            var li= document.createElement('li');
+            li.id = 'select' + length;
+            li.innerHTML = elem;
+            var i = document.createElement('i');
+            i.className = 'fa fa-trash';
+            li.append(i);
+            i.onclick = (event) => {
+                var elem = event.target.parentNode;
+                var parent = elem.parentNode;
+                parent.removeChild(elem);
+                var updateIdList = parent.getElementsByTagName("li")
+                for(var i=0; i<updateIdList.length; i++){
+                    updateIdList[i].id = 'select' + i;
+                }
+            }
+            currentList.appendChild(li);
         }
         document.getElementById("selected-funds").innerHTML = "";
-        newHTMLContent=document.getElementById("added-funds").innerHTML + newHTMLContent;
-        document.getElementById("added-funds").innerHTML = newHTMLContent;
+    }
+
+    addEntitlementsToUsers(){
+
     }
     
     render() {
@@ -128,15 +164,15 @@ class AddEntitlements extends Component {
                                 <ul id="selected-funds">
                                 </ul>
                             </div>
-                            <button className="btn waves-effect waves-light" id="csv-add" onClick={this.selectFunds}>
+                            <button className="btn waves-effect waves-light add-entitlements" onClick={this.selectFunds}>
                                 Select funds
                             </button>
                         </div>
                         <div className="finalized-funds">
                             <ul id="added-funds">
-
                             </ul>
-                            <button className="btn waves-effect waves-light" id="csv-add">Add Entitlements to Users
+                            <button className="btn waves-effect waves-light add-entitlements" onClick={this.addEntitlementsToUsers}>
+                                Add Entitlements
                             </button>
                         </div>
                     </div>    
