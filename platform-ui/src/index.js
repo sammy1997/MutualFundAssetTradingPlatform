@@ -8,6 +8,7 @@ import App from './App';
 import LoginScreen from './components/LoginScreen';
 import * as serviceWorker from './serviceWorker';
 import PreferencesScreen from './components/PreferencesScreen';
+import CustomerService from './components/CustomerService';
 
 
 const routing = (
@@ -15,6 +16,7 @@ const routing = (
       <div>
         <Route path="/" exact component={LoginScreen} />
         <Route path="/portfolio" exact component={App} />
+        <Route path="/admin" exact component={CustomerService} />
         <Route path="/preferences" exact component={PreferencesScreen} />
       </div>
     </Router>

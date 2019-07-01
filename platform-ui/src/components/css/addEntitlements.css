@@ -1,0 +1,102 @@
+.wrapper{
+    height: 85vh;
+}
+
+.user-search{
+    margin-top: 30px;
+    max-width: 50%;
+    margin-left: 25%;
+}
+
+.user-search label{
+    font-size: 15px;
+    color: teal;
+}
+
+.user-search div{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.entitlements{
+    margin-top: 50px;
+    padding: 40px;
+    width: 60%;
+    margin-left: 20%;
+    border-style: solid;
+    border-color: grey;
+    border-width: 2px;
+    height: 70%;
+}
+
+.content-wrapper{
+    width: 100%;
+    height: 100%;
+}
+
+.search-and-add{
+    float: left;
+    width: 50%;
+    height: 100%;
+}
+
+.finalized-funds{
+    float: right;
+    width: 50%;
+}
+
+.funds{
+    background-color: #F5F5F5;
+    height: 80%;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+  .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff; 
+    border-bottom: 1px solid #d4d4d4; 
+  }
+  .autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: #e9e9e9; 
+  }
+  .autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: teal !important; 
+    color: #ffffff; 
+  }
+
+  #selected-funds li, #added-funds li{
+      /* margin: 5px; */
+      text-align: left;
+      padding: 10px;
+      border-bottom: #BDBDBD 1px solid;
+  }
+
+  ul li i{
+      float: right;
+  }
+
+  .finalized-funds{
+      height: 100%;
+      padding: 10px;
+  }
+  #added-funds{
+      margin: 10px;
+      height: 90%;
+      background-color: #F5F5F5;
+  }
+

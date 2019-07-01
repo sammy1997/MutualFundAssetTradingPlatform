@@ -1,0 +1,32 @@
+  table {
+    font-family: 'Nunito', sans-serif;
+    max-width: 1300px;
+    margin: 10px auto;
+  }
+  
+  thead th {
+    font-weight: 400;
+    background: #26a69a;
+    color: #FFF;
+  }
+  
+  tr {
+    background: #fff;
+    border-bottom: 1px solid #FFF;
+    margin-bottom: 5px;
+  }
+  
+  tr:nth-child(even) {
+    background: #e8eeef;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 10px;
+    font-weight: 300;
+    max-width: 200px;
+  }
+
+  .table-wrapper{
+      margin-top: 20px; 
+  }
