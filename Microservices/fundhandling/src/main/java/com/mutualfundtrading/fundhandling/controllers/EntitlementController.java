@@ -26,12 +26,11 @@ public class EntitlementController {
     @Path("/add")
     @POST
 //    @QueryParam("userId") String userId, @QueryParam("entitledTo") List<String> entitleTo
-    public Response createEntitlement(Entitlements entitlement, @HeaderParam("Authorization") String token){
-        String userId = ServiceUtils.decodeJWTForUserId(token);
-        if (userId==null){
-            return Response.status(401).entity("Invalid authorization token").build();
+    public Response createEntitlement(Entitlements entitlement){
+        Optional<String> userId = entitlement.userId();
+        if (!userId.isPresent()){
+            return Response.status(401).entity("Invalid request").build();
         }
-        entitlement = ImmutableEntitlements.builder().from(entitlement).userId(Optional.of(userId)).build();
         return service.addEntitlements(entitlement);
     }
 

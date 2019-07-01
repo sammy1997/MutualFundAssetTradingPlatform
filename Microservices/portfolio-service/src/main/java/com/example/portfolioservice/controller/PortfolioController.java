@@ -83,8 +83,11 @@ public class PortfolioController
                                                 @QueryParam("secret") String secret_key, User2 user)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
+        System.out.println(userId);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
+            System.out.println("Here secret");
             if (user.all_funds().isPresent() && userId!=null){
+                System.out.println("Here");
                 List<Fund2> currFunds = user.all_funds().get();
                 List<Fund2> updateProfitsOfFunds = new ArrayList<>();
                 for (Fund2 fund: currFunds){

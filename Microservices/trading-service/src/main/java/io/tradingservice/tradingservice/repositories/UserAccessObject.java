@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.utils.Constants;
+import org.apache.tomcat.util.bcel.Const;
 import org.immutables.mongo.Mongo;
 import org.immutables.mongo.repository.RepositorySetup;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +60,7 @@ public class UserAccessObject {
     }
 
     // Helper function to Create a new user
-    public int addUser(String userId){
+    private int addUser(String userId){
         User newUser =
                 ImmutableUser.builder()
                         .userId(userId)
@@ -67,6 +71,11 @@ public class UserAccessObject {
         else return 0;
     }
 
+    // Helper function for conversion rate
+    private float getConversionRate(String baseCurr, String tradeCurr){
+        float convRate = Constants.FX_USD.get(baseCurr)/ Constants.FX_USD.get(tradeCurr);
+        return convRate;
+    }
 
     // To get list of Trades of given user(userId)
     public List<ImmutableTrade> getAllTradesByUserId(String userId){
@@ -76,10 +85,47 @@ public class UserAccessObject {
         } return null;
     }
 
+    // Verify Trades
+    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr){
+        int count = 0;
+        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+            User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
+            List<ImmutableTrade> currTrades = user.trades();
+            for (Trade t: newTrades){
+                if (t.status().equals("purchase")){
+                    float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                    balance -= debit;
+                    count++;
+                }
+                if (t.status().equals("sell")){
+                    for (ImmutableTrade tradeExist: currTrades){
+                        if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
+                            float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                            balance += credit;
+                            count++;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (count == newTrades.size() && balance >= 0){
+                return true;
+            }
+            else return false;
+        }
+        return false;
+    }
+
     // Update an existing fund
-    public int updateFund(String userId, Trade trade, String fundId){
+    public float updateFund(String userId, Trade trade, String fundId, float balance, String baseCurr){
         // If status is purchase
         if (trade.status().equals("purchase")) {
+            float debit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                debit = trade.avgNav() * trade.quantity() * convRate;
+            } else debit = trade.avgNav() * trade.quantity();
+            if (debit > balance) return 0;
             // Trade already exists, so no need for non existence case
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) {
                 User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
@@ -104,10 +150,14 @@ public class UserAccessObject {
                         .addTrades(newT).upsert();
                 userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
-                // currBal = currBal - trade.quantity()*trade.avgNav();
-                return 1;
+                return -debit;
             }
         } else if (trade.status().equals("sell")){           // If the status is sell
+            float credit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                credit = trade.avgNav() * trade.quantity() * convRate;
+            } else credit = trade.avgNav() * trade.quantity();
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
                 User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
                 List<ImmutableTrade> trades = user.trades();
@@ -115,8 +165,8 @@ public class UserAccessObject {
                 // If the quantity is zero, remove trade directly
                 if (trade.quantity()==t.quantity()){
                     directRemoveFund(userId, fundId);
-                    // currBal = currBal + trade.quantity()*trade.avgNav();
-                    return -1;
+                    credit = trade.quantity()*trade.avgNav();
+                    return credit;
                 }
                 else if (trade.quantity()<t.quantity()){        // Condition that sell quantity strictly less than existent
                     float newQuantity = t.quantity() - trade.quantity();
@@ -138,20 +188,26 @@ public class UserAccessObject {
                             .removeTrades(t).upsert();
                     userRepository.findByUserId(userId).andModifyFirst()
                             .addTrades(newT).upsert();
-                    // currBal = currBal + trade.quantity()*trade.avgNav();
-                    return -1;
-                } else return -5;   // Bad request wherein sell quantity strictly greater than existing
+                    return credit;
+                } else return 0;   // Bad request wherein sell quantity strictly greater than existing
             }
         } return 0;
     }
 
     // Condition checks for adding a trade
-    public int addTrade(String userId, Trade trade){
+    public float addTrade(String userId, Trade trade, float balance, String baseCurr){
         boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
         if (!exists && trade.status().equals("purchase")){
             addUser(userId);
-            directAddFund(userId, trade);
-            return 1;
+            float debit;
+            if (baseCurr!=trade.invCurr()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                debit = trade.avgNav() * trade.quantity() * convRate ;
+            } else  debit = trade.quantity() * trade.avgNav();
+            if (debit<=balance) {
+                directAddFund(userId, trade);
+                return -debit;
+            }
         }
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
@@ -161,47 +217,18 @@ public class UserAccessObject {
             for (ImmutableTrade t: trades){
                 // Fund already exists
                 if (t.fundNumber().equals(fundId) /*&& currBalance >= trade.quantity()*trade.avgNav()*/){
-                    return updateFund(userId, trade, fundId);
+                    return updateFund(userId, trade, fundId, balance, baseCurr);
                 }
                 count++;
             }
             // Fund doesn't exist
             if (count==trades.size()){
                 directAddFund(userId, trade);
-                return 1;
+                float debit = -trade.quantity()*trade.avgNav();
+                return debit;
             }
         }
-        return 3;
+        return 0;
     }
 
-
 }
-
-
-
-//    private boolean findTradeById(List<ImmutableTrade> trades, String fundId){
-//        for (Trade t: trades ){
-//            if (t.fundNumber().equals(fundId)) return true;
-//            else return false;
-//        }
-//        return false;
-//    }
-
-
-
-
-
-//    public List<User> getUsers(){
-//        List<User> outUsers = new ArrayList<>();
-//        List<User> users = userRepository.findAll().fetchAll().getUnchecked();
-//        for (User user: users){
-//            outUsers.add(user);
-//        }
-//        return users;
-//    }
-
-
-//    public User getUser(String userId){
-//        User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
-//        return user;
-//    }
