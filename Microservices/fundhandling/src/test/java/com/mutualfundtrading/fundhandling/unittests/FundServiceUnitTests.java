@@ -32,10 +32,10 @@ public class FundServiceUnitTests {
     Fund fund;
     FundDBModel fundDb;
 
-    @Test
-    public void successTest(){
-        assert 1==1;
-    }
+        @Test
+        public void successTest(){
+            assert 1==1;
+        }
 
 //    @Before
 //    public void init() {
