@@ -14,20 +14,13 @@ class PreferencesScreen extends Component{
     }
 
     componentDidMount(){
-        var preferencesScreen = [];
-        preferencesScreen.push(
-        <Header key="1" />,
-        <Preferences key="2"/>
-        );
-        this.setState({
-            preferencesScreen:preferencesScreen
-        })
+        
     }
 
     render(){
         return(
             <div className="preferencesScreen">
-                {this.state.preferencesScreen}
+                
             </div>
         );
     }

@@ -8,7 +8,7 @@ class Preferences extends Component {
         super(props);
 
         this.state={
-            userId:'Sammy',
+            userId:'Shikhar',
             fullName:'',
             baseCurr:''
         }
