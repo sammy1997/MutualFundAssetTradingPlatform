@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -60,6 +62,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
+
 
         //Data passed in JWT Payload
         Long now = System.currentTimeMillis();
