@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import M from 'materialize-css'
 import './css/preferences.css'
+import axios from 'axios';
+import getCookie from './Cookie';
 
 class Preferences extends Component {
     constructor(props){
@@ -23,6 +25,29 @@ class Preferences extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
     }
+
+
+    componentDidMount(){
+        var jwt = getCookie('token');
+        // console.log(jwt);
+        if(!jwt){
+            this.props.history.push('/');
+        }else{
+            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+            .then( res => {
+                this.setState({
+                    userId : res.data.userId,
+                    fullName : res.data.fullName,
+                    baseCurr: res.data.baseCurr
+                })
+                console.log(res.data);
+            }).catch( err => {
+                // document.cookie = "";
+                this.props.history.push('/');
+            });
+        }
+    }
+
 
     render(){ 
         M.updateTextFields();
@@ -47,8 +72,8 @@ class Preferences extends Component {
                                     <label className="label-content">
                                         Base Currency :
                                     </label>
-                                    <select className="browser-default">
-                                    <option value="" disabled selected>Choose your option</option>
+                                    <select className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
+                                    {/* <option value={this.state.baseCurr} >Choose your option</option> */}
                                         <option value="INR">INR</option>
                                         <option value="USD">USD</option>
                                         <option value="GBP">GBP</option>

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Link, Redirect, Switch, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 // import AddFund from './components/AddFund';
@@ -9,16 +9,20 @@ import LoginScreen from './components/LoginScreen';
 import * as serviceWorker from './serviceWorker';
 import PreferencesScreen from './components/PreferencesScreen';
 import CustomerService from './components/CustomerService';
-
+import AuthComponent from './components/AuthComponent';
 
 const routing = (
     <Router>
-      <div>
-        <Route path="/" exact component={LoginScreen} />
-        <Route path="/portfolio" exact component={App} />
-        <Route path="/admin" exact component={CustomerService} />
-        <Route path="/preferences" exact component={PreferencesScreen} />
-      </div>
+      <Switch>
+        {/* <div> */}
+          <Route path="/" exact component={LoginScreen} />
+          <AuthComponent>
+            <Route path="/portfolio" exact component={App} />
+            <Route path="/admin" exact component={CustomerService} />
+            <Route path="/preferences" exact component={PreferencesScreen} />
+          </AuthComponent>
+        {/* </div> */}
+      </Switch>
     </Router>
   )
 

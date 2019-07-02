@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import 'materialize-css/dist/css/materialize.min.css'
 import './css/header.css'
+import getCookie from './Cookie'
+import axios from 'axios'
+import M from 'materialize-css'
 
 class Header extends Component {
     constructor(props) {
@@ -10,11 +13,29 @@ class Header extends Component {
              li1: "FUND FINDER",
              li2: "ADD FUND",
              li3: "ADD ENTITLEMENTS",
-             user: "Sammy"
+             user: ""
+        }
+    }
+
+    componentDidMount(){
+        var jwt = getCookie('token');
+        if(!jwt){
+            this.props.history.push('/');
+        }else{
+            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+            .then( res => {
+                this.setState({
+                    user: res.data.userId
+                })
+            }).catch( err => {
+                document.cookie = "";
+                this.props.history.push('/');
+            });
         }
     }
     
     render() {
+        M.updateTextFields();
         return (
             <nav>
                 <div className="nav-wrapper">

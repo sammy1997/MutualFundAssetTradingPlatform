@@ -2,8 +2,19 @@ import React, { Component } from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import M from 'materialize-css'
 import axios from 'axios';
-import './css/login.css' 
+import './css/login.css' ;
+import { Link } from 'react-router-dom';
+import Status from './Status';
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
 
 class Login extends Component {
     constructor(props){
@@ -11,7 +22,8 @@ class Login extends Component {
         
         this.state={
             userId:'',
-            password:''
+            password:'',
+            status: []
         }
     }
 
@@ -33,9 +45,19 @@ class Login extends Component {
             url: baseUrl + "auth",
             data: payload
         }).then(function (response){
-            console.log(response.headers['authorization']);  
-        }).catch(function(error){
-            console.log(error);
+            var authorization = response.headers['authorization'];
+            var token = authorization.replace('Bearer ','');
+            document.cookie = "token=" + token;
+            var role = parseJwt(token).authorities[0];
+            // console.log(sub);
+            if((role === "ROLE_TRADER") || (role === "ROLE_VIEWER")){
+                window.location = "/portfolio";
+            }else{
+                window.location = "/admin";
+            }
+        })
+        .catch(function(error){
+            console.log(error.response.status);
         })
     }
 
