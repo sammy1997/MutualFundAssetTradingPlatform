@@ -33,18 +33,18 @@ class Preferences extends Component {
         if(!jwt){
             this.props.history.push('/');
         }else{
-            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
-            .then( res => {
-                this.setState({
-                    userId : res.data.userId,
-                    fullName : res.data.fullName,
-                    baseCurr: res.data.baseCurr
-                })
-                console.log(res.data);
-            }).catch( err => {
-                // document.cookie = "";
-                this.props.history.push('/');
-            });
+            // axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+            // .then( res => {
+            //     this.setState({
+            //         userId : res.data.userId,
+            //         fullName : res.data.fullName,
+            //         baseCurr: res.data.baseCurr
+            //     })
+            //     console.log(res.data);
+            // }).catch( err => {
+            //     // document.cookie = "";
+            //     this.props.history.push('/');
+            // });
         }
     }
 
