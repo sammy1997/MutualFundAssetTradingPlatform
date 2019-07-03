@@ -164,7 +164,6 @@ public class UserAccessObject {
                 // If the quantity is zero, remove trade directly
                 if (trade.quantity()==t.quantity()){
                     directRemoveFund(userId, fundId);
-                    credit = trade.quantity()*trade.avgNav();
                     return credit;
                 }
                 else if (trade.quantity()<t.quantity()){        // Condition that sell quantity strictly less than existent

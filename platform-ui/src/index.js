@@ -19,7 +19,7 @@ const routing = (
           <AuthComponent>
             <Route path="/portfolio" exact component={App} />
             <Route path="/admin" exact component={CustomerService} />
-            <Route path="/preferences" exact component={PreferencesScreen} />
+            {/* <Route path="/preferences" exact component={PreferencesScreen} /> */}
           </AuthComponent>
         {/* </div> */}
       </Switch>

@@ -141,7 +141,7 @@ public class UserTradeService {
 
         // Maintain consistency
         int count = 0;
-        while(count <=1){
+        while(count<=10){
             while(updatedTrades!=getAllTrades(userId)){
                 updatedTrades = getAllTrades(userId);
                 break;

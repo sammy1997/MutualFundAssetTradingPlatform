@@ -53,9 +53,9 @@ class HeaderPortfolio extends Component {
                 <div className="nav-wrapper teal lighten-1">
                     <a href="#" className="right username">{this.state.userId}</a>
                         <ul id="nav-mobile" className="left hide-on-med-and-down">
-                            <li><a>Total Assets : {this.state.assets}</a></li>
-                            <li><a>Total Balance : {this.state.currBal}</a></li>
-                            <li><a>Base Currency : {this.state.baseCurr}</a></li>
+                            <li>Total Assets : {this.state.assets}</li>
+                            <li>Total Balance : {this.state.currBal}</li>
+                            <li>Base Currency : {this.state.baseCurr}</li>
                         </ul>
                         
                 </div>
