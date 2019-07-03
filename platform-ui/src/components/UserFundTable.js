@@ -3,6 +3,7 @@ import './css/userFundTable.css'
 import 'materialize-css/dist/css/materialize.min.css'
 import getCookie from './Cookie';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 
 
 class UserFunds extends Component
@@ -169,4 +170,4 @@ class UserFunds extends Component
 }
 
 
-export default UserFunds
+export default withRouter(UserFunds)
