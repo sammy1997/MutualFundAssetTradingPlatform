@@ -1,13 +1,51 @@
 import React, { Component } from 'react'
 import './css/fundFinder.css'
 import SearchBar from './SearchBar';
+import axios from 'axios';
+import getCookie from './Cookie';
+import searchContent from './utility/SearchTableContent';
 
 
 class FundFinder extends Component {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            searchableFields: [0,1,2,5],
+            fundList: []
+        }
+    }
+
+    componentDidMount(){
+        var baseUrl = "http://localhost:8762/fund-handling/api/funds/";
+        var token =getCookie('token');
+        if(!token){
+            this.props.history.push('/');
+        }
+        var headers ={
+            Authorization: 'Bearer ' + token
+        }
+        axios({
+            method: 'get',
+            url: baseUrl + 'all',
+            headers: headers
+        }).then(response =>{
+            this.setState({
+                fundList: response.data
+            })
+        }).catch(error =>{
+            console.log(error);
+            document.cookie = "token=;"
+            if(error.response.status === 401){
+                this.props.history.push('/')
+            }
+        });
+    }
+    
     render() {
         return (
             <div className="table-wrapper">
-                <table>
+                <table id='all-funds'>
                     <thead>
                         <tr>
                             <th scope="col">Fund Number</th>
@@ -22,45 +60,43 @@ class FundFinder extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row"><SearchBar searchTerm = "Search Fund Number"></SearchBar></th>
-                            <th scope="row"><SearchBar searchTerm = "Search Fund Name"></SearchBar></th>
-                            <th scope="row"><SearchBar searchTerm = "Search Manager"></SearchBar></th>
+                            <th scope="row">
+                                <SearchBar index={0} searchHandler={searchContent} tableId='all-funds' 
+                                    searchableFields={this.state.searchableFields} searchTerm = "Search Fund Number">
+                                </SearchBar>
+                            </th>
+                            <th scope="row">
+                                <SearchBar index={1} searchHandler={searchContent} tableId='all-funds' 
+                                    searchableFields={this.state.searchableFields} searchTerm = "Search Fund Name"></SearchBar>
+                            </th>
+                            <th scope="row">
+                                <SearchBar index={2} searchHandler={searchContent} tableId='all-funds'
+                                    searchableFields={this.state.searchableFields} searchTerm = "Search Manager"></SearchBar>
+                            </th>
                             <td>-N/A-</td>
                             <td>-N/A-</td>
-                            <th scope="row"><SearchBar searchTerm = "Search Currency"></SearchBar></th>
+                            <th scope="row">
+                                <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' 
+                                    searchableFields={this.state.searchableFields} searchTerm = "Search Currency"></SearchBar>
+                            </th>
                             <td>-N/A-</td>
                             <td>-N/A-</td>
                         </tr>
-                        <tr>
-                            <th scope="row">12345</th>
-                            <td>GS Funds</td>
-                            <td>Goldman Sachs</td>
-                            <td>2</td>
-                            <td>23.3</td>
-                            <td>USD</td>
-                            <td>21.5</td>
-                            <td>200</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">12345</th>
-                            <td>GS Funds</td>
-                            <td>Goldman Sachs</td>
-                            <td>2</td>
-                            <td>23.3</td>
-                            <td>USD</td>
-                            <td>21.5</td>
-                            <td>200</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">12345</th>
-                            <td>GS Funds</td>
-                            <td>Goldman Sachs</td>
-                            <td>2</td>
-                            <td>23.3</td>
-                            <td>USD</td>
-                            <td>21.5</td>
-                            <td>200</td>
-                        </tr>
+                        
+                        {
+                            this.state.fundList.map(item => 
+                                <tr key={item.fundNumber}>
+                                    <td>{item.fundNumber}</td>
+                                    <td>{item.fundName}</td>
+                                    <td>{item.invManager}</td>
+                                    <td>{item.setCycle}</td>
+                                    <td>{item.nav}</td>
+                                    <td>{item.invCurrency}</td>
+                                    <td>{item.sAndPRating}</td>
+                                    <td>{item.moodysRating}</td>
+                                </tr>
+                            )
+                        }
                     </tbody>
                 </table>
             </div>
