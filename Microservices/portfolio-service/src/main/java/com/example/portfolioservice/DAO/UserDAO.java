@@ -78,7 +78,7 @@ public class UserDAO
         return null;
     }
 
-    public void updateBalance(String userId, float balance)
+    public float updateBalance(String userId, float balance)
     {
         Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())
@@ -90,6 +90,8 @@ public class UserDAO
                             .currBal(balance)
                             .build()
             );
+            return user.get().currBal();
         }
+        return 0;
     }
 }

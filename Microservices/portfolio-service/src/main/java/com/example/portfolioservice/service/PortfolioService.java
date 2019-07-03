@@ -46,8 +46,8 @@ public class PortfolioService
         return userDAO.getBalance(userId);
     }
 
-    public void updateBalance(String userId, float balance)
+    public float updateBalance(String userId, float balance)
     {
-        userDAO.updateBalance(userId, balance);
+        return userDAO.updateBalance(userId, balance);
     }
 }
