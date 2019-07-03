@@ -12,8 +12,7 @@ class Header extends Component {
         this.state = {
              li1: "FUND FINDER",
              li2: "ADD FUND",
-             li3: "ADD ENTITLEMENTS",
-             user: "Shikhar"
+             li3: "ADD ENTITLEMENTS"
         }
     }
 
@@ -24,7 +23,7 @@ class Header extends Component {
         return (
             <nav>
                 <div className="nav-wrapper">
-                    <a href="x.html" className="right username">{this.state.user}</a>
+                    <a className="right username">{this.props.name}</a>
                     <ul id="nav-mobile" className="left hide-on-med-and-down">
                         <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                         <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>

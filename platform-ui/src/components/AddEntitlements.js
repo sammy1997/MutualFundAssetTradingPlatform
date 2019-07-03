@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'materialize-css/dist/css/materialize.min.css';
-import Chips, { Chip } from 'react-chips'
+import Chips from 'react-chips'
 import './css/addEntitlements.css'
 import SearchBar from './SearchBar.js'
 // import 'materialize-css/dist/js/materialize.min.js'

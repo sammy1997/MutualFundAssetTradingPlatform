@@ -3,6 +3,8 @@ import Header from './HeaderCustomerService';
 import FundFinder from './FundFinder';
 import AddFund from './AddFund';
 import AddEntitlements from './AddEntitlements';
+import parseJwt from './utility/JwtParser';
+import getCookie from './Cookie';
 
 class CustomerService extends Component {
     constructor(props) {
@@ -10,6 +12,8 @@ class CustomerService extends Component {
     
         this.state = {
              childComponents: [<FundFinder/>, <AddFund/>, <AddEntitlements/>],
+             userId: "-",
+             name: "",
              currTab: 0
         }
     }
@@ -19,12 +23,25 @@ class CustomerService extends Component {
             currTab: tab
         });
     }
+    componentDidMount(){
+        var token = getCookie("token");
+        if(!token){
+            this.props.history.push("/")
+        }
+        
+        var jwtInfo = parseJwt(token);
+        // console.log(jwtInfo);
+        this.setState({
+            userId: jwtInfo.sub,
+            name: jwtInfo.name
+        })
+    }
 
     render() {
         var component = this.state.childComponents[this.state.currTab];
         return (
             <div>
-                <Header tabHandler={this.tabHandler}></Header>
+                <Header name={this.state.name} tabHandler={this.tabHandler}></Header>
                 {component}
             </div>
         )

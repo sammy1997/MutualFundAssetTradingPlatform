@@ -9,8 +9,8 @@ class App extends Component{
     super(props)
   
     this.state = {
-      childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
-      currTab: 0
+        childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
+        currTab: 0 
     }
   }
 

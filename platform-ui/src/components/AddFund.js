@@ -2,8 +2,68 @@ import React, { Component } from 'react'
 import 'materialize-css/dist/css/materialize.min.css'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import './css/addFund.css'
+import axios from 'axios';
+import getCookie from './Cookie';
+import { withRouter } from 'react-router-dom';
 
 class AddFund extends Component {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            fundNumber: "",
+            fundName: "",
+            invManager: "",
+            setCycle: 0,
+            nav: 0.0,
+            invCurrency: "",
+            sAndPRating: 0,
+            moodysRating: 0
+        }
+    }
+    
+
+    onChange = event =>{
+        var value = event.target.value;
+        if(event.target.type==='number' && event.target.id!=='seCycle'){
+            value = parseFloat(value)
+        }else if(event.target.type==='number'){
+            value = parseInt(value)
+        }
+        this.setState({
+            [event.target.id]: value
+        })
+    }
+
+    addFundRequest = (event) =>{
+        event.preventDefault()
+
+        var baseUrl = "http://localhost:8762/fund-handling/api/funds/";
+        var token =getCookie('token');
+        
+        if(!token){
+            this.props.history.push('/');
+        }
+        var headers ={
+            Authorization: 'Bearer ' + token
+        }
+
+        axios({
+            method: 'post',
+            url: baseUrl + 'create',
+            headers: headers,
+            data: this.state
+        }).then(response =>{
+            console.log(response);
+        }).catch(error =>{
+            console.log(error);
+            document.cookie = "token=;"
+            if(error.response.status === 401){
+                this.props.history.push('/')
+            }
+        });
+    }
+
     render() {
         M.updateTextFields();
         return (
@@ -15,37 +75,42 @@ class AddFund extends Component {
                         <form className="col s12">
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="fundNumber" type="text" className="validate"/>
+                                    <input id="fundNumber" value={this.state.fundNumber} type="text" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="fundNumber">Fund Number</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="fundName" type="text" className="validate"/>
+                                    <input id="fundName" value={this.state.fundName} type="text" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="fundName">Fund Name</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="invManager" type="text" className="validate"/>
+                                    <input id="invManager" value={this.state.invManager} type="text" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="invManager">Investment Manager</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="setCycle" type="text" className="validate"/>
+                                    <input id="setCycle" value={this.state.setCycle} type="number" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="setCycle">Settlement Cycle(in days)</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="nav" type="text" className="validate"/>
+                                    <input id="nav" value={this.state.nav} type="number" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="nav">NAV</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <select id="invCurrency" defaultValue="">
+                                    <select id="invCurrency" defaultValue="" onChange={this.onChange}>
                                         <option value="" disabled>Investment currency</option>
                                         <option value="INR">INR</option>
                                         <option value="USD">USD</option>
@@ -59,18 +124,20 @@ class AddFund extends Component {
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="sAndPRating" type="text" className="validate"/>
+                                    <input id="sAndPRating" value={this.state.sAndPRating} type="number" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="sAndPRating">S and P Rating</label>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="moodysRating" type="text" className="validate"/>
+                                    <input id="moodysRating" value={this.state.moodysRating} type="number" 
+                                        onChange={this.onChange} className="validate"/>
                                     <label htmlFor="moodysRating">Moody's Rating</label>
                                 </div>
                             </div>
-                            <button className="btn waves-effect waves-light" type="submit" name="action">Submit
-                            </button>
+                            <button className="btn waves-effect waves-light" type="submit" 
+                                onClick={this.addFundRequest}>Submit</button>
                         </form>
                     </div>
                 </div>
@@ -79,4 +146,4 @@ class AddFund extends Component {
     }
 }
 
-export default AddFund
+export default withRouter(AddFund)
