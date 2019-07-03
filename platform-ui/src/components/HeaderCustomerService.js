@@ -13,26 +13,11 @@ class Header extends Component {
              li1: "FUND FINDER",
              li2: "ADD FUND",
              li3: "ADD ENTITLEMENTS",
-             user: ""
+             user: "Shikhar"
         }
     }
 
-    componentDidMount(){
-        var jwt = getCookie('token');
-        if(!jwt){
-            this.props.history.push('/');
-        }else{
-            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
-            .then( res => {
-                this.setState({
-                    user: res.data.userId
-                })
-            }).catch( err => {
-                document.cookie = "";
-                this.props.history.push('/');
-            });
-        }
-    }
+
     
     render() {
         M.updateTextFields();

@@ -1,0 +1,19 @@
+.main{
+    margin: 0;
+}
+
+.tabs{
+    width: 100%;
+    margin: 0%;
+    height: 50px;
+}
+
+.username{
+    margin-right: 20px;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.myNav{
+    background-color: #26a69a
+}

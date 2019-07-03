@@ -31,17 +31,20 @@ class AuthComponent extends Component {
         if(!jwt){
             this.props.history.push('/');
         }else{
-            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
-            .then( res => {
-                this.setState({
-                    user : res.data
-                })
-                // console.log(parseJwt(jwt).authorities[0]);
-                // console.log(this.state.user);
-            }).catch( err => {
-                document.cookie = "";
-                this.props.history.push('/');
+            this.setState({
+                user: "hey"
             });
+            // axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+            // .then( res => {
+            //     this.setState({
+            //         user : res.data
+            //     })
+            //     // console.log(parseJwt(jwt).authorities[0]);
+            //     // console.log(this.state.user);
+            // }).catch( err => {
+            //     // document.cookie = "";
+            //     // this.props.history.push('/');
+            // });
         }
     }
 
