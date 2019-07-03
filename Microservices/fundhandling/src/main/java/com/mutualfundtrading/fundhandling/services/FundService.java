@@ -17,8 +17,15 @@ public class FundService {
     @Autowired
     FundDAO dao;
 
-    public String addFundService(Fund fund){
-        return dao.insert(fund);
+    public Response addFundService(Fund fund){
+        String message = dao.insert(fund);
+        if (message.equals("Successfully added")){
+            return Response.status(200).entity(message).build();
+        }
+        if(message.equals("Some fields are missing")){
+            return Response.status(400).entity(message).build();
+        }
+        return Response.status(422).entity(message).build();
     }
 
     public ImmutableFundDBModel getFund(String fundNumber){

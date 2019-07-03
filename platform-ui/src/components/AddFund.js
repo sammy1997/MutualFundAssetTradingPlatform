@@ -14,11 +14,11 @@ class AddFund extends Component {
             fundNumber: "",
             fundName: "",
             invManager: "",
-            setCycle: 0,
-            nav: 0.0,
+            setCycle: "",
+            nav: "",
             invCurrency: "",
-            sAndPRating: 0,
-            moodysRating: 0
+            sAndPRating: "",
+            moodysRating: ""
         }
     }
     
@@ -54,12 +54,16 @@ class AddFund extends Component {
             headers: headers,
             data: this.state
         }).then(response =>{
-            console.log(response);
+            console.log(response.data)
+            alert(response.data)
         }).catch(error =>{
-            console.log(error);
-            document.cookie = "token=;"
-            if(error.response.status === 401){
-                this.props.history.push('/')
+            // console.log(error.response);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+            else{
+                alert(error.response.data)
             }
         });
     }

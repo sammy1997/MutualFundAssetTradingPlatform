@@ -27,7 +27,7 @@ public class FundDAO {
         String message = "Successfully added";
         boolean exists = repository.findByFundNumber(fund.fundNumber()).fetchFirst().getUnchecked().isPresent();
         if (exists){
-            message = "Fund already exists";
+            message = "Fund with this fund number already exists";
         }else {
             if (fund.invManager().isPresent() && fund.setCycle().isPresent() &&
                     fund.moodysRating().isPresent() && fund.sAndPRating().isPresent() &&

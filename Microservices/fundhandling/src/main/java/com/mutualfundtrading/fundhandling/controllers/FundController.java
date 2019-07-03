@@ -24,7 +24,7 @@ public class FundController{
 //    Fund creation url
     @Path("/create")
     @POST
-    public String createFund(Fund fund){
+    public Response createFund(Fund fund){
         return service.addFundService(fund);
     }
 
