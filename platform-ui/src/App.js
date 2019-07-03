@@ -10,7 +10,7 @@ class App extends Component{
   
     this.state = {
         childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
-        currTab: 2
+        currTab: 0 
     }
   }
 

@@ -5,9 +5,7 @@
   position: relative;
   display: flex;
 }
-#searchId{
-  height: 1.5rem;
-}
+
 .searchTerm {
   font-size: 10px;
   width: 100%;

@@ -1,6 +1,9 @@
 package com.sapient.authservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sapient.authservice.dao.UsersDAO;
+import com.sapient.authservice.entities.ImmutableUsers;
+import com.sapient.authservice.entities.ImmutableUsersDBModel;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +30,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     private AuthenticationManager authManager;
 
     private final JwtConfig jwtConfig;
+    private UsersDAO dao = new UsersDAO();
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authManager, JwtConfig jwtConfig) {
         this.authManager = authManager;
@@ -66,6 +70,11 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         //Data passed in JWT Payload
         Long now = System.currentTimeMillis();
+        ImmutableUsersDBModel user = dao.getUserByUserId(auth.getName());
+        String payload ="";
+        if(user!=null){
+            payload = user.fullName();
+        }
         String token = Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.
@@ -73,6 +82,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
+                .claim("name", payload)
                 .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();

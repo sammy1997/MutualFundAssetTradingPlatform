@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './css/userFundTable.css'
 import 'materialize-css/dist/css/materialize.min.css'
-
+import searchContent from './utility/SearchTableContent'
 
 class UserFunds extends Component
 {
@@ -9,7 +9,7 @@ class UserFunds extends Component
     {
         super()
         this.state = {
-            searchableFields: 4,
+            searchableFields: [],
             list : [
               {
                 fundName : 'fundname',
@@ -43,7 +43,7 @@ class UserFunds extends Component
                 quantity : 10,
                 NAV : 400,
                 setCycle : 5,
-                invCurr : 'INR',
+                invCurr : 'USD',
                 profit : '-5%',
                 arrow: 'down'
               }
@@ -65,37 +65,15 @@ class UserFunds extends Component
             }
         }
     }
-
-    searchContent() {
-        var filters=[]
-        var input, filter, table, tr, td, i, txtValue;
-        for(var index = 0;index < this.state.searchableFields;index++){
-            input = document.getElementById("myInput"+index);
-            console.log(input);
-            if(input==null) continue;
-            filter = input.value.toUpperCase();
-            filters.push(filter);
-        }
-
-        table = document.getElementById("myTable");
-        tr = table.getElementsByTagName("tr");
-        
-        for (i = 2; i < tr.length; i++){
-            var f = true;
-            for(var index = 0;index<filters.length;index++){
-                td=tr[i].getElementsByTagName("td")[index];
-                if(td){
-                    txtValue = td.textContent || td.innerText;
-                    if(txtValue.toUpperCase().indexOf(filters[index]) == -1){
-                        f=false;
-                        break;
-                    }
-                }
-            }
-            if(f)
-                tr[i].style.display = "";
-            else
-                tr[i].style.display = "none";
+    componentDidMount(){
+        if(this.props.portfolio){
+            this.setState({
+                searchableFields: [0,1,2,7]
+            })
+        }else{
+            this.setState({
+                searchableFields: [0,1,2,6]
+            })
         }
     }
 
@@ -123,14 +101,18 @@ class UserFunds extends Component
 
                     <tbody>
                         <tr>
-                            <td><input type="text" id="myInput0"  onKeyUp={() => this.searchContent()} /></td> 
-                            <td><input type="text" id="myInput1"  onKeyUp={() => this.searchContent()} /></td>
-                            <td><input type="text" id="myInput2"  onKeyUp={() => this.searchContent()} /></td>
+                            <td><input type="text" id="myInput0"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> 
+                            <td><input type="text" id="myInput1" 
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
+                            <td><input type="text" id="myInput2"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
                             <td></td>
                             {this.props.portfolio?<td></td>:""}
                             <td></td>
                             <td></td>
-                            <td><input type="text" id="myInput3"  onKeyUp={() => this.searchContent()} /></td>
+                            <td><input type="text" id="myInput3"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
                             {this.props.portfolio?<td></td>:""}
                             {this.props.portfolio?<td></td>:""}
                         </tr>
