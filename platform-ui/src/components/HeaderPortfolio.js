@@ -4,6 +4,7 @@ import './css/headerPortfolio.css'
 import axios from 'axios'
 import getCookie from './Cookie';
 
+
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -26,7 +27,7 @@ class HeaderPortfolio extends Component {
             assets: 25000,
             currBal: undefined,
             baseCurr: undefined,
-            userId: undefined
+            fullName: undefined,
         }
     }
 
@@ -40,7 +41,7 @@ class HeaderPortfolio extends Component {
                 this.setState({
                     currBal: res.data.currBal,
                     baseCurr: res.data.baseCurr,
-                    userId: res.data.userId
+                    fullName: parseJwt(jwt).name
                 })
             })
         }
@@ -51,22 +52,24 @@ class HeaderPortfolio extends Component {
             
             <nav>
                 <div className="nav-wrapper teal lighten-1">
-                    <a href="#" className="right username">{this.state.userId}</a>
-                        <ul id="nav-mobile" className="left hide-on-med-and-down">
-                            <li>Total Assets : {this.state.assets}</li>
-                            <li>Total Balance : {this.state.currBal}</li>
-                            <li>Base Currency : {this.state.baseCurr}</li>
+                    <a href="#" className="right username">{this.state.fullName}</a>
+                        <ul id="nav-mobile" className="left user-info">
+                            <li><a>Total Assets : {this.state.assets}</a></li>
+                            <li><a>Total Balance : {this.state.currBal}</a></li>
+                            <li><a>Base Currency : {this.state.baseCurr}</a></li>
                         </ul>
                         
                 </div>
-                <div className="nav-wrapper teal lighten-1" text-align = "center">
-                        <ul id="nav-mobile" className="left hide-on-med-and-down">
-                            <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
-                            <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
-                            <li onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
-                        </ul>
-                      
-                </div>
+                <div className="nav-content">
+                    {/* <div className="nav-wrapper teal lighten-1" text-align = "center"> */}
+                            <ul id="nav-mobile" className="left tabs ">
+                                <li className="tab" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                                <li className="tab" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
+                                <li className="tab" onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
+                            </ul>
+                        
+                    {/* </div> */}
+                </div>  
                 
             </nav>
         )

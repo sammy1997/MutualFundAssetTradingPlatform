@@ -4,14 +4,40 @@
 
 .tabs{
     width: 100%;
-    margin: 0%;
     height: 50px;
+    background-color: #26a69a;
+    display:flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+}
+/* 
+.tabs .active{
+    background-color: red;
+} */
+
+.tabs .tab a{
+    color: white;
+    font-weight: bolder;
+    font-size: 20px;
+}
+
+.tabs .tab a:hover{
+    color: white;
 }
 
 .username{
     margin-right: 20px;
     font-size: 20px;
     font-weight: bolder;
+}
+
+.user-info a{
+    font-size: 18px;
+}
+
+.user-info a:hover{
+    cursor: text;
+    background-color: #26a69a;
 }
 
 .myNav{
