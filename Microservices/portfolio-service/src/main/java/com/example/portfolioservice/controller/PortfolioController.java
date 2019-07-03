@@ -121,7 +121,7 @@ public class PortfolioController
                         updateProfitsOfFunds.add(updatedFund);
                     }
                 }
-                user = ImmutableUser2.builder().userId(userId).balance(user.balance())
+                user = ImmutableUser2.builder().userId(userId).currBal(user.currBal())
                         .all_funds(updateProfitsOfFunds).build();
                 portfolioService.update(user);
                 return Response.status(200).entity("Updated profile successfully").build();
@@ -155,7 +155,7 @@ public class PortfolioController
                 .userId(userId)
                 .baseCurr(baseCurr)
                 .all_funds(new ArrayList<>())
-                .balance(balance)
+                .currBal(balance)
                 .build();
         portfolioService.createUser(user);
         return Response.status(200).entity("User added to DB").build();

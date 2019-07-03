@@ -79,12 +79,17 @@ public class UserTradeService {
         return userAccessObject.getAllTradesByUserId(userId);
     }
 
+    // For creating a new user
+    public boolean addUserById(String userId){
+        return userAccessObject.addUser(userId);
+    }
+
     // For verifying the trades
     public boolean verifyTrades(String userId, List<Trade> trades, String header){
 
         // Verify Possibility of trades
         BalanceInfo balanceInfo = getBalance(header);
-        float balance = balanceInfo.getBalance();
+        float balance = balanceInfo.getCurrBal();
         String baseCurr = balanceInfo.getBaseCurr();
         boolean exchangePossible = userAccessObject.verify(userId, trades, balance, baseCurr);
 
@@ -114,7 +119,7 @@ public class UserTradeService {
 
             // Get balance and base Currency of the user
             BalanceInfo balanceInfo = getBalance(header);
-            float balance = balanceInfo.getBalance();
+            float balance = balanceInfo.getCurrBal();
             String baseCurr = balanceInfo.getBaseCurr();
 
             // Add trades
@@ -156,7 +161,7 @@ public class UserTradeService {
         // Create the updated user
         User2 updatedUser = ImmutableUser2.builder()
                 .userId(userId)
-                .balance(newBalance)
+                .currBal(newBalance)
                 .all_funds(funds)
                 .build();
 

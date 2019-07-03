@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface User2
 {
     Optional<String> userId();
-    float balance();
+//    float balance();
+    float currBal();
     Optional<String> baseCurr();
     Optional<List<Fund2>> all_funds();
 }

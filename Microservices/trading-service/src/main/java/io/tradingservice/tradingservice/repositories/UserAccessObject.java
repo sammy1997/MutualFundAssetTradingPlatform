@@ -59,16 +59,17 @@ public class UserAccessObject {
         }
     }
 
-    // Helper function to Create a new user
-    private int addUser(String userId){
-        User newUser =
-                ImmutableUser.builder()
-                        .userId(userId)
-                        .trades(new ArrayList<>())
-                        .build();
-        userRepository.insert(newUser);
-        if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) return 1;
-        else return 0;
+    // Create a new user
+    public boolean addUser(String userId){
+        if (!userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+            User newUser =
+                    ImmutableUser.builder()
+                            .userId(userId)
+                            .trades(new ArrayList<>())
+                            .build();
+            userRepository.insert(newUser);
+            return true;
+        } else return false;
     }
 
     // Helper function for conversion rate
@@ -110,10 +111,8 @@ public class UserAccessObject {
             }
             if (count == newTrades.size() && balance >= 0){
                 return true;
-            }
-            else return false;
-        }
-        return false;
+            } else return false;
+        } else return false;
     }
 
     // Update an existing fund
@@ -196,19 +195,6 @@ public class UserAccessObject {
 
     // Condition checks for adding a trade
     public float addTrade(String userId, Trade trade, float balance, String baseCurr){
-        boolean exists = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
-        if (!exists && trade.status().equals("purchase")){
-            addUser(userId);
-            float debit;
-            if (baseCurr!=trade.invCurr()){
-                float convRate = getConversionRate(baseCurr, trade.invCurr());
-                debit = trade.avgNav() * trade.quantity() * convRate ;
-            } else  debit = trade.quantity() * trade.avgNav();
-            if (debit<=balance) {
-                directAddFund(userId, trade);
-                return -debit;
-            }
-        }
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             List<ImmutableTrade> trades = user.trades();

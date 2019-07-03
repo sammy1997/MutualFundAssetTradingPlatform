@@ -66,5 +66,17 @@ public class TradeServiceController {
         else return Response.status(200).entity("Not verified: Trades not possible").build();
     }
 
+    // Add user
+    @POST
+    @Path("/addUser")
+    public Response addUserById(@HeaderParam("Authorization") String header, @QueryParam("secret") String key){
+        if (key.equals(Constants.SECRET_KEY)) {
+            String userId = ServiceUtils.decodeJWTForUserId(header);
+            boolean success = userTradeService.addUserById(userId);
+            if (success) return Response.status(201).entity("User Created").build();
+            else return Response.status(400).entity("Bad request").build();
+        } else return Response.status(403).entity("Unauthorized request").build();
+    }
+
 
 }

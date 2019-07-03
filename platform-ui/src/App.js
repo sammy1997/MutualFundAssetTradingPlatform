@@ -9,8 +9,8 @@ class App extends Component{
     super(props)
   
     this.state = {
-        childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
-        currTab: 2
+      childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
+      currTab: 0
     }
   }
 
@@ -24,8 +24,8 @@ class App extends Component{
     var component = this.state.childComponents[this.state.currTab];
     return (
       <div className="App">
-          <HeaderPortfolio tabHandler={this.tabHandler}></HeaderPortfolio>
-          {component}
+        <HeaderPortfolio tabHandler={this.tabHandler}></HeaderPortfolio>
+        {component}
       </div>
     );
   }
