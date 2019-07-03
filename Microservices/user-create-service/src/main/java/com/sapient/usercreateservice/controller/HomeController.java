@@ -78,6 +78,17 @@ public class HomeController {
                     .doOnSuccess(clientResponse -> {
                         System.out.println(clientResponse.statusCode());
                     }).block();
+
+            webClientBuilder.build()
+                    .post()
+                    .uri("localhost:8762/trade/addUser?secret=ggmuekp69t11p6914qrl7pk4598679hm")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", authHeader)
+                    .exchange()
+                    .doOnSuccess(clientResponse -> {
+                        System.out.println(clientResponse.statusCode());
+                    }).block();
             return user.userId() + " added to database";
         } else if (response.getStatus() == 400) {
             return "Some field(s) missing. If not, please validate your fields";

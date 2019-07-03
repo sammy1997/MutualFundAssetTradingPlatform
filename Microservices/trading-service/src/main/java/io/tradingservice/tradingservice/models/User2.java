@@ -11,7 +11,8 @@ import java.util.List;
 @JsonDeserialize(as = ImmutableUser2.class)
 public interface User2 {
     String userId();
-    float balance();
+//    float balance();
+    float currBal();
     List<FundParser> all_funds();
 
 

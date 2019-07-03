@@ -1,18 +1,18 @@
 package io.tradingservice.tradingservice.models;
 
 public class BalanceInfo {
-    float balance;
+    float currBal;
     String baseCurr;
 
     public BalanceInfo() {
     }
 
-    public float getBalance() {
-        return balance;
+    public float getCurrBal() {
+        return currBal;
     }
 
-    public void setBalance(float balance) {
-        this.balance = balance;
+    public void setCurrBal(float currBal) {
+        this.currBal = currBal;
     }
 
     public String getBaseCurr() {

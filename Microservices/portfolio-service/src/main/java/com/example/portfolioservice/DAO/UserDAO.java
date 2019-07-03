@@ -26,7 +26,7 @@ public class UserDAO
         userDB = ImmutableUserDBModel.builder()
                 .userId(user.userId().get())
                 .baseCurr(user.baseCurr().get())
-                .balance(user.balance())
+                .currBal(user.currBal())
                 .all_funds(user.all_funds().get()).build();
 
         repository.insert(userDB);
@@ -51,7 +51,7 @@ public class UserDAO
             UserDBModel updated_user = userDB.get();
             repository.upsert(
                     ImmutableUserDBModel.builder()
-                    .userId(updated_user.userId()).balance(user.balance())
+                    .userId(updated_user.userId()).currBal(user.currBal())
                             .baseCurr(user.baseCurr().isPresent()? user.baseCurr().get(): updated_user.baseCurr())
                             .all_funds(user.all_funds().isPresent()? user.all_funds().get():updated_user.all_funds())
                     .build()
@@ -71,7 +71,7 @@ public class UserDAO
         if(user.isPresent())
         {
             BalanceInfo balance = new BalanceInfo();
-            balance.setBalance(user.get().balance());
+            balance.setCurrBal(user.get().currBal());
             balance.setBaseCurr(user.get().baseCurr());
             return balance;
         }
@@ -87,7 +87,7 @@ public class UserDAO
                     ImmutableUserDBModel.builder()
                             .userId(user.get().userId())
                             .all_funds(user.get().all_funds())
-                            .balance(balance)
+                            .currBal(balance)
                             .build()
             );
         }

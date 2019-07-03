@@ -13,7 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.net.URI;
 
 public class AuthServiceUnitTests {
 
@@ -23,9 +27,14 @@ public class AuthServiceUnitTests {
     @InjectMocks
     UserDetailsServiceImpl service;
 
+    @LocalServerPort
+    int port;
+
     Users user;
     UsersDBModel usersDB;
+    String baseUrl;
     UserDetails userDetails;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -33,7 +42,8 @@ public class AuthServiceUnitTests {
 
     @Before
     public void mockDB(){
-        user = ImmutableUsers.builder().userId("harsh123").password("qwerty123").role("ROLE_TRADER").fullName("Harsh Jaiswal").build();
+//        baseUrl = "http://localhost:" + port + "/auth";
+//        user = ImmutableUsers.builder().userId("harsh123").password("qwerty123").role("ROLE_TRADER").fullName("Harsh Jaiswal").build();
         usersDB = ImmutableUsersDBModel.builder().userId("harsh123").password("qwerty123").role("ROLE_TRADER").fullName("Harsh Jaiswal").build();
     }
 
@@ -41,11 +51,5 @@ public class AuthServiceUnitTests {
     public void findByUserIdTest(){
         Mockito.when(dao.getUserByUserId(Mockito.any(String.class))).thenReturn((ImmutableUsersDBModel) usersDB);
         Assert.assertEquals((ImmutableUsersDBModel) usersDB, service.findByUserId("harsh123"));
-    }
-
-    @Test
-    public void loadUserTest(){
-//        Mockito.when(service.loadUserByUsername(Mockito.any(String.class))).thenReturn(userDetails);
-        Assert.assertEquals(userDetails, service.loadUserByUsername("harsh123"));
     }
 }

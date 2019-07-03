@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(as = BalanceInfo.class)
 public class BalanceInfo {
     String baseCurr;
-    float balance;
+
+    //    float balance;
+    float currBal;
 
     public BalanceInfo() {
     }
@@ -20,11 +22,14 @@ public class BalanceInfo {
         this.baseCurr = baseCurr;
     }
 
-    public float getBalance() {
-        return balance;
+    public float getCurrBal() {
+        return currBal;
     }
 
-    public void setBalance(float balance) {
-        this.balance = balance;
+    public void setCurrBal(float currBal) {
+        this.currBal = currBal;
     }
+
+
+
 }
