@@ -5,7 +5,7 @@ import './css/addEntitlements.css'
 import SearchBar from './SearchBar.js'
 import axios from 'axios';
 import getCookie from './Cookie';
-// import 'materialize-css/dist/js/materialize.min.js'
+import FileUpload from './FileUploadComponent';
 
 class AddEntitlements extends Component {
     constructor(props) {
@@ -59,7 +59,7 @@ class AddEntitlements extends Component {
             if (e.keyCode === 40) {
               currentFocus++;
               addActive(x);
-            } else if (e.keyCode === 38) { //up
+            } else if (e.keyCode === 38) {
               currentFocus--;
               addActive(x);
             } else if (e.keyCode === 13) {
@@ -165,7 +165,6 @@ class AddEntitlements extends Component {
         li.innerHTML = content;
         li.append(i);
         i.onclick = event => {
-            // console.log(event.target.parentNode.id)
             var elem = event.target.parentNode;
             var parent = elem.parentNode;
             parent.removeChild(elem);
@@ -221,7 +220,7 @@ class AddEntitlements extends Component {
         for(var i=0; i< listOfFunds.length; i++){
             entitledTo.push(listOfFunds[i].innerText || listOfFunds[i].textContent);
         }
-        var count = 0;
+
         for(var i=0; i< this.state.chips.length; i++){
             var payload ={
                 userId: this.state.chips[i],
@@ -233,24 +232,21 @@ class AddEntitlements extends Component {
                 url: baseUrl + 'fund-handling/api/entitlements/add',
                 headers: headers,
                 data: payload
+            // eslint-disable-next-line no-loop-func
             }).then(response =>{
                 console.log(response.data)
+                alert('Response for user ' + this.state.chips[i] + " : " + response.data);
             }).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
                     document.cookie = "token=;"
                     window.location = "/";
                 }else{
-                    count = 1;
                     alert(error.response.data)
                 }
             });
         }
-        if(count === 0){
-            alert("All additions successful");
-        }else{
-            alert("Some additions faced errors");
-        }
+
         document.getElementById("added-funds").innerHTML = "";
     }
     
@@ -286,7 +282,8 @@ class AddEntitlements extends Component {
                             </button>
                         </div>
                     </div>    
-                </div>           
+                </div>
+                <FileUpload endUrl='entitlements/addEntitlements' buttonText='Add Entitlements from File'></FileUpload>         
             </div>
         )
     }

@@ -20,33 +20,40 @@
 	</properties>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.immutables</groupId>
 			<artifactId>value</artifactId>
 			<version>2.7.4</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.immutables</groupId>
 			<artifactId>mongo</artifactId>
 			<version>2.7.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
+
 		<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-jersey</artifactId>
-	</dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
@@ -77,11 +84,13 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
+
+		<dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-multipart</artifactId>
             <version>1.19.4</version>
         </dependency>
+
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
@@ -98,11 +107,19 @@
 			<version>2.9.0</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
+
+		<dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.11</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.15</version>
+		</dependency>
+
     </dependencies>
 
 	<dependencyManagement>

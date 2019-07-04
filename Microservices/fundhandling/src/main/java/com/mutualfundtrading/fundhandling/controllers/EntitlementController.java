@@ -6,11 +6,14 @@ import com.mutualfundtrading.fundhandling.models.ImmutableEntitlements;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.EntitlementService;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,4 +73,19 @@ public class EntitlementController {
         return null;
     }
 
+    @POST
+    @Path("/addEntitlements")
+    @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE})
+    public Response uploadCsvFile(  @FormDataParam("file") InputStream fileInputStream,
+                                    @FormDataParam("file") FormDataContentDisposition fileMetaData)
+    {
+        int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
+        if (status ==404){
+            return Response.status(status).entity("Provide excel or csv files").build();
+        }else if (status == 400){
+            return Response.status(status).entity("Error while uploading file. Try again").build();
+        }else {
+            return ServiceUtils.addEntitlementsFromCSV(fileMetaData.getFileName());
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundDBModel;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
+
 
 @Path("/funds")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
@@ -69,30 +71,15 @@ public class FundController{
     @Path("/addFund")
     @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE})
     public Response uploadCsvFile(  @FormDataParam("file") InputStream fileInputStream,
-                                    @FormDataParam("file") FormDataContentDisposition fileMetaData) throws Exception
+                                    @FormDataParam("file") FormDataContentDisposition fileMetaData)
     {
-        String UPLOAD_PATH = "C:\\Users\\somchakr\\Desktop\\upload\\";
-        try
-        {
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            String fileName = fileMetaData.getFileName();
-            if (!(fileName.contains("xlx") && fileName.contains("xlsx")  && fileName.contains("csv"))){
-                return Response.status(404).entity("Provide files").build();
-            }
-            OutputStream out = new FileOutputStream(new File(UPLOAD_PATH + fileName));
-//            System.out.println(fileMetaData.getFileName());
-
-            while ((read = fileInputStream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);
-            }
-            out.flush();
-            out.close();
-        } catch (IOException e)
-        {
-            throw new WebApplicationException("Error while uploading file. Please try again !!");
+        int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
+        if (status ==404){
+            return Response.status(status).entity("Provide excel or csv files").build();
+        }else if (status == 400){
+            return Response.status(status).entity("Error while uploading file. Try again").build();
+        }else {
+            return ServiceUtils.addFundsFromCSV(fileMetaData.getFileName());
         }
-        return Response.ok("Data uploaded successfully !!").build();
     }
 }
