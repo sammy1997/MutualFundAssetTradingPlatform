@@ -84,6 +84,13 @@ public class UserTradeService {
         return userAccessObject.addUser(userId);
     }
 
+    public void makeTrades(String userId, List<TradeParser> tradeParsers){
+        List<ImmutableFund> entitlements = getEntitlements(userId);
+        List<Trade> trades = new ArrayList<>();
+        for (TradeParser t: tradeParsers){
+            
+        }
+    }
     // For verifying the trades
     public boolean verifyTrades(String userId, List<Trade> trades, String header){
 

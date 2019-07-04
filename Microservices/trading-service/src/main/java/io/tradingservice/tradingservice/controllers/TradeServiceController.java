@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.tradingservice.tradingservice.models.ImmutableTrade;
 import io.tradingservice.tradingservice.models.Trade;
+import io.tradingservice.tradingservice.models.TradeParser;
 import io.tradingservice.tradingservice.services.UserTradeService;
 import io.tradingservice.tradingservice.utils.Constants;
 import io.tradingservice.tradingservice.utils.ServiceUtils;
@@ -56,14 +57,22 @@ public class TradeServiceController {
         } else return Response.status(400).entity("Max trade request is 5").build();
     }
 
-    // Verify trades
+//    // Verify trades
+//    @POST
+//    @Path("/verify")
+//    public Response verifyTrades(@HeaderParam("Authorization") String header, List<Trade> trades){
+//        String userId = ServiceUtils.decodeJWTForUserId(header);
+//        boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
+//        if (isVerified) return Response.status(200).entity("Verified Trades").build();
+//        else return Response.status(200).entity("Not verified: Trades not possible").build();
+//    }
+
     @POST
     @Path("/verify")
-    public Response verifyTrades(@HeaderParam("Authorization") String header, List<Trade> trades){
+    public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
-        boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
-        if (isVerified) return Response.status(200).entity("Verified Trades").build();
-        else return Response.status(200).entity("Not verified: Trades not possible").build();
+        userTradeService.makeTrades(userId, tradeParsers);
+        return Response.status(400).entity("Bad request").build();
     }
 
     // Add user
