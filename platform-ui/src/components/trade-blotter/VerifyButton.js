@@ -1,5 +1,7 @@
+// component button for verifying 
 import React, { Component } from 'react'
 import Modal from 'react-responsive-modal';
+import axios from 'axios'
 
 class VerifyButton extends Component {
     constructor(props) {
@@ -24,25 +26,32 @@ class VerifyButton extends Component {
         this.props.numberOfTrades < 6 ? this.setState({
             verified: true 
         }) :    alert (`Max trades to place is only 5`) 
-        //console.log("Max trades to place is only 5")
-        // Axios.post('http://localhost:8762/trade/verify', {headers: {}, body: this.props.funds})
-        // .then(Response => {
-        //     Response == `Verified Trades` ? (
-        //     this.setState({
-        //         verified: true  
-        //     })
-        // ) : (console.log("Not verified"))
-        // }).catch(error => console.log(error))
+
+        //axios post request to check for verification
+        axios.post('http://localhost:8762/trade/verify', {headers: {}, body: this.props.funds})
+        .then(Response => {
+            Response.equals(`Verified Trades`) ? (
+            this.setState({
+                verified: true  
+            })
+        ) : (console.log("Not verified"))
+        }).catch(error => console.log(error))
     }
 
-    submitHandler = () => {
-        // verified == true ? (
-        //     Axios.post(`http://localhost:8762/trade/exchange`, {headers: {}, body: this.props.funds})
-        //     .then(Response => {
-        //         Response.status == 201 ? console.log(`Exchanged trades`) : console.log(`Error occurred`)
-        //     })) : (
-        //         console.log(`Not verified`)
-        //     ) 
+    submitHandler = (e) => {
+        e.preventDefault();
+        this.setState({
+            open: false
+        })
+        
+        //axios post request to place trades from trade blotter
+        this.state.verified === true ? (
+            axios.post(`http://localhost:8762/trade/exchange`, {headers: {}, body: this.props.funds})
+            .then(Response => {
+                Response.status === 201 ? console.log(`Exchanged trades`) : console.log(`Error occurred`)
+            })) : (
+                console.log(`Not verified`)
+            ) 
     }
 
     render() { 

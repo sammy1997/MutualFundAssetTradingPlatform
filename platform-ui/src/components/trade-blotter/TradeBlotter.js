@@ -2,12 +2,11 @@
 
 import React, { Component } from 'react'
 import './tradeBlotter.css' 
-import AddFund from './AddFund'
+import AddTrade from './AddTrade'
 import FundItem from './FundItem';
 import VerifyButton from './VerifyButton';
 import 'materialize-css/dist/css/materialize.min.css';
 //import M from 'materialize-css'
-//import axios from 'axios'
 
 class Table extends Component {
 
@@ -16,44 +15,30 @@ class Table extends Component {
     
         this.state = {
             funds: [
-                {
-                    fundName: 'eric',
-                    fundNumber: '1',
-                    invManager: 'GS',
-                    invCurr: 'INR',
-                    setCycle: '12',
-                    nav: '69',
-                    sAndPRating: '6',
-                    moodyRating: '9',
-                    quantity: '5'
-                }, 
-                {
-                    fundName: 'praneet',
-                    fundNumber: '2',
-                    invManager: 'GS',
-                    invCurr: 'INR',
-                    setCycle: '12',
-                    nav: '69',
-                    sAndPRating: '6',
-                    moodyRating: '9',
-                    quantity: '5'
-                }
+                // {
+                //     fundName: '',
+                //     fundNumber: '',
+                //     invManager: '',
+                //     invCurr: '',
+                //     setCycle: '',
+                //     nav: '',
+                //     sAndPRating: '',
+                //     moodyRating: '',
+                //     quantity: ''
+                // }
             ]
-         }
+        }
     }
 
-    // componentDidMount () {
-    //     axios.get('http://localhost:8762/')
-    //     .then (response => {
-    //         console.log(response)
-    //         this.setState({})
+    // Set funds from fund finder page ui 
+    componentDidMount () {
+    //     this.setState({
+    //         funds: this.props.funds 
     //     })
-    //     .catch(error => {
-    //         console.log(error)
-    //     })
-    // }
+    }
 
-    addFund = function (fundName, fundNumber, invManager, invCurr, setCycle, nav, sAndPRating, moodyRating, quantity) {
+    // Add Trade method
+    addTrade = function (fundName, fundNumber, invManager, invCurr, setCycle, nav, sAndPRating, moodyRating, quantity) {
         console.log({fundName}, {fundNumber}); 
         const newFund = {
             fundName,
@@ -92,6 +77,7 @@ class Table extends Component {
                     </thead>
 
                     <tbody> {
+                        // Render all the funds 
                         this.state.funds.map((f) => (
                             <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager}
                             invCurr={f.invCurr} setCycle={f.setCycle} nav={f.nav} sAndPRating={f.sAndPRating} moodyRating={f.moodyRating}
@@ -101,8 +87,8 @@ class Table extends Component {
                         }                          
                     </tbody>
                 </table>
-
-                <AddFund addFund={this.addFund} numberOfTrades={this.state.funds.length}/>
+                        
+                <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length}/>
                 <VerifyButton numberOfTrades={this.state.funds.length}/> 
             </div>
         )

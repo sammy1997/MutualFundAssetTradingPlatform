@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import './tradeBlotter.css' 
 import Modal from 'react-responsive-modal';
 
-class AddFund extends Component {
+class AddTrade extends Component {
     
     constructor(props) {
         super(props)
@@ -37,7 +37,7 @@ class AddFund extends Component {
         console.log(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr,
             this.state.setCycle, this.state.nav, this.state.sAndPRating, this.state.moodyRating, this.state.quantity);
             
-            this.props.addFund(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr, 
+            this.props.addTrade(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr, 
             this.state.setCycle, this.state.nav, this.state.sAndPRating, this.state.moodyRating, this.state.quantity)
         
         this.setState ({
@@ -85,4 +85,4 @@ class AddFund extends Component {
     }
 }
 
-export default AddFund
+export default AddTrade

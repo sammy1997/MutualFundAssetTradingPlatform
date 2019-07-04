@@ -1,3 +1,4 @@
+// component for creating fund item  
 import React, { Component } from 'react';
 
 export class FundItem extends Component {
