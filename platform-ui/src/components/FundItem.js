@@ -1,5 +1,6 @@
 // component for creating fund item  
 import React, { Component } from 'react';
+import './css/tradeBlotter.css'
 
 export class FundItem extends Component {
 

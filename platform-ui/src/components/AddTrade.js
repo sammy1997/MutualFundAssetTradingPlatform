@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import './tradeBlotter.css' 
 import Modal from 'react-responsive-modal';
+import './css/tradeBlotter.css'
 
 class AddTrade extends Component {
     

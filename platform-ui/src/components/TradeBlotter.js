@@ -6,6 +6,7 @@ import AddTrade from './AddTrade'
 import FundItem from './FundItem';
 import VerifyButton from './VerifyButton';
 import 'materialize-css/dist/css/materialize.min.css';
+import './css/tradeBlotter.css'
 //import M from 'materialize-css'
 
 class Table extends Component {
@@ -15,6 +16,7 @@ class Table extends Component {
     
         this.state = {
             funds: [
+                //  Objects of the form 
                 // {
                 //     fundName: '',
                 //     fundNumber: '',

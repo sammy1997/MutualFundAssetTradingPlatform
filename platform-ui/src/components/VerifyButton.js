@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import Modal from 'react-responsive-modal';
 import axios from 'axios'
+import './css/tradeBlotter.css'
 
 class VerifyButton extends Component {
     constructor(props) {
