@@ -17,25 +17,25 @@ class UserFunds extends Component
         }
     }
 
-    componentDidMount(){
-        var jwt = getCookie('token');
-        if(!jwt){
-            this.props.history.push('/');
-        }else{
-            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
-            .then(res => {
-                console.log(res.data.all_funds);
-                this.setState({
-                    list : res.data.all_funds
-                })
-            })
-            .catch( err => {
-                document.cookie = "";
-                this.props.history.push('/');
-                }
-            );
-        }
-    }
+    // componentDidMount(){
+    //     var jwt = getCookie('token');
+    //     if(!jwt){
+    //         this.props.history.push('/');
+    //     }else{
+    //         axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+    //         .then(res => {
+    //             console.log("as");
+    //             this.setState({
+    //                 list : res.data.all_funds
+    //             })
+    //         })
+    //         .catch( err => {
+    //             document.cookie = "";
+    //             this.props.history.push('/');
+    //             }
+    //         );
+    //     }
+    // }
 
 
     placeTradeClicked(){
@@ -52,15 +52,39 @@ class UserFunds extends Component
             }
         }
     }
+
+
     componentDidMount(){
-        if(this.props.portfolio){
-            this.setState({
-                searchableFields: [0,1,2,7]
-            })
-        }else{
-            this.setState({
-                searchableFields: [0,1,2,6]
-            })
+        var jwt = getCookie('token');
+        if(!jwt){
+            this.props.history.push('/');
+        }else if(this.props.portfolio){
+            axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
+            .then(res => {
+                console.log(res.data.all_funds);
+                this.setState({
+                    list : res.data.all_funds,
+                    searchableFields: [0,1,2,4]
+                })
+            }).catch( err => {
+                if(err.response.status === 401){
+                    document.cookie = "token=";
+                    this.props.history.push('/');
+                }
+            });    
+        }else if(!(this.props.portfolio)){
+            axios.get('http://localhost:8762/fund-handling/api/entitlements/get', {headers : { Authorization: `Bearer ${jwt}` } })
+            .then(res => {
+                this.setState({
+                    list : res.data,
+                    searchableFields: [0,1,2,4]
+                })
+            }).catch( err => {
+                if(err.response.status === 401){
+                    document.cookie = "token=";
+                    this.props.history.push('/');
+                }
+            });   
         }
     }
 
@@ -106,8 +130,8 @@ class UserFunds extends Component
                             {this.props.portfolio?<td></td>:""}
                             <td></td>
                             <td></td>
-                            <td><input type="text" id="myInput3"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
+                            {/* <td><input type="text" id="myInput3"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
                             {this.props.portfolio?<td></td>:""}
                             {this.props.portfolio?<td></td>:""}
                         </tr>
@@ -122,15 +146,12 @@ class UserFunds extends Component
                             <td>{item.invManager}</td>
                             <td>{item.fundNumber}</td>
                             <td>{item.setCycle}</td>
-                            {/* <td>{item.NAV}</td> */}
-                            {/* <td>{item.setCycle}</td> */}
-                            {/* <td>{item.invCurr}</td> */}
                             <td>{item.invCurrency}</td>
                             <td>{item.sAndPRating}</td>
                             <td>{item.moodysRating}</td>
                             {this.props.portfolio?<td>{item.quantity}</td>:""}
                             {this.props.portfolio?<td>{item.originalNav}</td>:""}
-                            <td>{item.presentNav}</td>
+                            {this.props.portfolio?<td>{item.presentNav}</td>:<td>{item.nav}</td>}
                             {this.props.portfolio?<td>{item.profitAmount}</td>:""}
                             {this.props.portfolio?<td>{item.profitPercent}</td>:""}
                             {this.props.portfolio?

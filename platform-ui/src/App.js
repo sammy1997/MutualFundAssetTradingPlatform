@@ -9,14 +9,17 @@ class App extends Component{
     super(props)
   
     this.state = {
-        childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
-        currTab: 0 
+        childComponents: [<UserFunds portfolio={true} key="1" />, <UserFunds portfolio={false} key="2" />, <Preferences/>],
+        currTab: 0,
+        active: false 
     }
   }
 
   tabHandler = tab =>{
+    const currentState = this.state.active;
     this.setState({
-        currTab: tab
+        currTab: tab,
+        active: !currentState
     });
   }
   
@@ -24,7 +27,7 @@ class App extends Component{
     var component = this.state.childComponents[this.state.currTab];
     return (
       <div className="App">
-        <HeaderPortfolio tabHandler={this.tabHandler}></HeaderPortfolio>
+        <HeaderPortfolio active={this.state.active} tabHandler={this.tabHandler}></HeaderPortfolio>
         {component}
       </div>
     );
