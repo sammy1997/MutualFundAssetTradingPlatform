@@ -48,7 +48,12 @@ class HeaderPortfolio extends Component {
     }
 
     render() {
+        var tabClass=["tab"];
+        if(this.props.active){
+            tabClass.push('active');
+        }
         return (
+            
             
             <nav>
                 <div className="nav-wrapper teal lighten-1">
@@ -63,7 +68,7 @@ class HeaderPortfolio extends Component {
                 <div className="nav-content">
                     {/* <div className="nav-wrapper teal lighten-1" text-align = "center"> */}
                             <ul id="nav-mobile" className="left tabs ">
-                                <li className="tab" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                                <li className="tab active" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                                 <li className="tab" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
                                 <li className="tab" onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
                             </ul>

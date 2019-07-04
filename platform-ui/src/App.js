@@ -11,16 +11,26 @@ class App extends Component{
     this.state = {
         childComponents: [<UserFunds portfolio={true} key="1" />, <UserFunds portfolio={false} key="2" />, <Preferences/>],
         currTab: 0,
-        active: false 
+        
     }
   }
 
+
+  
+
+
   tabHandler = tab =>{
-    const currentState = this.state.active;
     this.setState({
         currTab: tab,
-        active: !currentState
     });
+    var tablet = document.getElementsByClassName('tab');
+    var numberOfTabs = this.state.childComponents.length;
+    if(!tablet[tab].classList.contains('active')){
+       for(var i=0; i<numberOfTabs; i++){
+         tablet[i].classList.remove('active');
+       }
+       tablet[tab].classList.add('active'); 
+    }
   }
   
   render(){
