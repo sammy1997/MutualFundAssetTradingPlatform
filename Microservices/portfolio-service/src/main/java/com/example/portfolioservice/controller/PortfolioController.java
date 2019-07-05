@@ -35,8 +35,7 @@ public class PortfolioController
     @Path("/")
     public ImmutableUserDBModel getUserById(@HeaderParam("Authorization") String token)
     {
-        ImmutableUserDBModel user = portfolioService.getUser("1");
-        System.out.println("\n\n"+user);
+        ImmutableUserDBModel user = portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
         return user;
     }
 
@@ -134,7 +133,7 @@ public class PortfolioController
     public String updateBaseCurrency(@HeaderParam("Authorization") String token,
                                      @QueryParam("Currency") String newCurrency)
     {
-
+//        System.out.println("Here");
         String userId = ServiceUtils.decodeJWTForUserId(token);
         return portfolioService.updateBaseCurrency(userId, newCurrency);
 

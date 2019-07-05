@@ -74,17 +74,18 @@ class UserFunds extends Component
             axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
                 this.loadAssets(res);
-                console.log(res.data.all_funds);
+                console.log(res);
                 this.setState({
                     list : res.data.all_funds,
                     searchableFields: [0,1,2,4]
                 })
-            }).catch( err => {
-                if(err.response.status === 401){
-                    document.cookie = "token=";
-                    this.props.history.push('/');
-                }
-                // console.log(err.response);
+            })
+            .catch( err => {
+                // if(err.response.status === 401){
+                //     document.cookie = "token=";
+                //     this.props.history.push('/');
+                // }
+                console.log(err);
             });  
         }else if(!(this.props.portfolio)){
             axios.get('http://localhost:8762/fund-handling/api/entitlements/get', {headers : { Authorization: `Bearer ${jwt}` } })
