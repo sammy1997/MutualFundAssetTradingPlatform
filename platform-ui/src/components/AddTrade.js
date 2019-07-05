@@ -1,9 +1,11 @@
 //component for adding fund
 
 import React, { Component } from 'react'
-import './tradeBlotter.css' 
+// import './tradeBlotter.css' 
 import Modal from 'react-responsive-modal';
 import './css/tradeBlotter.css'
+import axios from 'axios';
+import getCookie from './Cookie';
 
 class AddTrade extends Component {
     
@@ -35,23 +37,31 @@ class AddTrade extends Component {
 
     onSubmit = (event) => {
         event.preventDefault();
-        console.log(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr,
-            this.state.setCycle, this.state.nav, this.state.sAndPRating, this.state.moodyRating, this.state.quantity);
-            
-            this.props.addTrade(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr, 
-            this.state.setCycle, this.state.nav, this.state.sAndPRating, this.state.moodyRating, this.state.quantity)
+        var jwt = getCookie('token');
+        if(!jwt){
+            this.props.history.push('/');
+        }else{
+        // console.log(this.state.fundName, this.state.fundNumber, this.state.invManager, this.state.invCurr,
+        //     this.state.setCycle, this.state.nav, this.state.sAndPRating, this.state.moodyRating, this.state.quantity);
+            axios.get('http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=' + this.state.fundNumber, 
+                {headers : { Authorization: `Bearer ${jwt}` } })
+            .then(res => {
+                this.props.addTrade(res.data.fundName, res.data.fundNumber, res.data.invManager)
+            })
+        }
+        //     this.props.addTrade(this.state.fundName, this.state.fundNumber, this.state.invManager)
         
-        this.setState ({
-            fundName: '',
-            fundNumber:  '',
-            invManager: 'GS',
-            invCurr: 'INR',
-            setCycle: '12',
-            nav: '10',
-            sAndPRating: '6',
-            moodyRating: '9',
-            quantity: '10'
-        });
+        // this.setState ({
+        //     fundName: '',
+        //     fundNumber:  '',
+        //     invManager: 'GS',
+        //     invCurr: 'INR',
+        //     setCycle: '12',
+        //     nav: '10',
+        //     sAndPRating: '6',
+        //     moodyRating: '9',
+        //     quantity: '10'
+        // });
         this.onCloseModal() 
     }
 
@@ -68,10 +78,10 @@ class AddTrade extends Component {
 
                 <Modal open={open} onClose={this.onCloseModal} center>
                     <form onSubmit={this.onSubmit}>
-                        <div>
+                        {/* <div>
                             <label>Fund Name</label>
                             <input id="fundName" type='text' name='fundName' value={this.state.fundName} onChange={this.onChange}/>
-                        </div>
+                        </div> */}
                         
                         <div>
                             <label>Fund Number</label>

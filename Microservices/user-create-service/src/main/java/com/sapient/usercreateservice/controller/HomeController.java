@@ -1,7 +1,7 @@
 package com.sapient.usercreateservice.controller;
 
-import com.sapient.usercreateservice.entities.ImmutableUsersDBModel;
-import com.sapient.usercreateservice.entities.Users;
+import com.sapient.usercreateservice.entities.ImmutableUser;
+import com.sapient.usercreateservice.entities.ParsedUser;
 import com.sapient.usercreateservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,13 +31,13 @@ public class HomeController {
     @Path("/list-all")
     @GET
     @Produces("application/json")
-    public List<ImmutableUsersDBModel> getAllUsers(){
+    public List<ImmutableUser> getAllUsers(){
         return userService.getAllUsers();
     }
 
     @POST
     @Consumes("application/json")
-    public String addUser(@RequestBody Users user) {
+    public String addUser(@RequestBody ParsedUser user) {
         Response response = userService.addUser(user);
         if (response.getStatus() == 200 && !user.role().get().equals("ROLE_ADMIN")) {
             String userCredentials = "{\"userId\": \"" + user.userId() + "\", \n" +

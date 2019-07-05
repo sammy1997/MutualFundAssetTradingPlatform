@@ -1,20 +1,18 @@
 package com.sapient.authservice.entities;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.mongo.Mongo;
 import org.immutables.value.Value;
 
-import java.util.Optional;
-
 @Value.Immutable
-@JsonSerialize(as = ImmutableUsers.class)
-@JsonDeserialize(as = ImmutableUsers.class)
-public interface Users {
+@Mongo.Repository(collection = "Users")
+@JsonSerialize(as = ImmutableUser.class)
+@JsonDeserialize(as = ImmutableUser.class)
+public interface User {
+    @Mongo.Id
     String userId();
     String password();
-    Optional<String> fullName();
-    Optional<Double> currBal();
-    Optional<String> baseCurr();
-    Optional<String> role();
+    String fullName();
+    String role();
 }

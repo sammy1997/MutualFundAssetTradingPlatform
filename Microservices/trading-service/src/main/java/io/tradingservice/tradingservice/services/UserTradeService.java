@@ -174,7 +174,7 @@ public class UserTradeService {
             }
 
             // Create the funds for sending update request
-            // updateUser(userId, header, balance);
+             updateUser(userId, header, balance);
             return balance;
         } else return 0;
     }

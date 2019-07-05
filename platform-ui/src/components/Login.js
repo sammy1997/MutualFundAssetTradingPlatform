@@ -5,8 +5,6 @@ import axios from 'axios';
 import './css/login.css' ;
 import parseJwt from './utility/JwtParser'
 
-
-
 class Login extends Component {
     constructor(props){
         super(props);
@@ -14,7 +12,7 @@ class Login extends Component {
         this.state={
             userId:'',
             password:'',
-            status: []
+            errorResponse: []
         }
     }
 
@@ -48,7 +46,10 @@ class Login extends Component {
             }
         })
         .catch(function(error){
-            console.log(error.response.status);
+            // console.log(error.response.status);
+            if(error.response.status === 401){
+                
+            }
         })
     }
 
@@ -58,6 +59,9 @@ class Login extends Component {
             <div>
                 <div className="top">
                     <h1>Login</h1>
+                </div>
+                <div className="error-response">
+                    <p>{this.state.errorResponse}</p>
                 </div>
                 <div>
                     <div className="row form-container-custom">

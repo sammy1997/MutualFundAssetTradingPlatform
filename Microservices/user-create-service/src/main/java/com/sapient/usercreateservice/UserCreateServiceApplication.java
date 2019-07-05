@@ -1,6 +1,6 @@
 package com.sapient.usercreateservice;
 
-import com.sapient.usercreateservice.dao.UsersDAO;
+import com.sapient.usercreateservice.dao.UserDAO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 //import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -14,8 +14,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class UserCreateServiceApplication {
 
 	@Bean
-	public UsersDAO createUsersDAO(){
-		return new UsersDAO();
+	public UserDAO createUsersDAO(){
+		return new UserDAO();
 	}
 
 	@Bean
