@@ -1,6 +1,7 @@
 package io.tradingservice.tradingservice.models;
 
 public class BalanceInfo {
+
     float currBal;
     String baseCurr;
 

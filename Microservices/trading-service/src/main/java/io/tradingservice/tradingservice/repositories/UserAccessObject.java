@@ -2,16 +2,9 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.utils.Constants;
-import org.apache.tomcat.util.bcel.Const;
-import org.immutables.mongo.Mongo;
 import org.immutables.mongo.repository.RepositorySetup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,21 +16,30 @@ public class UserAccessObject {
     // Create instance of user repository
     UserRepository userRepository;
 
+
     // Constructor of dao when called
     public UserAccessObject() {
         userRepository = new UserRepository(RepositorySetup.forUri("mongodb://localhost:27017/UserTrades"));
     }
 
+
     // Helper function to get specific fund info based on the userId and fundId(fundNumber)
     private ImmutableTrade getFundById(List<ImmutableTrade> trades, String fundId){
+
+        // Loop through funds
         for (ImmutableTrade t: trades) {
+
+            // Find the fund trade
             if (t.fundNumber().equals(fundId)) return t;
         }
         return null;
     }
 
+
     // Helper function to directly add fund to corresponding userId
     private void directAddFund(String userId, Trade trade){
+
+        // Create the immutable instance and append
         ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
         userRepository.findByUserId(userId)
             .andModifyFirst()
@@ -45,11 +47,18 @@ public class UserAccessObject {
             .upsert();
     }
 
+
     // Helper function to Remove fund only if exists
     private void directRemoveFund(String userId, String fundId){
+
+        // Drop trade instance from directory
         User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
         for (ImmutableTrade t: user.trades()){
+
+            // Find the trade
             if (t.fundNumber().equals(fundId)){
+
+                // Drop the funds
                 userRepository.findByUserId(userId)
                         .andModifyFirst()
                         .removeTrades(t)
@@ -59,9 +68,23 @@ public class UserAccessObject {
         }
     }
 
+
+    // Helper function for conversion rate
+    private float getConversionRate(String baseCurr, String tradeCurr){
+
+        // Calculate the conversion rate ratio
+        float convRate = Constants.FX_USD.get(baseCurr)/ Constants.FX_USD.get(tradeCurr);
+        return convRate;
+    }
+
+
     // Create a new user
     public boolean addUser(String userId){
+
+        // Create an immutable instance of a user
         if (!userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
+
+            // Create and insert the new document
             User newUser =
                     ImmutableUser.builder()
                             .userId(userId)
@@ -72,14 +95,11 @@ public class UserAccessObject {
         } else return false;
     }
 
-    // Helper function for conversion rate
-    private float getConversionRate(String baseCurr, String tradeCurr){
-        float convRate = Constants.FX_USD.get(baseCurr)/ Constants.FX_USD.get(tradeCurr);
-        return convRate;
-    }
 
     // To get list of Trades of given user(userId)
     public List<ImmutableTrade> getAllTradesByUserId(String userId){
+
+        // Get the user and find his trades
         boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
         if (isPresent) {
             return userRepository.findByUserId(userId).fetchFirst().getUnchecked().get().trades();
@@ -88,19 +108,38 @@ public class UserAccessObject {
 
     // Verify Trades
     public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr){
+
+        // Count is used to make sure all trades are verified
         int count = 0;
+
+        // Find user and calculate balance (if the trades are to be carried out)
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             List<ImmutableTrade> currTrades = user.trades();
             for (Trade t: newTrades){
+
+                // If the trade status is set to purchase
                 if (t.status().equals("purchase")){
+
+                    // Calculate new balance after the trade
                     float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                    System.out.println(t.quantity());
                     balance -= debit;
                     count++;
+                    System.out.println(balance);
+                    System.out.println("HERE");
                 }
+
+                // If the trade status is set to sell
                 if (t.status().equals("sell")){
+
+                    // Loop through existing assets
                     for (ImmutableTrade tradeExist: currTrades){
+
+                        // Find the fund through existing assets
                         if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
+
+                            // Calculate new balance after the trade
                             float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
                             balance += credit;
                             count++;
@@ -109,21 +148,29 @@ public class UserAccessObject {
                     }
                 }
             }
-            if (count == newTrades.size() && balance >= 0){
-                return true;
-            } else return false;
+
+            // If all trades are carried out and positive balance
+            if (count == newTrades.size() && balance >= 0) return true;
+            else return false;
         } else return false;
     }
 
-    // Update an existing fund
+
+    // Update an existing trade of a fund
     public float updateFund(String userId, Trade trade, String fundId, float balance, String baseCurr){
+
         // If status is purchase
         if (trade.status().equals("purchase")) {
+
+            // Debit is to be calculated
             float debit;
             if (baseCurr!=trade.invCurr()){
+
+                // Calculate conversion
                 float convRate = getConversionRate(baseCurr, trade.invCurr());
                 debit = trade.avgNav() * trade.quantity() * convRate;
             } else debit = trade.avgNav() * trade.quantity();
+
             if (debit > balance) return 0;
             // Trade already exists, so no need for non existence case
             if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) {
@@ -151,7 +198,10 @@ public class UserAccessObject {
                         .removeTrades(t).upsert();
                 return -debit;
             }
-        } else if (trade.status().equals("sell")){           // If the status is sell
+        }
+
+        // If status is sell
+        else if (trade.status().equals("sell")){
             float credit;
             if (baseCurr!=trade.invCurr()){
                 float convRate = getConversionRate(baseCurr, trade.invCurr());
@@ -168,12 +218,12 @@ public class UserAccessObject {
                 }
                 else if (trade.quantity()<t.quantity()){        // Condition that sell quantity strictly less than existent
                     float newQuantity = t.quantity() - trade.quantity();
-                    float newAvgNav = (t.quantity()*t.avgNav() - trade.quantity()*trade.avgNav())/ newQuantity;
+//                    float newAvgNav = (t.quantity()*t.avgNav() - trade.quantity()*trade.avgNav())/ newQuantity;
                     ImmutableTrade newT =
                             ImmutableTrade.builder()
                                     .fundNumber(fundId)
                                     .fundName(trade.fundName())
-                                    .avgNav(newAvgNav)
+                                    .avgNav(t.avgNav())
                                     .status(trade.status())
                                     .quantity(newQuantity)
                                     .invManager(trade.invManager())
@@ -194,6 +244,7 @@ public class UserAccessObject {
 
     // Condition checks for adding a trade
     public float addTrade(String userId, Trade trade, float balance, String baseCurr){
+
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             List<ImmutableTrade> trades = user.trades();
@@ -209,8 +260,8 @@ public class UserAccessObject {
             // Fund doesn't exist
             if (count==trades.size()){
                 directAddFund(userId, trade);
-                float debit = -trade.quantity()*trade.avgNav();
-                return debit;
+                float debit = trade.quantity()*trade.avgNav()*getConversionRate(baseCurr, trade.invCurr());
+                return -debit;
             }
         }
         return 0;

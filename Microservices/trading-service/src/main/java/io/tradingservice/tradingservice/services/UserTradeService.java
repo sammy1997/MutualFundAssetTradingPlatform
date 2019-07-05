@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 //import static com.sun.tools.doclint.Entity.trade;
 
@@ -35,10 +36,22 @@ public class UserTradeService {
 
     // Helper function to check entitlements
     private boolean isEntitled(List<ImmutableFund> entitlements, Trade t){
+
         for (ImmutableFund fund: entitlements){
             if (t.fundNumber().equals(fund.fundNumber())) return true;
         }
         return false;
+    }
+
+    // Helper function to find the fund details
+    private ImmutableFund existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
+
+        for (ImmutableFund fund: entitlements){
+            if (fund.fundNumber().equals(tradeParser.getFundNumber())){
+                return fund;
+            }
+        }
+        return null;
     }
 
     // Helper function to get balance
@@ -84,14 +97,44 @@ public class UserTradeService {
         return userAccessObject.addUser(userId);
     }
 
+    // To make the trades
+    public List<Trade> makeTrades(String userId, List<TradeParser> tradeParsers, String header){
+
+        List<ImmutableFund> entitlements = getEntitlements(header);
+        List<Trade> trades = new ArrayList<>();
+        for (TradeParser t: tradeParsers){
+            ImmutableFund oldFund = existFunds(entitlements, t);
+            if (oldFund!=null){
+                Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
+                                            .fundName(oldFund.fundName())
+                                            .avgNav(oldFund.nav())
+                                            .status(t.getStatus())
+                                            .quantity(t.getQuantity())
+                                            .invManager(oldFund.invManager())
+                                            .setCycle(oldFund.setCycle())
+                                            .invCurr(oldFund.invCurrency())
+                                            .sAndPRating(oldFund.sAndPRating())
+                                            .moodysRating(oldFund.moodysRating())
+                                            .build();
+                trades.add(newTrade);
+            } else {
+                return null;
+            }
+        }
+        return trades;
+    }
+
     // For verifying the trades
     public boolean verifyTrades(String userId, List<Trade> trades, String header){
 
         // Verify Possibility of trades
         BalanceInfo balanceInfo = getBalance(header);
         float balance = balanceInfo.getCurrBal();
+        System.out.println(balance);
         String baseCurr = balanceInfo.getBaseCurr();
+        System.out.println(baseCurr);
         boolean exchangePossible = userAccessObject.verify(userId, trades, balance, baseCurr);
+        System.out.println(exchangePossible);
 
         // Verify Entitlements
         List<ImmutableFund> entitlements = getEntitlements(header);
@@ -105,6 +148,7 @@ public class UserTradeService {
         if (count == trades.size()) {
             isEntitled = true;
         }
+        System.out.println(isEntitled);
 
         // Set verification status
         if (exchangePossible && isEntitled){
@@ -115,6 +159,8 @@ public class UserTradeService {
 
     // For purchasing / selling trades
     public float exchangeTrade(String userId, List<Trade> trades, String header) {
+
+        // Trade happens only after verification
         if (verifyTrades(userId, trades, header)) {
 
             // Get balance and base Currency of the user
@@ -135,19 +181,16 @@ public class UserTradeService {
 
     public void updateUser(String userId, String header, float newBalance){
 
+        // Delay to complete the asynchronous call
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Create the updated attributes of funds' list
         List<ImmutableTrade> updatedTrades = getAllTrades(userId);
         System.out.println(updatedTrades);
-
-        // Maintain consistency
-        int count = 0;
-        while(count<=10){
-            while(updatedTrades!=getAllTrades(userId)){
-                updatedTrades = getAllTrades(userId);
-                break;
-            }
-            count++;
-        }
 
         List<FundParser> funds = new ArrayList<>();
         for (ImmutableTrade t : updatedTrades) {
@@ -159,7 +202,7 @@ public class UserTradeService {
         }
 
         // Create the updated user
-        User2 updatedUser = ImmutableUser2.builder()
+        UserParser updatedUser = ImmutableUserParser.builder()
                 .userId(userId)
                 .currBal(newBalance)
                 .all_funds(funds)
