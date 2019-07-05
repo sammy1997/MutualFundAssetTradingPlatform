@@ -9,22 +9,35 @@ class App extends Component{
     super(props)
   
     this.state = {
-        childComponents: [<UserFunds portfolio={true} />, <UserFunds portfolio={false} />, <Preferences/>],
-        currTab: 0 
+        childComponents: [<UserFunds portfolio={true} key="1" />, <UserFunds portfolio={false} key="2" />, <Preferences/>],
+        currTab: 0,
+        
     }
   }
 
+
+  
+
+
   tabHandler = tab =>{
     this.setState({
-        currTab: tab
+        currTab: tab,
     });
+    var tablet = document.getElementsByClassName('tab');
+    var numberOfTabs = this.state.childComponents.length;
+    if(!tablet[tab].classList.contains('active')){
+       for(var i=0; i<numberOfTabs; i++){
+         tablet[i].classList.remove('active');
+       }
+       tablet[tab].classList.add('active'); 
+    }
   }
   
   render(){
     var component = this.state.childComponents[this.state.currTab];
     return (
       <div className="App">
-        <HeaderPortfolio tabHandler={this.tabHandler}></HeaderPortfolio>
+        <HeaderPortfolio active={this.state.active} tabHandler={this.tabHandler}></HeaderPortfolio>
         {component}
       </div>
     );

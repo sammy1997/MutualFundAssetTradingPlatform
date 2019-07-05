@@ -8,6 +8,7 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableFund.class)
 @JsonDeserialize(as = ImmutableFund.class)
 public interface Fund {
+
     String fundNumber();
     String fundName();
     String invManager();

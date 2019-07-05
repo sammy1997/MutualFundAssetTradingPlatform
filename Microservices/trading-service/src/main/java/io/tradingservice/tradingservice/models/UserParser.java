@@ -7,11 +7,11 @@ import org.immutables.value.Value;
 import java.util.List;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableUser2.class)
-@JsonDeserialize(as = ImmutableUser2.class)
-public interface User2 {
+@JsonSerialize(as = ImmutableUserParser.class)
+@JsonDeserialize(as = ImmutableUserParser.class)
+public interface UserParser {
+
     String userId();
-//    float balance();
     float currBal();
     List<FundParser> all_funds();
 

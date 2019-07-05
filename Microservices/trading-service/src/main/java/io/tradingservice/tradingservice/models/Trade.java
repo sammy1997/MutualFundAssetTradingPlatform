@@ -17,7 +17,6 @@ public interface Trade {
     @Mongo.Id
     String fundNumber();
     String fundName();
-    //Timestamp timeStamp();
     float avgNav();
     String status();
     float quantity();

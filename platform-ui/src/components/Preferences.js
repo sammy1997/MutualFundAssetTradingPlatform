@@ -5,6 +5,17 @@ import './css/preferences.css'
 import axios from 'axios';
 import getCookie from './Cookie';
 
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
 class Preferences extends Component {
     constructor(props){
         super(props);
@@ -37,7 +48,7 @@ class Preferences extends Component {
             .then( res => {
                 this.setState({
                     userId : res.data.userId,
-                    fullName : res.data.fullName,
+                    fullName : parseJwt(jwt).name,
                     baseCurr: res.data.baseCurr
                 })
                 console.log(res.data);
