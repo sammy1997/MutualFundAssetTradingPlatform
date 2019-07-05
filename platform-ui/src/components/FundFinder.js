@@ -35,9 +35,9 @@ class FundFinder extends Component {
             })
         }).catch(error =>{
             console.log(error);
-            document.cookie = "token=;"
-            if(error.response.status === 401){
-                this.props.history.push('/')
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
             }
         });
     }
@@ -61,22 +61,22 @@ class FundFinder extends Component {
                     <tbody>
                         <tr>
                             <th scope="row">
-                                <SearchBar index={0} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={0} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Fund Number">
                                 </SearchBar>
                             </th>
                             <th scope="row">
-                                <SearchBar index={1} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={1} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Fund Name"></SearchBar>
                             </th>
                             <th scope="row">
-                                <SearchBar index={2} searchHandler={searchContent} tableId='all-funds'
+                                <SearchBar index={2} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Manager"></SearchBar>
                             </th>
                             <td>-N/A-</td>
                             <td>-N/A-</td>
                             <th scope="row">
-                                <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Currency"></SearchBar>
                             </th>
                             <td>-N/A-</td>

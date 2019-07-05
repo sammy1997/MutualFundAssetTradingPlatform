@@ -11,6 +11,7 @@ public class BalanceInfo {
     //    float balance;
     float currBal;
 
+
     public BalanceInfo() {
     }
 
