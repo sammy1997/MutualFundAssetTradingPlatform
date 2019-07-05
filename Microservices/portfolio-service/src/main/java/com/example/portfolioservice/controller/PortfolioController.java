@@ -35,7 +35,9 @@ public class PortfolioController
     @Path("/")
     public ImmutableUserDBModel getUserById(@HeaderParam("Authorization") String token)
     {
-        return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
+        ImmutableUserDBModel user = portfolioService.getUser("1");
+        System.out.println("\n\n"+user);
+        return user;
     }
 
     // Get user balance
@@ -85,9 +87,7 @@ public class PortfolioController
         String userId = ServiceUtils.decodeJWTForUserId(token);
         System.out.println(userId);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
-            System.out.println("Here secret");
             if (user.all_funds().isPresent() && userId!=null){
-                System.out.println("Here");
                 List<Fund2> currFunds = user.all_funds().get();
                 List<Fund2> updateProfitsOfFunds = new ArrayList<>();
                 for (Fund2 fund: currFunds){
@@ -132,16 +132,28 @@ public class PortfolioController
         return Response.status(400).entity("Wrong secret key").build();
     }
 
+    //update user Base Currency
+    @PATCH
+    @Produces("application/json")
+    @Path("/update/baseCurrency")
+    public String updateBaseCurrency(@HeaderParam("Authorization") String token,
+                                     @QueryParam("Currency") String newCurrency)
+    {
 
+        String userId = ServiceUtils.decodeJWTForUserId(token);
+        return portfolioService.updateBaseCurrency(userId, newCurrency);
+
+    }
 
     // Create user balance
     // Internal access
     @POST
     @Produces("application/json")
-    @Path("/add/user/")
+    @Path("/add/user")
     public Response addUser(@HeaderParam("Authorization") String token, @QueryParam("secret") String secret_key,
                             @QueryParam("balance") float balance, @QueryParam("baseCurr") String baseCurr)
     {
+
         if (!Constants.SECRET_TOKEN.equals(secret_key)){
             return Response.status(400).entity("Secret key not correct").build();
         }
@@ -162,7 +174,7 @@ public class PortfolioController
     }
 
 
-    // Get the funds of user. If user does not exist in DB add user.
+    // Get the funds of user.
     @GET
     @Produces("application/json")
     @Path("/getFunds/")

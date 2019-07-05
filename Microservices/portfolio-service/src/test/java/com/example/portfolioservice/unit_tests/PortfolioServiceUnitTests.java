@@ -1,9 +1,8 @@
-package com.example.portfolioservice;
+package com.example.portfolioservice.unit_tests;
 import com.example.portfolioservice.DAO.UserDAO;
 import com.example.portfolioservice.models.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 
 import java.util.ArrayList;
@@ -57,7 +56,15 @@ public class PortfolioServiceUnitTests
     }
 
 
-//    }
+//
+
+    @Test
+    public void test_createUser()
+    {
+        Mockito.doReturn("User Created").when(dao).createUser(user);
+        String message = portfolioService.createUser(user);
+        assertEquals(message, "User Created");
+    }
 
     @Test
     public void test_getUser()

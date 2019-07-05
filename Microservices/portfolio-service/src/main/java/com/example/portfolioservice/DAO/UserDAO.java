@@ -4,6 +4,8 @@ import com.example.portfolioservice.models.*;
 import com.google.common.base.Optional;
 import org.immutables.mongo.repository.RepositorySetup;
 
+import static com.example.portfolioservice.utils.Constants.FX_USD;
+
 
 public class UserDAO
 {
@@ -20,7 +22,7 @@ public class UserDAO
     }
 
 
-    public void createUser(User2 user)
+    public String createUser(User2 user)
     {
         UserDBModel userDB;
         userDB = ImmutableUserDBModel.builder()
@@ -30,6 +32,7 @@ public class UserDAO
                 .all_funds(user.all_funds().get()).build();
 
         repository.insert(userDB);
+        return "User Created";
 
     }
 
@@ -93,5 +96,22 @@ public class UserDAO
             return user.get().currBal();
         }
         return 0;
+    }
+    public String updateBaseCurrency(String userId, String newCurrency)
+    {
+        Optional<UserDBModel> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        if(user.isPresent())
+        {
+            float newBalance = user.get().currBal() * (FX_USD.get(newCurrency)/FX_USD.get(user.get().baseCurr()));
+            repository.upsert(
+                    ImmutableUserDBModel.builder()
+                            .userId(user.get().userId())
+                            .all_funds(user.get().all_funds())
+                            .currBal(newBalance)
+                            .baseCurr(newCurrency)
+                            .build()
+            );
+        }
+        return user.get().baseCurr();
     }
 }

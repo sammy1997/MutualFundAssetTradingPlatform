@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 //
 @Service
 public class PortfolioService
@@ -20,9 +21,9 @@ public class PortfolioService
 
 
 
-    public void createUser(User2 user)
+    public String createUser(User2 user)
     {
-        userDAO.createUser(user);
+        return userDAO.createUser(user);
     }
 
     public ImmutableUserDBModel getUser(String id)
@@ -49,5 +50,10 @@ public class PortfolioService
     public float updateBalance(String userId, float balance)
     {
         return userDAO.updateBalance(userId, balance);
+    }
+
+    public String updateBaseCurrency(String userId, String newCurrency)
+    {
+        return userDAO.updateBaseCurrency(userId, newCurrency);
     }
 }
