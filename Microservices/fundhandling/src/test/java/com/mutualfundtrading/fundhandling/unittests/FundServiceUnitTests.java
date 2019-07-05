@@ -2,23 +2,13 @@ package com.mutualfundtrading.fundhandling.unittests;
 
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.FundDBModel;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
-import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
+import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.services.FundService;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-import com.google.common.base.Optional;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,8 +19,8 @@ public class FundServiceUnitTests {
     @InjectMocks
     FundService service;
 
-    Fund fund;
-    FundDBModel fundDb;
+    FundParser fund;
+    Fund fundDb;
 
         @Test
         public void successTest(){

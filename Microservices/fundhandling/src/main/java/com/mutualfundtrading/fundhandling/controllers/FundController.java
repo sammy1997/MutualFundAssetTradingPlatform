@@ -1,9 +1,10 @@
 package com.mutualfundtrading.fundhandling.controllers;
 
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.FundDBModel;
-import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
+import com.mutualfundtrading.fundhandling.models.FundParser;
+import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,85 +15,69 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
 
+
 @Path("/funds")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
-public class FundController{
+public class FundController {
     @Autowired
-    FundService service;
+    private FundService service;
 
-//    Fund creation url
+    // Fund creation url
     @Path("/create")
     @POST
-    public String createFund(Fund fund){
+    public Response createFund(FundParser fund) {
         return service.addFundService(fund);
     }
 
-//    Fund details update URL
+    // Fund details update URL
     @Path("/retrieve")
     @POST
-    public ImmutableFundDBModel getFund(Fund fund){
+    public ImmutableFund getFund(FundParser fund) {
         return service.getFund(fund.fundNumber());
     }
 
-//    Get all funds
+    // Get all funds
     @Path("/all")
     @GET
-    public List<ImmutableFundDBModel> getAll(){
+    public List<ImmutableFund> getAll() {
         return service.getAll();
     }
 
-//    Update fund details
+    // Update fund details
     @Path("/update")
     @PATCH
-    public Response updateFund(Fund fund){
+    public Response updateFund(FundParser fund) {
         return service.update(fund);
     }
 
-//    Delete funds
+    // Delete funds
     @Path("/delete")
     @DELETE
-    public Response delete(@QueryParam("fundNumber") String fundNumber){
+    public Response delete(@QueryParam("fundNumber") String fundNumber) {
         return service.delete(fundNumber);
     }
 
-//    Search funds
+    // Search funds
     @Path("/search")
     @GET
-    public List<FundDBModel> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm){
+    public List<Fund> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm) {
         return service.searchAllFunds(field, searchTerm);
     }
 
-//    Add from CSV. TODO
-
+    // Add from CSV file
     @POST
     @Path("/addFund")
     @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Response uploadCsvFile(  @FormDataParam("file") InputStream fileInputStream,
-                                    @FormDataParam("file") FormDataContentDisposition fileMetaData) throws Exception
-    {
-        String UPLOAD_PATH = "C:\\Users\\somchakr\\Desktop\\upload\\";
-        try
-        {
-            int read = 0;
-            byte[] bytes = new byte[1024];
-            String fileName = fileMetaData.getFileName();
-            if (!(fileName.contains("xlx") && fileName.contains("xlsx")  && fileName.contains("csv"))){
-                return Response.status(404).entity("Provide files").build();
-            }
-            OutputStream out = new FileOutputStream(new File(UPLOAD_PATH + fileName));
-//            System.out.println(fileMetaData.getFileName());
-
-            while ((read = fileInputStream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);
-            }
-            out.flush();
-            out.close();
-        } catch (IOException e)
-        {
-            throw new WebApplicationException("Error while uploading file. Please try again !!");
+    public Response uploadCsvFile(@FormDataParam("file") InputStream fileInputStream,
+                                    @FormDataParam("file") FormDataContentDisposition fileMetaData) {
+        int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
+        if (status == 404) {
+            return Response.status(status).entity("Provide excel or csv files").build();
+        } else if (status == 400) {
+            return Response.status(status).entity("Error while uploading file. Try again").build();
+        } else {
+            return ServiceUtils.addFundsFromCSV(fileMetaData.getFileName());
         }
-        return Response.ok("Data uploaded successfully !!").build();
     }
 }

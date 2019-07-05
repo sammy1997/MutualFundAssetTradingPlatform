@@ -44,10 +44,6 @@ public class HomeController {
                     "\"password\": \"" + user.password() + "\"\n" +
                     "}";
 
-//            String currBal = "{\"currBal\": \"" + user.currBal() + "\"\n" + "}";
-
-
-            //Make a post request to auth-service to generate a token that will be used to make a request to portfolio service
             webClientBuilder.build()
                     .post()
                     .uri("localhost:8762/auth")
