@@ -17,27 +17,6 @@ class UserFunds extends Component
         }
     }
 
-    // componentDidMount(){
-    //     var jwt = getCookie('token');
-    //     if(!jwt){
-    //         this.props.history.push('/');
-    //     }else{
-    //         axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
-    //         .then(res => {
-    //             console.log("as");
-    //             this.setState({
-    //                 list : res.data.all_funds
-    //             })
-    //         })
-    //         .catch( err => {
-    //             document.cookie = "";
-    //             this.props.history.push('/');
-    //             }
-    //         );
-    //     }
-    // }
-
-
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
         if (checked.length === 0) {
