@@ -2,22 +2,22 @@ package com.mutualfundtrading.fundhandling.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.immutables.mongo.Mongo;
 import org.immutables.value.Value;
 
-import java.util.Optional;
-
-
 @Value.Immutable
+@Mongo.Repository(collection = "Funds")
 @JsonSerialize(as = ImmutableFund.class)
 @JsonDeserialize(as = ImmutableFund.class)
 public interface Fund {
+    @Mongo.Id
     String fundNumber();
-    Optional<String> fundName();
-    Optional<String> invManager();
-    Optional<Integer> setCycle();
-    Optional<Float> nav();
-    Optional<String> invCurrency();
-    Optional<Float> sAndPRating();
-    Optional<Float> moodysRating();
-}
+    String fundName();
+    String invManager();
+    int setCycle();
+    float nav();
+    String invCurrency();
+    float sAndPRating();
+    float moodysRating();
 
+}
