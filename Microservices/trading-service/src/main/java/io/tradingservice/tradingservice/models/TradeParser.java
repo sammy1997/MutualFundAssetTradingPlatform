@@ -1,6 +1,7 @@
 package io.tradingservice.tradingservice.models;
 
 public class TradeParser {
+
     private String fundNumber;
     private int quantity;
     private String status;

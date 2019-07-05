@@ -1,6 +1,7 @@
 package io.tradingservice.tradingservice.models;
 
 public class FundParser {
+
     String fundNumber;
     float originalNav;
     int quantity;
