@@ -12,6 +12,7 @@ import java.util.List;
 @JsonSerialize(as = ImmutableUser.class)
 @JsonDeserialize(as = ImmutableUser.class)
 public interface User {
+
     @Mongo.Id
     String userId();
     List<ImmutableTrade> trades();

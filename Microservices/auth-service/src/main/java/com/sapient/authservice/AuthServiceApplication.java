@@ -1,7 +1,7 @@
 package com.sapient.authservice;
 
 
-import com.sapient.authservice.dao.UsersDAO;
+import com.sapient.authservice.dao.UserDAO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -13,8 +13,8 @@ public class AuthServiceApplication  {
 
 
 	@Bean
-	public UsersDAO createUsersDAO(){
-		return new UsersDAO();
+	public UserDAO createUsersDAO(){
+		return new UserDAO();
 	}
 
 

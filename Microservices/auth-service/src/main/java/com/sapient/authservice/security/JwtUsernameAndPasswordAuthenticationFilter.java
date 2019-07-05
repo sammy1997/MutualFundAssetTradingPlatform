@@ -1,9 +1,9 @@
 package com.sapient.authservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sapient.authservice.dao.UsersDAO;
-import com.sapient.authservice.entities.ImmutableUsers;
-import com.sapient.authservice.entities.ImmutableUsersDBModel;
+import com.sapient.authservice.dao.UserDAO;
+import com.sapient.authservice.entities.ImmutableParsedUser;
+import com.sapient.authservice.entities.ImmutableUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -30,7 +28,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     private AuthenticationManager authManager;
 
     private final JwtConfig jwtConfig;
-    private UsersDAO dao = new UsersDAO();
+    private UserDAO dao = new UserDAO();
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authManager, JwtConfig jwtConfig) {
         this.authManager = authManager;
@@ -70,7 +68,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         //Data passed in JWT Payload
         Long now = System.currentTimeMillis();
-        ImmutableUsersDBModel user = dao.getUserByUserId(auth.getName());
+        ImmutableUser user = dao.getUserByUserId(auth.getName());
         String payload ="";
         if(user!=null){
             payload = user.fullName();

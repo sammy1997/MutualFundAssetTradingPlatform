@@ -85,7 +85,6 @@ public class PortfolioController
                                                 @QueryParam("secret") String secret_key, User2 user)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        System.out.println(userId);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
             if (user.all_funds().isPresent() && userId!=null){
                 List<Fund2> currFunds = user.all_funds().get();
@@ -99,10 +98,6 @@ public class PortfolioController
                             .block();
 
                     FundParser parsedFund = response.bodyToMono(FundParser.class).block();
-
-                    System.out.println(parsedFund.nav());
-                    System.out.println(fund.originalNav());
-                    System.out.println(fund.quantity());
 
                     if (parsedFund!=null){
                         float profit = (parsedFund.nav().get() - fund.originalNav().get())*fund.quantity().get();

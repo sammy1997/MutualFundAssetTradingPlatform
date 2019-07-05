@@ -1,7 +1,7 @@
 package com.mutualfundtrading.fundhandling.unittests;
 
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.FundDBModel;
+import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.services.FundService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +30,8 @@ public class FundControllerUnitTests {
 
     String baseUrl;
 
-    Fund fund;
-    FundDBModel fundDb;
+    FundParser fund;
+    Fund fundDb;
 
     @Test
     public void successTest(){
