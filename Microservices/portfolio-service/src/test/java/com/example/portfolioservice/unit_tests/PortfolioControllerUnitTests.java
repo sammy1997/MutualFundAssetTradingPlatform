@@ -144,20 +144,6 @@ public class PortfolioControllerUnitTests {
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    //failing
-//    @Test
-//    public void test_addUser() throws Exception {
-//        URI uri = new URI(baseURL + "/add/user/?secret=" + SECRET_TOKEN);
-//        // URI uri = new URI(baseURL + "/add/user?secret="+SECRET_TOKEN+"&balance="+user.currBal()+"/INR");
-//        Mockito.when(portfolioService.createUser(Mockito.any())).thenReturn("User Created");
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Authorization", token);
-//        headers.set("Content-Type", "application/json");
-//        HttpEntity<String> request = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
-//        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    }
-
     @Test
     public void test_getFunds() throws Exception {
         URI uri = new URI(baseURL + "/getFunds/");
