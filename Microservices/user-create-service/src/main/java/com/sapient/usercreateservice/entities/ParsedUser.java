@@ -7,9 +7,9 @@ import org.immutables.value.Value;
 import java.util.Optional;
 
 @Value.Immutable
-@JsonSerialize(as = ImmutableUsers.class)
-@JsonDeserialize(as = ImmutableUsers.class)
-public interface Users {
+@JsonSerialize(as = ImmutableParsedUser.class)
+@JsonDeserialize(as = ImmutableParsedUser.class)
+public interface ParsedUser {
     String userId();
     String password();
     String baseCurr();
