@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/MutualFundAssetTradingPlatform.iml" filepath="$PROJECT_DIR$/.idea/MutualFundAssetTradingPlatform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/auth-service/auth-service.iml" filepath="$PROJECT_DIR$/Microservices/auth-service/auth-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/eureka-server/eureka-server.iml" filepath="$PROJECT_DIR$/Microservices/eureka-server/eureka-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/fundhandling/fundhandling.iml" filepath="$PROJECT_DIR$/Microservices/fundhandling/fundhandling.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/portfolio-service/portfolio-service.iml" filepath="$PROJECT_DIR$/Microservices/portfolio-service/portfolio-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/trading-service/tradingservice.iml" filepath="$PROJECT_DIR$/Microservices/trading-service/tradingservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/user-create-service/user-create-service.iml" filepath="$PROJECT_DIR$/Microservices/user-create-service/user-create-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Microservices/zuul/zuul.iml" filepath="$PROJECT_DIR$/Microservices/zuul/zuul.iml" />
+    </modules>
+  </component>
+</project>

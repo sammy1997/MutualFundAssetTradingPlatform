@@ -1,0 +1,17 @@
+.form-container{
+    margin: 30px;
+}
+
+.form-card{
+    margin-top: 50px;
+    padding: 40px;
+    width: 50%;
+    margin-left: 25%;
+    border-style: solid;
+    border-color: grey;
+    border-width: 3px;
+}
+
+select{
+    display: block;
+}

@@ -1,84 +1,83 @@
 package com.mutualfundtrading.fundhandling.controllers;
 
-
-import com.mutualfundtrading.fundhandling.messages.Message;
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.FundDBModel;
-import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
+import com.mutualfundtrading.fundhandling.models.FundParser;
+import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import com.mutualfundtrading.fundhandling.services.FundService;
-import com.sun.jersey.multipart.FormDataParam;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.ws.rs.*;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import javax.ws.rs.core.Response;
+import java.io.*;
 import java.util.List;
 
-@RestController
+
 @Path("/funds")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
-public class FundController{
+public class FundController {
     @Autowired
-    FundService service;
+    private FundService service;
 
-//    Fund creation url
+    // Fund creation url
     @Path("/create")
     @POST
-    public String createFund(Fund fund){
-        System.out.println(fund.fundNumber());
+    public Response createFund(FundParser fund) {
         return service.addFundService(fund);
     }
 
-//    Fund details update URL
+    // Fund details update URL
     @Path("/retrieve")
     @POST
-    public ImmutableFundDBModel getFund(Fund fund){
+    public ImmutableFund getFund(FundParser fund) {
         return service.getFund(fund.fundNumber());
     }
 
-//    Get all funds
+    // Get all funds
     @Path("/all")
     @GET
-    public List<ImmutableFundDBModel> getAll(){
+    public List<ImmutableFund> getAll() {
         return service.getAll();
     }
 
-//    Update fund details
+    // Update fund details
     @Path("/update")
     @PATCH
-    public Message updateFund(Fund fund){
+    public Response updateFund(FundParser fund) {
         return service.update(fund);
     }
 
-//    Delete funds
+    // Delete funds
     @Path("/delete")
     @DELETE
-    public Message delete(Fund fund){
-        return service.delete(fund);
+    public Response delete(@QueryParam("fundNumber") String fundNumber) {
+        return service.delete(fundNumber);
     }
 
-//    Search funds
+    // Search funds
     @Path("/search")
     @GET
-    public List<FundDBModel> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm){
+    public List<Fund> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm) {
         return service.searchAllFunds(field, searchTerm);
     }
 
-//    Add from CSV. TODO
-
-    @Path("/addFromFile")
+    // Add from CSV file
     @POST
-    @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.ALL_VALUE})
-    public Message addFromFile(@FormDataParam("file") InputStream fileInputStream){
-        System.out.println(fileInputStream.toString());
-//        System.out.println(file);
-        return null;
+    @Path("/addFund")
+    @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE})
+    public Response uploadCsvFile(@FormDataParam("file") InputStream fileInputStream,
+                                    @FormDataParam("file") FormDataContentDisposition fileMetaData) {
+        int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
+        if (status == 404) {
+            return Response.status(status).entity("Provide excel or csv files").build();
+        } else if (status == 400) {
+            return Response.status(status).entity("Error while uploading file. Try again").build();
+        } else {
+            return ServiceUtils.addFundsFromCSV(fileMetaData.getFileName());
+        }
     }
 }
