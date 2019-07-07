@@ -7,13 +7,16 @@ import com.mutualfundtrading.fundhandling.services.FundService;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
+import org.slf4j.Logger;
 
 
 @Path("/funds")
@@ -23,10 +26,13 @@ public class FundController {
     @Autowired
     private FundService service;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
+
     // Fund creation url
     @Path("/create")
     @POST
     public Response createFund(FundParser fund) {
+        LOGGER.info("Create fund endpoint hit.");
         return service.addFundService(fund);
     }
 
@@ -34,6 +40,7 @@ public class FundController {
     @Path("/retrieve")
     @POST
     public ImmutableFund getFund(FundParser fund) {
+        LOGGER.info("Get fund endpoint hit.");
         return service.getFund(fund.fundNumber());
     }
 
@@ -41,6 +48,7 @@ public class FundController {
     @Path("/all")
     @GET
     public List<ImmutableFund> getAll() {
+        LOGGER.info("Get all funds endpoint hit.");
         return service.getAll();
     }
 
@@ -48,6 +56,7 @@ public class FundController {
     @Path("/update")
     @PATCH
     public Response updateFund(FundParser fund) {
+        LOGGER.info("Update fund endpoint hit.");
         return service.update(fund);
     }
 
@@ -55,6 +64,7 @@ public class FundController {
     @Path("/delete")
     @DELETE
     public Response delete(@QueryParam("fundNumber") String fundNumber) {
+        LOGGER.info("Delete fund endpoint hit.");
         return service.delete(fundNumber);
     }
 
@@ -62,6 +72,7 @@ public class FundController {
     @Path("/search")
     @GET
     public List<Fund> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm) {
+        LOGGER.info("Search fund endpoint hit.");
         return service.searchAllFunds(field, searchTerm);
     }
 
@@ -73,10 +84,13 @@ public class FundController {
                                     @FormDataParam("file") FormDataContentDisposition fileMetaData) {
         int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
         if (status == 404) {
+            LOGGER.info("Wrong file format.");
             return Response.status(status).entity("Provide excel or csv files").build();
         } else if (status == 400) {
+            LOGGER.info("File upload failed");
             return Response.status(status).entity("Error while uploading file. Try again").build();
         } else {
+            LOGGER.info("File upload successful");
             return ServiceUtils.addFundsFromCSV(fileMetaData.getFileName());
         }
     }
