@@ -30,8 +30,6 @@ public class PortfolioControllerUnitTests {
     @LocalServerPort
     private int randomServerPort;
 
-
-    // @Autowired
     private TestRestTemplate restTemplate;
 
     private String baseURL;
@@ -86,7 +84,7 @@ public class PortfolioControllerUnitTests {
     @Test
     public void test_getBalanceById() throws Exception {
         URI uri = new URI(baseURL + "/getBalance");
-        Mockito.when(portfolioService.getBalanceById(Mockito.anyString())).thenReturn(balanceInfo);
+        Mockito.when(portfolioService.getBalanceById(Mockito.anyString())).thenReturn(Optional.of(balanceInfo));
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", token);
@@ -98,8 +96,7 @@ public class PortfolioControllerUnitTests {
     }
 
     @Test
-    public void test_updateBaseCurrency()throws Exception
-    {
+    public void test_updateBaseCurrency()throws Exception {
         String newCurr = "USD";
         URI uri = new URI(baseURL + "/update/baseCurrency/?Currency="+newCurr);
         Mockito.when(portfolioService.updateBaseCurrency(Mockito.anyString(), Mockito.anyString())).thenReturn(newCurr);
@@ -113,8 +110,7 @@ public class PortfolioControllerUnitTests {
     }
 
     @Test
-    public void test_addUserSecretKeyWrong()throws Exception
-    {
+    public void test_addUserSecretKeyWrong()throws Exception {
         URI uri = new URI(baseURL + "/add/user?secret=" + "wrong" + "&balance="+ userParser.currBal()+
                 "&baseCurr="+ userParser.baseCurr().get());
         Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class))).thenReturn("User Created");
@@ -127,8 +123,7 @@ public class PortfolioControllerUnitTests {
     }
 
     @Test
-    public void test_addExistingUser()throws Exception
-    {
+    public void test_addExistingUser()throws Exception {
         URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+ userParser.currBal()+
                 "&baseCurr="+ userParser.baseCurr().get());
         Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class))).thenReturn("User Created");
@@ -142,8 +137,7 @@ public class PortfolioControllerUnitTests {
     }
 
     @Test
-    public void test_addUser()throws Exception
-    {
+    public void test_addUser()throws Exception {
         URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+ userParser.currBal()+
                 "&baseCurr="+ userParser.baseCurr().get());
 

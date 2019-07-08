@@ -54,28 +54,24 @@ public class UserDAO {
         return user;
     }
 
-    public Optional<User> delete(final String userId)
-    {
+    public Optional<User> delete(final String userId) {
         return repository.findByUserId(userId).deleteFirst().getUnchecked();
     }
 
-    public BalanceInfo getBalance(String userId)
-    {
+    public Optional<BalanceInfo> getBalance(String userId) {
         Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
-        if(user.isPresent())
-        {
+        if(user.isPresent()) {
             BalanceInfo balance = new BalanceInfo();
             balance.setCurrBal(user.get().currBal());
             balance.setBaseCurr(user.get().baseCurr());
-            return balance;
+            return Optional.of(balance);
         }
-        return null;
+        return Optional.absent();
     }
 
     public float updateBalance(final String userId, float balance) {
         Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
-        if(user.isPresent())
-        {
+        if(user.isPresent()) {
             repository.upsert(
                     ImmutableUser.builder()
                             .userId(user.get().userId())
@@ -87,11 +83,9 @@ public class UserDAO {
         }
         return 0;
     }
-    public String updateBaseCurrency(final String userId, final String newCurrency)
-    {
+    public String updateBaseCurrency(final String userId, final String newCurrency) {
         Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
-        if(user.isPresent())
-        {
+        if(user.isPresent()) {
             float newBalance = user.get().currBal() * (FX_USD.get(newCurrency)/FX_USD.get(user.get().baseCurr()));
             repository.upsert(
                     ImmutableUser.builder()
