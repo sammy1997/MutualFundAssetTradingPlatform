@@ -132,7 +132,7 @@ public class PortfolioController
     @Produces("application/json")
     @Path("/update/baseCurrency")
     public String updateBaseCurrency(@HeaderParam("Authorization") String token,
-                                     @QueryParam("Currency") String newCurrency)
+                                     @QueryParam("currency") String newCurrency)
     {
 
         String userId = ServiceUtils.decodeJWTForUserId(token);

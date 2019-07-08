@@ -26,9 +26,9 @@ public class PortfolioServiceUnitTests
     @InjectMocks
     PortfolioService portfolioService;
 
-    UserDBModel userDB;
-    User2 user;
-    BalanceInfo balance = new BalanceInfo();
+    private UserDBModel userDB;
+    private User2 user;
+    private BalanceInfo balance = new BalanceInfo();
 
     @Before
     public void init()
@@ -109,6 +109,14 @@ public class PortfolioServiceUnitTests
         Mockito.doReturn((float)43).when(dao).updateBalance("1", (float)34);
         float balance = portfolioService.updateBalance("1", (float)34);
         assert(balance == 43);
+    }
+
+    @Test
+    public void test_updateBaseCurrency()
+    {
+        Mockito.when(dao.updateBaseCurrency(Mockito.anyString(),Mockito.anyString())).thenReturn(user.baseCurr().get());
+        String baseCurr = portfolioService.updateBaseCurrency("1", "INR");
+        assertEquals(baseCurr, user.baseCurr().get());
     }
 
 }

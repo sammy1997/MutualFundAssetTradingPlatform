@@ -107,7 +107,70 @@ public class PortfolioControllerUnitTests {
     }
 
     @Test
-    public void test_updateBalance() throws Exception {
+    public void test_updateBaseCurrency()throws Exception
+    {
+        String newCurr = "USD";
+        URI uri = new URI(baseURL + "/update/baseCurrency/?currency="+newCurr);
+        Mockito.when(portfolioService.updateBaseCurrency(Mockito.anyString(), Mockito.anyString())).thenReturn(newCurr);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", token);
+        HttpEntity<String> request = new HttpEntity<String>(null, headers);
+        ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.PATCH, request, String.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(entity.getBody(), newCurr);
+
+
+    }
+
+    @Test
+    public void test_addUserSecretKeyWrong()throws Exception
+    {
+        URI uri = new URI(baseURL + "/add/user?secret=" + "wrong" + "&balance="+user.currBal()+
+                "&baseCurr="+user.baseCurr().get());
+        Mockito.when(portfolioService.createUser(Mockito.any(User2.class))).thenReturn("User Created");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", token);
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void test_addExistingUser()throws Exception
+    {
+        URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+user.currBal()+
+                "&baseCurr="+user.baseCurr().get());
+        Mockito.when(portfolioService.createUser(Mockito.any(User2.class))).thenReturn("User Created");
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(userDB);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", token);
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void test_addUser()throws Exception
+    {
+        URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+user.currBal()+
+                "&baseCurr="+user.baseCurr().get());
+
+        Mockito.when(portfolioService.createUser(Mockito.any(User2.class))).thenReturn("User Created");
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(null);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", token);
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.POST, request, String.class);
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void test_updateBalance()throws Exception {
         float newBal = 34.56f;
         URI uri = new URI(baseURL + "/update?balance=" + user.currBal() + "&secret=" + SECRET_TOKEN);
         Mockito.when(portfolioService.updateBalance(Mockito.anyString(), Mockito.anyFloat())).thenReturn(newBal);
