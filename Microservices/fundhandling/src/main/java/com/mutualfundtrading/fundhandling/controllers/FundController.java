@@ -3,6 +3,7 @@ package com.mutualfundtrading.fundhandling.controllers;
 import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+import com.mutualfundtrading.fundhandling.services.EntitlementService;
 import com.mutualfundtrading.fundhandling.services.FundService;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -25,6 +26,9 @@ import org.slf4j.Logger;
 public class FundController {
     @Autowired
     private FundService service;
+
+    @Autowired
+    private EntitlementService entitlementService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
 
@@ -72,8 +76,16 @@ public class FundController {
     @Path("/search")
     @GET
     public List<Fund> search(@QueryParam("field") String field, @QueryParam("term") String searchTerm) {
-        LOGGER.info("Search fund endpoint hit.");
+        LOGGER.info("Search fund endpoint hit");
         return service.searchAllFunds(field, searchTerm);
+    }
+
+    // Fetch entitled funds of a user on admin request
+    @Path("/entitlements")
+    @GET
+    public List<ImmutableFund> getUserEntitlements(@QueryParam("userId") String userId){
+        LOGGER.info("Get entitlements request from admin");
+        return entitlementService.getEntitlements(userId);
     }
 
     // Add from CSV file
