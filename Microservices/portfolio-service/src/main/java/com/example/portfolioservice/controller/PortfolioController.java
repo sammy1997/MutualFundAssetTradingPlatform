@@ -35,7 +35,7 @@ public class PortfolioController
     @Path("/")
     public ImmutableUserDBModel getUserById(@HeaderParam("Authorization") String token)
     {
-        ImmutableUserDBModel user = portfolioService.getUser("1");
+        ImmutableUserDBModel user = portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
         System.out.println("\n\n"+user);
         return user;
     }
