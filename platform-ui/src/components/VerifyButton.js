@@ -16,15 +16,15 @@ class VerifyButton extends Component {
              numberOfFunds: 0,
              verified: false, 
              open: false,
-             trades: [], 
-             active: true  
+             trades: [],
+             active: false   
         }
     }
 
 
     componentDidMount = () => {
         this.setState({
-            active: false  
+            verified: false
         })
     }
 
@@ -37,9 +37,6 @@ class VerifyButton extends Component {
     };
 
     verifyHandler = () => {
-        this.setState({
-            active: true 
-        })
         var jwt = getCookie('token');
         if (!jwt) {
             this.props.history.push('/');
@@ -48,6 +45,11 @@ class VerifyButton extends Component {
             trades: this.props.trades
         }, () => {
             var getTrades = [...this.state.trades] 
+            var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
+            if (index!=-1){
+                alert(`Please enter quantity`)
+                console.log(index)
+            }
             // console.log(jwt) 
             console.log(this.state.trades)
             this.props.numberOfTrades < 6 ? ( 

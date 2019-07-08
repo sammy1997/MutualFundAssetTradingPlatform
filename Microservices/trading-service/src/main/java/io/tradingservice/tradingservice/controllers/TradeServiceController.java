@@ -44,7 +44,7 @@ public class TradeServiceController {
     public Response exchangeTrade(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers) {
         if (tradeParsers.size() <= 5) {
             String userId = ServiceUtils.decodeJWTForUserId(header);
-            List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
+            List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
             System.out.println(trades);
             if (trades == null) return Response.status(400).entity("Trades not verified").build();
             float res = userTradeService.exchangeTrade(userId, trades, header);
@@ -62,7 +62,7 @@ public class TradeServiceController {
     @Path("/verify")
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
-        List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
+        List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
         if (trades == null) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();

@@ -8,7 +8,7 @@ export class FundItem extends Component {
         super(props)
     
         this.state = {
-            quantity: 0,
+            quantity: undefined,
             status: "sell"
         }
     }
@@ -48,7 +48,7 @@ export class FundItem extends Component {
                 <td>{fundName}</td>
                 <td>{fundNumber}</td>
                 <td>{invManager}</td>
-                <td><input id={"quantity-" + fundNumber} type="number" onChange={this.onChangeHandlerQuantity}></input></td>
+                <td><input id={"quantity-" + fundNumber} type="number" placeholder="Enter quantity" onChange={this.onChangeHandlerQuantity}></input></td>
                 <td>
                     <select onChange={this.onChangeHandlerStatus}>
                         <option value="sell">Sell</option>

@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 //import static com.sun.tools.doclint.Entity.trade;
@@ -42,14 +43,13 @@ public class UserTradeService {
     }
 
     // Helper function to find the fund details
-    private ImmutableFund existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
-
+    private boolean existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
         for (ImmutableFund fund: entitlements){
             if (fund.fundNumber().equals(tradeParser.getFundNumber())){
-                return fund;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     // Helper function to get balance
@@ -96,13 +96,18 @@ public class UserTradeService {
     }
 
     // To make the trades
-    public List<Trade> makeTrades(String userId, List<TradeParser> tradeParsers, String header){
+    public List<Trade> makeTrades(List<TradeParser> tradeParsers, String header){
 
         List<ImmutableFund> entitlements = getEntitlements(header);
         List<Trade> trades = new ArrayList<>();
-        for (TradeParser t: tradeParsers){
-            ImmutableFund oldFund = existFunds(entitlements, t);
-            if (oldFund!=null){
+        for (TradeParser t: tradeParsers) {
+            if (existFunds(entitlements, t)){
+                ImmutableFund oldFund;
+                for (oldFund : entitlements){
+                    if (oldFund.fundNumber().equals(t.getFundNumber())){
+
+                    }
+                }
                 Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                             .fundName(oldFund.fundName())
                                             .avgNav(oldFund.nav())
@@ -116,7 +121,7 @@ public class UserTradeService {
                                             .build();
                 trades.add(newTrade);
             } else {
-                return null;
+                return [];
             }
         }
         return trades;

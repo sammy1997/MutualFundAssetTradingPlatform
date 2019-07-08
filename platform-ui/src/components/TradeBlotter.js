@@ -50,7 +50,7 @@ class TradeBlotter extends Component {
             quantity: trade.quantity,
             status: trade.status
         }
-        
+    
         var newTrades = [...this.state.trades]
         var index = newTrades.indexOf(newTrades.find(t => t.fundNumber === newTrade.fundNumber))
 
