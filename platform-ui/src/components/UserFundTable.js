@@ -15,6 +15,7 @@ class UserFunds extends Component
         super()
         this.state = {
             selectedFunds:[],
+            numberOfSelectedFunds: 0,
             list : [],
             searchableFields: [],
             open: false,
@@ -28,6 +29,11 @@ class UserFunds extends Component
         })
     }
 
+    onSelect = () =>{
+        this.setState({
+            numberOfSelectedFunds: document.querySelectorAll('input[type="checkbox"]:checked').length
+        })
+    }
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
         if (checked.length === 0) {
@@ -137,7 +143,27 @@ class UserFunds extends Component
                 <div className="error-response">
                     {this.state.errorResponse}
                 </div>
-                
+
+                <div className="row ">
+                    <form className = "search-form">
+                        <div className = "input-field col s4">
+                            <label htmlFor="myInput0">Search By Fund Name</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Fund Name" id="myInput0" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                            
+                        </div>  
+                        <div className = "input-field col s4">
+                            <label htmlFor="myInput1">Search By Investment Manager</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Investment Manager" id="myInput1" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                        </div>  
+                        <div className = "input-field col s4">  
+                            <label htmlFor="myInput2">Search By Fund Number</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Fund Number" id="myInput2" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                        </div>
+                    </form>
+                </div>
                 <table align = "center" id = "myTable">
                     <thead>
                     <tr className = "software">
@@ -159,28 +185,28 @@ class UserFunds extends Component
 
                     <tbody>
                         <tr>
-                            <td><input type="text" id="myInput0"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> 
-                            <td><input type="text" id="myInput1" 
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            <td><input type="text" id="myInput2"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            <td>-N/A-</td>
-                            {this.props.portfolio?<td>-N/A-</td>:""}
-                            <td>-N/A-</td>
-                            <td>-N/A-</td>
-                            {this.props.portfolio?<td>-N/A-</td>:""}
-                            {this.props.portfolio?<td>-N/A-</td>:""}
-                            <td>-N/A-</td>
-                            <td>-N/A-</td>
-                            {this.props.portfolio?<td>-N/A-</td>:""}
-                            {this.props.portfolio?<td>-N/A-</td>:""}
+                            {/* <td><input type="text" id="myInput0"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>  */}
+                            {/* <td><input type="text" id="myInput1" 
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
+                            {/* <td><input type="text" id="myInput2"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
+                            {/* <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            {this.props.portfolio?<td>N/A</td>:""} */}
                         </tr>
                         {               
                             this.state.list.map(item => <tr key={item.fundNumber}>
                             <td>
                                 <label>
-                                    <input type="checkbox" />
+                                    <input type="checkbox" onChange={this.onSelect} />
                                     <span id="fund-name" style={spanStyle} className="fundname-label">{item.fundName}</span>
                                 </label>
                             </td>
@@ -206,6 +232,7 @@ class UserFunds extends Component
                     </tbody>
                 </table>
 
+                <h5>You have selected {this.state.numberOfSelectedFunds} funds. Start trading?</h5>
                 <button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
                     Place trade
                 </button>

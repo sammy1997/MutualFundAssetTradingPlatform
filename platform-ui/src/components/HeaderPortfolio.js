@@ -60,7 +60,7 @@ class HeaderPortfolio extends Component {
             <nav>
                 <div className="nav-wrapper teal lighten-1">
                     <a href="/" onClick={this.logout}className="right sign-out-icon">
-                        {/* <div className="separator"></div> */}
+                        <div className="separator"></div>
                         <i class="fa fa-sign-out" aria-hidden="true"></i>
                     </a>
                     <a href="#" className="right username">{this.state.fullName}</a>

@@ -45,7 +45,7 @@ class TradeBlotter extends Component {
     render() {
         return (
             <div className="page-content">
-                
+                <h3 align="center">Trade Blotter</h3>
                 <table className='centered' id="trade-blotter-table">
                     <thead>
                         <tr>
