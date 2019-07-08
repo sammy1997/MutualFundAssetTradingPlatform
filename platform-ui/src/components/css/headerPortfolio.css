@@ -31,17 +31,17 @@
     font-size: 25px;
 }
 
-/* .separator{
+.separator{
     position: absolute;
     top:15px;
     background-color: white;
     bottom:15px;
-    left:-4px;
-    right:26px; 
-} */
+    left:-8px;
+    right:29px; 
+}
 
 .username{
-    margin-right: 10px !important;
+    margin-right: 15px !important;
     cursor: text;
     pointer-events: none;
 }

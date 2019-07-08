@@ -18,6 +18,13 @@
   color: #9DBFAF;
 }
 
+.search-icon-custom{
+    position:absolute;
+    right:3px;
+    top:4px;
+    color: grey
+}
+
 i{
   font-size: 10px;
 }
