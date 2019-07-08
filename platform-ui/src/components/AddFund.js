@@ -5,6 +5,7 @@ import './css/addFund.css'
 import axios from 'axios';
 import getCookie from './Cookie';
 import { withRouter } from 'react-router-dom';
+import FileUpload from './FileUploadComponent';
 
 class AddFund extends Component {
     constructor(props) {
@@ -14,11 +15,11 @@ class AddFund extends Component {
             fundNumber: "",
             fundName: "",
             invManager: "",
-            setCycle: 0,
-            nav: 0.0,
+            setCycle: "",
+            nav: "",
             invCurrency: "",
-            sAndPRating: 0,
-            moodysRating: 0
+            sAndPRating: "",
+            moodysRating: ""
         }
     }
     
@@ -54,12 +55,16 @@ class AddFund extends Component {
             headers: headers,
             data: this.state
         }).then(response =>{
-            console.log(response);
+            console.log(response.data)
+            alert(response.data)
         }).catch(error =>{
-            console.log(error);
-            document.cookie = "token=;"
-            if(error.response.status === 401){
-                this.props.history.push('/')
+            // console.log(error.response);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+            else{
+                alert(error.response.data)
             }
         });
     }
@@ -68,8 +73,7 @@ class AddFund extends Component {
         M.updateTextFields();
         return (
             <div className="form-container center-align">
-                <button className="btn waves-effect waves-light" id="csv-add" name="action">Add Funds from CSV
-                            </button>
+                <FileUpload endUrl='funds/addFund' buttonText='Add Fund from File'></FileUpload>
                 <div className="form-card">
                     <div className="row">
                         <form className="col s12">

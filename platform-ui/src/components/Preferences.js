@@ -35,12 +35,12 @@ class Preferences extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
+        // axios.post("http://localhost:8762/portfolio/update?balance=" + )
     }
 
 
     componentDidMount(){
         var jwt = getCookie('token');
-        // console.log(jwt);
         if(!jwt){
             this.props.history.push('/');
         }else{
@@ -58,6 +58,8 @@ class Preferences extends Component {
             });
         }
     }
+
+
 
 
     render(){ 
@@ -84,7 +86,6 @@ class Preferences extends Component {
                                         Base Currency :
                                     </label>
                                     <select className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
-                                    {/* <option value={this.state.baseCurr} >Choose your option</option> */}
                                         <option value="INR">INR</option>
                                         <option value="USD">USD</option>
                                         <option value="GBP">GBP</option>

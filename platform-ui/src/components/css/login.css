@@ -26,3 +26,10 @@
 .button-container{
     text-align: center;
 }
+
+
+.error-response{
+    text-align: center;
+    color : red;
+    font-size: 30px;
+}

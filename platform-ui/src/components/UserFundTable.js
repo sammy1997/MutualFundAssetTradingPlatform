@@ -4,7 +4,9 @@ import 'materialize-css/dist/css/materialize.min.css'
 import getCookie from './Cookie';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import searchContent from './utility/SearchTableContent'
+import searchContent from './utility/SearchTableContent';
+import TradeBlotter from './TradeBlotter';
+import Modal from 'react-responsive-modal';
 
 class UserFunds extends Component
 {
@@ -12,9 +14,17 @@ class UserFunds extends Component
     {
         super()
         this.state = {
+            selectedFunds:[],
             list : [],
-            searchableFields: []
+            searchableFields: [],
+            open: false 
         }
+    }
+
+    closeModalHandler = () => {
+        this.setState({
+            open: false
+        })
     }
 
     placeTradeClicked(){
@@ -22,16 +32,39 @@ class UserFunds extends Component
         if (checked.length === 0) {
             alert('Please select atleast 1 fund to trade');
         } else {
+            var selected = [];
             for(var i = 0; i< checked.length; i++){
                 var tr = checked[i].parentNode.parentNode.parentNode;
                 var table_cells = tr.getElementsByTagName('td')
+                
+                var fieldName = ['fundName', 'invManager', 'fundNumber']
+                var temp = {};
                 for(var j = 0; j< table_cells.length; j++){
                     console.log(table_cells[j].textContent);
+                    if(j<3){
+                        temp[fieldName[j]] = table_cells[j].textContent;
+                    }
+                    
+                    this.setState({
+                        open: true 
+                    })
                 }
+                selected.push(temp);
             }
+            this.setState({
+                selectedFunds: selected
+            })
         }
     }
 
+    loadAssets(res){
+        var assetsValue = 0;
+        for(var i=0; i<res.data.all_funds.length; i++){
+            assetsValue += res.data.all_funds[i].quantity*res.data.all_funds[i].presentNav;
+        }
+        this.props.updateAssets(assetsValue);
+        
+    }
 
     componentDidMount(){
         var jwt = getCookie('token');
@@ -40,6 +73,7 @@ class UserFunds extends Component
         }else if(this.props.portfolio){
             axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
+                this.loadAssets(res);
                 console.log(res.data.all_funds);
                 this.setState({
                     list : res.data.all_funds,
@@ -50,7 +84,8 @@ class UserFunds extends Component
                     document.cookie = "token=";
                     this.props.history.push('/');
                 }
-            });    
+                // console.log(err.response);
+            });  
         }else if(!(this.props.portfolio)){
             axios.get('http://localhost:8762/fund-handling/api/entitlements/get', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
@@ -147,6 +182,11 @@ class UserFunds extends Component
                 <button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
                     Place trade
                 </button>
+                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                    <div> 
+                        <TradeBlotter funds = {this.state.selectedFunds}/> 
+                    </div> 
+                </Modal>
           </div>
         )
     }

@@ -1,8 +1,8 @@
 package com.sapient.authservice.service;
 
 
-import com.sapient.authservice.dao.UsersDAO;
-import com.sapient.authservice.entities.ImmutableUsersDBModel;
+import com.sapient.authservice.dao.UserDAO;
+import com.sapient.authservice.entities.ImmutableUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -19,16 +19,16 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    UsersDAO dao;
+    UserDAO dao;
 
-    public ImmutableUsersDBModel findByUserId(String userId){
+    public ImmutableUser findByUserId(String userId){
         return dao.getUserByUserId(userId);
     }
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
-        ImmutableUsersDBModel user = findByUserId(userId);
+        ImmutableUser user = findByUserId(userId);
         String id = user.userId();
 
         if(id == null){

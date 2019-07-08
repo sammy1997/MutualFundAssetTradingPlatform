@@ -1,8 +1,8 @@
 package com.sapient.usercreateservice.service;
 
-import com.sapient.usercreateservice.dao.UsersDAO;
-import com.sapient.usercreateservice.entities.ImmutableUsersDBModel;
-import com.sapient.usercreateservice.entities.Users;
+import com.sapient.usercreateservice.dao.UserDAO;
+import com.sapient.usercreateservice.entities.ImmutableUser;
+import com.sapient.usercreateservice.entities.ParsedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +13,15 @@ import java.util.List;
 @Service
 public class UserService {
 
-
-
-
     @Autowired
-    private UsersDAO dao;
+    private UserDAO dao;
 
-    public Response addUser(Users users){
+    public Response addUser(ParsedUser users){
         return dao.insert(users);
     }
 
 
-    public List<ImmutableUsersDBModel> getAllUsers() {
+    public List<ImmutableUser> getAllUsers() {
         return dao.getAllUsers();
     }
 }
