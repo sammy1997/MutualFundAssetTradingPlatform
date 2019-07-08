@@ -59,8 +59,9 @@ public class PortfolioController {
     @PATCH
     @Produces("application/json")
     @Path("/update")
-    public Response updateBalance(@HeaderParam("Authorization") String token, @QueryParam("balance") float balance,
-                              @QueryParam("secret") String secret_key) {
+    public Response updateBalance(@HeaderParam("Authorization") String token,
+                                  @QueryParam("balance") float balance,
+                                  @QueryParam("secret") String secret_key) {
         if (Constants.SECRET_TOKEN.equals(secret_key)){
             portfolioService.updateBalance(ServiceUtils.decodeJWTForUserId(token), balance);
             return Response.status(200).entity("Balance updated").build();
@@ -85,7 +86,8 @@ public class PortfolioController {
     @Produces("application/json")
     @Path("/update/userParser")
     public Response updateUserById(@HeaderParam("Authorization") String token,
-                                                @QueryParam("secret") String secret_key, UserParser userParser) {
+                                                @QueryParam("secret") String secret_key,
+                                                UserParser userParser) {
         String userId = ServiceUtils.decodeJWTForUserId(token);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
             if (userParser.all_funds().isPresent() && userId != null) {
@@ -102,9 +104,10 @@ public class PortfolioController {
 
                     FundParser parsedFund = response.bodyToMono(FundParser.class).block();
                     if (parsedFund != null) {
-                        float profit = (parsedFund.nav().get() - fund.originalNav().get()) * fund.quantity().get();
+                        float profit = (parsedFund.nav().get()
+                                        - fund.originalNav().get()) * fund.quantity().get();
                         float profitPercent = (parsedFund.nav().get() - fund.originalNav().get())
-                                / fund.originalNav().get();
+                                               / fund.originalNav().get();
                         Fund updatedFund = ImmutableFund.builder().fundNumber(fund.fundNumber())
                                 .fundName(parsedFund.fundName()).invCurrency(parsedFund.invCurrency())
                                 .invManager(parsedFund.invManager())
@@ -119,8 +122,9 @@ public class PortfolioController {
                         updateProfitsOfFunds.add(updatedFund);
                     }
                 }
-                userParser = ImmutableUserParser.builder().userId(userId).currBal(userParser.currBal())
-                        .all_funds(updateProfitsOfFunds).build();
+                userParser = ImmutableUserParser.builder()
+                             .userId(userId).currBal(userParser.currBal())
+                             .all_funds(updateProfitsOfFunds).build();
                 portfolioService.update(userParser);
                 return Response.status(200).entity("Updated profile successfully").build();
             }
@@ -145,8 +149,10 @@ public class PortfolioController {
     @POST
     @Produces("application/json")
     @Path("/add/user")
-    public Response addUser(@HeaderParam("Authorization") String token, @QueryParam("secret") String secret_key,
-                            @QueryParam("balance") float balance, @QueryParam("baseCurr") String baseCurr) {
+    public Response addUser(@HeaderParam("Authorization") String token,
+                            @QueryParam("secret") String secret_key,
+                            @QueryParam("balance") float balance,
+                            @QueryParam("baseCurr") String baseCurr) {
 
         if (!Constants.SECRET_TOKEN.equals(secret_key)){
             return Response.status(400).entity("Secret key not correct").build();

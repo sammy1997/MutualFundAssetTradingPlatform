@@ -38,16 +38,17 @@ public class UserDAO {
     }
 
     public Optional<User> update(UserParser userParser) {
-        Optional<User> user = repository.find(where.userId(userParser.userId().get())).fetchFirst().getUnchecked();
+        Optional<User> user = repository.find(where.userId(userParser.userId().get()))
+                              .fetchFirst().getUnchecked();
         if(user.isPresent()) {
             User updated_user = user.get();
             repository.upsert(
                     ImmutableUser.builder()
                     .userId(updated_user.userId()).currBal(userParser.currBal())
                             .baseCurr(userParser.baseCurr().isPresent() ? userParser.baseCurr().get()
-                                    : updated_user.baseCurr())
+                                      : updated_user.baseCurr())
                             .all_funds(userParser.all_funds().isPresent() ? userParser.all_funds().get()
-                                    : updated_user.all_funds())
+                                      : updated_user.all_funds())
                     .build()
             );
         }
@@ -59,7 +60,8 @@ public class UserDAO {
     }
 
     public Optional<BalanceInfo> getBalance(String userId) {
-        Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        Optional<User> user = repository.find(where.userId(userId))
+                              .fetchFirst().getUnchecked();
         if(user.isPresent()) {
             BalanceInfo balance = new BalanceInfo();
             balance.setCurrBal(user.get().currBal());
@@ -70,7 +72,8 @@ public class UserDAO {
     }
 
     public float updateBalance(final String userId, float balance) {
-        Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        Optional<User> user = repository.find(where.userId(userId))
+                              .fetchFirst().getUnchecked();
         if(user.isPresent()) {
             repository.upsert(
                     ImmutableUser.builder()
@@ -84,9 +87,12 @@ public class UserDAO {
         return 0;
     }
     public String updateBaseCurrency(final String userId, final String newCurrency) {
-        Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
+        Optional<User> user = repository.find(where.userId(userId))
+                                        .fetchFirst().getUnchecked();
         if(user.isPresent()) {
-            float newBalance = user.get().currBal() * (FX_USD.get(newCurrency)/FX_USD.get(user.get().baseCurr()));
+            float newBalance = user.get().currBal()
+                               * (FX_USD.get(newCurrency)
+                               / FX_USD.get(user.get().baseCurr()));
             repository.upsert(
                     ImmutableUser.builder()
                             .userId(user.get().userId())

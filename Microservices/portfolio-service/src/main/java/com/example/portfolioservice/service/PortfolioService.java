@@ -41,7 +41,8 @@ public class PortfolioService {
         return userDAO.updateBalance(userId, balance);
     }
 
-    public String updateBaseCurrency(final String userId, final String newCurrency) {
+    public String updateBaseCurrency(final String userId,
+                                     final String newCurrency) {
         return userDAO.updateBaseCurrency(userId, newCurrency);
     }
 }

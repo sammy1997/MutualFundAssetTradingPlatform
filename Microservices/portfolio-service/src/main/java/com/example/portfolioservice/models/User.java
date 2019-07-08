@@ -13,7 +13,7 @@ import java.util.List;
 @Mongo.Repository(collection = "UserParser")
 @JsonSerialize(as = ImmutableUser.class)
 @JsonDeserialize(as = ImmutableUser.class)
-public interface User  {
+public interface User {
     @Mongo.Id
     String userId();
     float currBal();
