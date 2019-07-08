@@ -19,7 +19,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
+    public WebClient webClientBuilder() {
+        return WebClient.builder().build();
     }
 }

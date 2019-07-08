@@ -28,31 +28,19 @@ public class EntitlementController {
 
     @Autowired
     EntitlementService service;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
 
     @Path("/add")
     @POST
     public Response createEntitlement(@HeaderParam("Authorization") String token, EntitlementParser entitlement) {
-        Optional<String> userId = entitlement.userId();
-        if (!userId.isPresent()) {
-            LOGGER.info("User ID missing for creating entitlements");
-            return Response.status(400).entity("Invalid request").build();
-        }
-        LOGGER.info("Entitlements added.");
+        LOGGER.info("Entitlement add endpoint hit.");
         return service.addEntitlements(entitlement, token);
     }
 
     @Path("/delete")
     @DELETE
     public Response deleteEntitlements(EntitlementParser entitlement, @HeaderParam("Authorization") String token) {
-        String userId = ServiceUtils.decodeJWTForUserId(token);
-        if (userId==null) {
-            LOGGER.info("Invalid token : " + token);
-            return Response.status(401).entity("Invalid authorization token").build();
-        }
-        entitlement = ImmutableEntitlementParser.builder().from(entitlement).build();
-        LOGGER.info("Deleted entitlements");
+        LOGGER.info("Delete entitlements endpoint hit");
         return service.deleteEntitlements(entitlement);
     }
 
@@ -82,9 +70,6 @@ public class EntitlementController {
                 LOGGER.info("Get an entitled fund detail endpoint hit.");
                 return result.get(0);
             }
-            LOGGER.info("No such entitled fund found.");
-            return ImmutableFund.builder().fundName("").fundNumber("").invCurrency("")
-                    .invManager("").moodysRating(0).sAndPRating(0).nav(0).setCycle(0).build();
         }
         LOGGER.info("No such entitled fund found.");
         return ImmutableFund.builder().fundName("").fundNumber("").invCurrency("")

@@ -14,8 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
 
 
 import javax.ws.rs.core.Response;
@@ -30,23 +32,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FundControllerUnitTests {
 
     @MockBean
-    FundService service;
+    private FundService service;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @LocalServerPort
-    int randomServerPort;
+    private int randomServerPort;
 
-    String baseUrl;
+    private String baseUrl;
 
-    FundParser fund;
-    Fund fundDb;
+    private FundParser fund;
+    private Fund fundDb;
 
-    @Test
-    public void successTest(){
-        assert 1==1;
-    }
 
     @Before
     public void setUp(){
@@ -68,7 +66,6 @@ public class FundControllerUnitTests {
         headers.set("Content-Type", "application/json");
 
         HttpEntity<FundParser> request = new HttpEntity<>(fund, headers);
-
         ResponseEntity<String> entity= this.restTemplate.postForEntity(uri, request, String.class);
 
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -144,7 +141,7 @@ public class FundControllerUnitTests {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        HttpEntity<FundParser> request = new HttpEntity<>(fund, headers);
 
         ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.PATCH, request, String.class);
 
@@ -153,7 +150,7 @@ public class FundControllerUnitTests {
     }
 
     @Test
-    public void deleteFundsEndpointTest() throws Exception{
+    public void deleteFundsEndpointTest() throws Exception {
         URI uri = new URI(baseUrl + "/delete?fundNumber=123");
 
         HttpHeaders headers = new HttpHeaders();
@@ -167,5 +164,25 @@ public class FundControllerUnitTests {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo("Deleted fund");
+    }
+
+    @Test
+    public void addFundFromFileTest() throws Exception {
+        URI uri = new URI(baseUrl + "/addFund");
+
+        // Test file format check
+        LinkedMultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+        ClassPathResource resource = new ClassPathResource("test.doc");
+        parameters.add("file", resource);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
+        ResponseEntity<String> response = this.restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("Provide excel or csv files");
+
     }
 }

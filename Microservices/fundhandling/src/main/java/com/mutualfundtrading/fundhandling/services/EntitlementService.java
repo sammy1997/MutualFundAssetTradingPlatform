@@ -1,5 +1,6 @@
 package com.mutualfundtrading.fundhandling.services;
 
+import com.google.gson.Gson;
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 
@@ -26,22 +27,27 @@ public class EntitlementService {
     private FundService fundService;
 
     @Autowired
-    private WebClient.Builder webClient;
+    private WebClient webClient;
 
     // Add entitlements
     public Response addEntitlements(EntitlementParser entitlement, String token) {
-        UserList listOfUsers = webClient.build().get()
+        String response = webClient.get()
                 .uri(BASE_URL + "list-all")
                 .header("Authorization", "Bearer " + token)
                 .retrieve()
-                .bodyToMono(UserList.class)
+                .bodyToMono(String.class)
                 .block();
+
+        response = "{\"users\":" + response + "}";
+
+        UserList listOfUsers = new Gson().fromJson(response, UserList.class);
 
         if (!entitlement.userId().isPresent()){
             return Response.status(400).entity("User ID is missing").build();
         }
+
         boolean flag = false;
-        for (User user: listOfUsers.users()){
+        for (User user: listOfUsers.getUsers()){
             if (user.userId().equals(entitlement.userId().get())){
                 flag = true;
                 break;
@@ -77,6 +83,9 @@ public class EntitlementService {
 
     // Delete entitlements
     public Response deleteEntitlements(EntitlementParser entitlement) {
+        if (!entitlement.userId().isPresent()){
+            return Response.status(400).entity("User ID is missing").build();
+        }
         if (entitlement.entitledTo().isPresent() && entitlement.entitledTo().get().size()>0) {
             String message = dao.delete(entitlement.userId().get(), entitlement.entitledTo().get());
             if (message == null) {
