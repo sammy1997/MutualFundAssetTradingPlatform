@@ -1,17 +1,11 @@
-package com.example.portfolioservice.unit_tests;
-
+package com.example.portfolioservice.unitTests;
 import com.example.portfolioservice.models.*;
-
 import static com.example.portfolioservice.utils.Constants.SECRET_TOKEN;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.common.base.Optional;
-
 import com.example.portfolioservice.service.PortfolioService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +13,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,10 +25,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PortfolioControllerUnitTests {
     @MockBean
-    PortfolioService portfolioService;
+    private PortfolioService portfolioService;
 
     @LocalServerPort
-    int randomServerPort;
+    private int randomServerPort;
 
 
     // @Autowired
@@ -79,13 +72,13 @@ public class PortfolioControllerUnitTests {
     @Test
     public void test_getUserById() throws Exception {
         URI uri = new URI(baseURL);
-        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(userDB);
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(Optional.of(userDB));
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", token);
         HttpEntity<String> request = new HttpEntity<String>(null, headers);
         ResponseEntity<String> entity = this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
-        String expected = "{\"userId\":\"1\",\"currBal\":34.0,\"baseCurr\":\"INR\",\"all_funds\":[]}";
+        String expected = "{\"present\":true}";
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertEquals(entity.getBody(), expected);
     }
@@ -108,7 +101,7 @@ public class PortfolioControllerUnitTests {
     public void test_updateBaseCurrency()throws Exception
     {
         String newCurr = "USD";
-        URI uri = new URI(baseURL + "/update/baseCurrency/?currency="+newCurr);
+        URI uri = new URI(baseURL + "/update/baseCurrency/?Currency="+newCurr);
         Mockito.when(portfolioService.updateBaseCurrency(Mockito.anyString(), Mockito.anyString())).thenReturn(newCurr);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -139,7 +132,7 @@ public class PortfolioControllerUnitTests {
         URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+ userParser.currBal()+
                 "&baseCurr="+ userParser.baseCurr().get());
         Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class))).thenReturn("User Created");
-        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(userDB);
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(Optional.of(userDB));
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", token);
@@ -154,8 +147,9 @@ public class PortfolioControllerUnitTests {
         URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="+ userParser.currBal()+
                 "&baseCurr="+ userParser.baseCurr().get());
 
-        Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class))).thenReturn("UserParser Created");
-        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(null);
+        Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class))).thenReturn("User Created");
+        Optional<User> user = Optional.absent();
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(user);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", token);
@@ -205,7 +199,7 @@ public class PortfolioControllerUnitTests {
     @Test
     public void test_getFunds() throws Exception {
         URI uri = new URI(baseURL + "/getFunds/");
-        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(userDB);
+        Mockito.when(portfolioService.getUser(Mockito.anyString())).thenReturn(Optional.of(userDB));
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         headers.set("Content-Type", "application/json");

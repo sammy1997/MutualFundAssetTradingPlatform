@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonDeserialize(as = BalanceInfo.class)
 @JsonSerialize(as = BalanceInfo.class)
 public class BalanceInfo {
-    String baseCurr;
+    private String baseCurr;
 
     //    float balance;
-    float currBal;
+    private float currBal;
 
 
     public BalanceInfo() {

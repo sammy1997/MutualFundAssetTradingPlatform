@@ -1,4 +1,4 @@
-package com.example.portfolioservice.unit_tests;
+package com.example.portfolioservice.unitTests;
 import com.example.portfolioservice.DAO.UserDAO;
 import com.example.portfolioservice.models.*;
 
@@ -21,12 +21,12 @@ import org.mockito.MockitoAnnotations;
 public class PortfolioServiceUnitTests
 {
     @Mock
-    UserDAO dao;
+    private UserDAO dao;
 
     @InjectMocks
-    PortfolioService portfolioService;
+    private PortfolioService portfolioService;
 
-    private User userDB;
+    private User user;
     private UserParser userParser;
     private BalanceInfo balance = new BalanceInfo();
 
@@ -41,7 +41,7 @@ public class PortfolioServiceUnitTests
     {
         List<Fund> funds =  new ArrayList<>();
 
-        userDB = ImmutableUser.builder()
+        user = ImmutableUser.builder()
                 .userId("1")
                 .currBal(34)
                 .all_funds(funds)
@@ -67,16 +67,17 @@ public class PortfolioServiceUnitTests
     public void test_getUser()
     {
 
-        Mockito.doReturn(userDB).when(dao).getUser("1");
-        User userDB2 = portfolioService.getUser("1");
-        assertEquals(userDB2, userDB);
+        Mockito.doReturn(Optional.of(this.user)).when(dao).getUser("1");
+        Optional<User> user = Optional.of(this.user);
+        user = portfolioService.getUser("1");
+        assertEquals(user.get(), this.user);
 
     }
 
     @Test
     public void test_update()
     {
-        Optional<User> user = Optional.of(userDB);
+        Optional<User> user = Optional.of(this.user);
         Mockito.doReturn(user).when(dao).update(this.userParser);
         Optional<User> user2 = portfolioService.update(this.userParser);
         assertEquals(user, user2);
@@ -85,7 +86,7 @@ public class PortfolioServiceUnitTests
     @Test
     public void test_delete()
     {
-        Optional<User> user = Optional.of(userDB);
+        Optional<User> user = Optional.of(this.user);
         Mockito.doReturn(user).when(dao).delete("1");
         Optional<User> user2 = portfolioService.delete("1");
         assertEquals(user, user2);

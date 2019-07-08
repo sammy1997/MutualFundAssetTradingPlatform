@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface UserParser
 {
     Optional<String> userId();
-//    float balance();
     float currBal();
     Optional<String> baseCurr();
     Optional<List<Fund>> all_funds();

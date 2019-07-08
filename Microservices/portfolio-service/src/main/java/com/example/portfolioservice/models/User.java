@@ -16,7 +16,6 @@ public interface User
 {
     @Mongo.Id
     String userId();
-//    float balance();
     float currBal();
     String baseCurr();
     List<Fund> all_funds();

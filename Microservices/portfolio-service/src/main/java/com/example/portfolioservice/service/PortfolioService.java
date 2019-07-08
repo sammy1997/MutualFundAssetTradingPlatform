@@ -10,22 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-//
 @Service
 public class PortfolioService
 {
 
     @Autowired
-    UserDAO userDAO;
-
-
+    private UserDAO userDAO;
 
     public String createUser(UserParser userParser)
     {
         return userDAO.createUser(userParser);
     }
 
-    public ImmutableUser getUser(String id)
+    public Optional<User> getUser(String id)
     {
         return userDAO.getUser(id);
     }

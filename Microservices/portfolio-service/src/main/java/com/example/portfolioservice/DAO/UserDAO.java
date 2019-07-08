@@ -24,34 +24,29 @@ public class UserDAO
 
     public String createUser(UserParser userParser)
     {
-        User userDB;
-        userDB = ImmutableUser.builder()
+        User user;
+        user = ImmutableUser.builder()
                 .userId(userParser.userId().get())
                 .baseCurr(userParser.baseCurr().get())
                 .currBal(userParser.currBal())
                 .all_funds(userParser.all_funds().get()).build();
 
-        repository.insert(userDB);
+        repository.insert(user);
         return "UserParser Created";
 
     }
 
-    public ImmutableUser getUser(String id)
+    public Optional<User> getUser(String id)
     {
-        Optional<User> user =repository.find(where.userId(id)).fetchFirst().getUnchecked();
-        if(user.isPresent())
-        {
-            return (ImmutableUser) user.get();
-        }
-        return null;
+        return repository.find(where.userId(id)).fetchFirst().getUnchecked();
     }
 
     public Optional<User> update(UserParser userParser)
     {
-        Optional<User> userDB = repository.find(where.userId(userParser.userId().get())).fetchFirst().getUnchecked();
-        if(userDB.isPresent())
+        Optional<User> user = repository.find(where.userId(userParser.userId().get())).fetchFirst().getUnchecked();
+        if(user.isPresent())
         {
-            User updated_user = userDB.get();
+            User updated_user = user.get();
             repository.upsert(
                     ImmutableUser.builder()
                     .userId(updated_user.userId()).currBal(userParser.currBal())
@@ -60,7 +55,7 @@ public class UserDAO
                     .build()
             );
         }
-        return userDB;
+        return user;
     }
 
     public Optional<User> delete(String userId)

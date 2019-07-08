@@ -31,11 +31,9 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/")
-    public ImmutableUser getUserById(@HeaderParam("Authorization") String token)
+    public Optional<User> getUserById(@HeaderParam("Authorization") String token)
     {
-        ImmutableUser user = portfolioService.getUser("1");
-        System.out.println("\n\n"+user);
-        return user;
+        return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
     }
 
     // Get user balance
@@ -90,7 +88,8 @@ public class PortfolioController
                 for (Fund fund: currFunds){
                     ClientResponse response =
                             client.get()
-                            .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=" + fund.fundNumber())
+                            .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=" +
+                                    fund.fundNumber())
                             .header("Authorization", "Bearer " + token)
                             .exchange()
                             .block();
@@ -130,11 +129,10 @@ public class PortfolioController
     @Produces("application/json")
     @Path("/update/baseCurrency")
     public String updateBaseCurrency(@HeaderParam("Authorization") String token,
-                                     @QueryParam("currency") String newCurrency)
+                                     @QueryParam("Currency") String newCurrency)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
         return portfolioService.updateBaseCurrency(userId, newCurrency);
-
     }
 
     // Create user balance
@@ -151,7 +149,7 @@ public class PortfolioController
         }
 
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        if (portfolioService.getUser(userId) != null){
+        if (portfolioService.getUser(userId).isPresent()){
             return Response.status(400).entity("UserParser already exists").build();
         }
 
@@ -173,10 +171,11 @@ public class PortfolioController
     public List<Fund> getFunds(@HeaderParam("Authorization") String token)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        ImmutableUser user = portfolioService.getUser(userId);
-        if (user==null)
-            return null;
-        return user.all_funds();
+        Optional<User> user = portfolioService.getUser(userId);
+        if (user.isPresent())
+            return user.get().all_funds();
+        List<Fund> emptyFunds = new ArrayList<>();
+        return emptyFunds;
     }
 
 }
