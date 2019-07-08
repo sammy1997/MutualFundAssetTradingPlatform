@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.springframework.data:spring-data-rest-webmvc:3.2.0.BUILD-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-rest-webmvc/3.2.0.BUILD-SNAPSHOT/spring-data-rest-webmvc-3.2.0.BUILD-20190704.112210-1623.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-rest-webmvc/3.2.0.BUILD-SNAPSHOT/spring-data-rest-webmvc-3.2.0.BUILD-20190704.112210-1623-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-rest-webmvc/3.2.0.BUILD-SNAPSHOT/spring-data-rest-webmvc-3.2.0.BUILD-20190704.112210-1623-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
