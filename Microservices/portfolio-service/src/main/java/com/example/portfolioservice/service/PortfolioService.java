@@ -2,10 +2,9 @@ package com.example.portfolioservice.service;
 
 
 import com.example.portfolioservice.DAO.UserDAO;
-import com.example.portfolioservice.models.BalanceInfo;
-import com.example.portfolioservice.models.ImmutableUserDBModel;
-import com.example.portfolioservice.models.User2;
-import com.example.portfolioservice.models.UserDBModel;
+import com.example.portfolioservice.models.*;
+import com.example.portfolioservice.models.ImmutableUser;
+import com.example.portfolioservice.models.User;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,22 +20,22 @@ public class PortfolioService
 
 
 
-    public String createUser(User2 user)
+    public String createUser(UserParser userParser)
     {
-        return userDAO.createUser(user);
+        return userDAO.createUser(userParser);
     }
 
-    public ImmutableUserDBModel getUser(String id)
+    public ImmutableUser getUser(String id)
     {
         return userDAO.getUser(id);
     }
 
-    public Optional<UserDBModel> update(User2 user)
+    public Optional<User> update(UserParser userParser)
     {
-        return userDAO.update(user);
+        return userDAO.update(userParser);
     }
 
-    public Optional<UserDBModel> delete(String userId)
+    public Optional<User> delete(String userId)
     {
         return userDAO.delete(userId);
     }

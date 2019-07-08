@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Mongo.Repository
 @Value.Immutable
-@JsonSerialize(as = ImmutableFund2.class)
-@JsonDeserialize(as = ImmutableFund2.class)
-public interface Fund2 {
+@JsonSerialize(as = ImmutableFund.class)
+@JsonDeserialize(as = ImmutableFund.class)
+public interface Fund {
     String fundNumber();
     Optional<String> fundName();
     Optional<String> invManager();

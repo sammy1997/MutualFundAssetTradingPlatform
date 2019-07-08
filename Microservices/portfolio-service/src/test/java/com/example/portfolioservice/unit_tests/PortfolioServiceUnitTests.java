@@ -19,15 +19,15 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class PortfolioServiceUnitTests
-{//
+{
     @Mock
     UserDAO dao;
 
     @InjectMocks
     PortfolioService portfolioService;
 
-    private UserDBModel userDB;
-    private User2 user;
+    private User userDB;
+    private UserParser userParser;
     private BalanceInfo balance = new BalanceInfo();
 
     @Before
@@ -39,14 +39,14 @@ public class PortfolioServiceUnitTests
     @Before
     public void initialize()
     {
-        List<Fund2> funds =  new ArrayList<>();
+        List<Fund> funds =  new ArrayList<>();
 
-        userDB = ImmutableUserDBModel.builder()
+        userDB = ImmutableUser.builder()
                 .userId("1")
                 .currBal(34)
                 .all_funds(funds)
                 .baseCurr("INR").build();
-        user = ImmutableUser2.builder()
+        userParser = ImmutableUserParser.builder()
                 .userId("1")
                 .currBal(34)
                 .all_funds(funds)
@@ -55,15 +55,12 @@ public class PortfolioServiceUnitTests
         this.balance.setBaseCurr("INR");
     }
 
-
-//
-
     @Test
     public void test_createUser()
     {
-        Mockito.doReturn("User Created").when(dao).createUser(user);
-        String message = portfolioService.createUser(user);
-        assertEquals(message, "User Created");
+        Mockito.doReturn("UserParser Created").when(dao).createUser(userParser);
+        String message = portfolioService.createUser(userParser);
+        assertEquals(message, "UserParser Created");
     }
 
     @Test
@@ -71,7 +68,7 @@ public class PortfolioServiceUnitTests
     {
 
         Mockito.doReturn(userDB).when(dao).getUser("1");
-        UserDBModel userDB2 = portfolioService.getUser("1");
+        User userDB2 = portfolioService.getUser("1");
         assertEquals(userDB2, userDB);
 
     }
@@ -79,18 +76,18 @@ public class PortfolioServiceUnitTests
     @Test
     public void test_update()
     {
-        Optional<UserDBModel> user = Optional.of(userDB);
-        Mockito.doReturn(user).when(dao).update(this.user);
-        Optional<UserDBModel> user2 = portfolioService.update(this.user);
+        Optional<User> user = Optional.of(userDB);
+        Mockito.doReturn(user).when(dao).update(this.userParser);
+        Optional<User> user2 = portfolioService.update(this.userParser);
         assertEquals(user, user2);
     }
 
     @Test
     public void test_delete()
     {
-        Optional<UserDBModel> user = Optional.of(userDB);
+        Optional<User> user = Optional.of(userDB);
         Mockito.doReturn(user).when(dao).delete("1");
-        Optional<UserDBModel> user2 = portfolioService.delete("1");
+        Optional<User> user2 = portfolioService.delete("1");
         assertEquals(user, user2);
 
     }
@@ -114,9 +111,9 @@ public class PortfolioServiceUnitTests
     @Test
     public void test_updateBaseCurrency()
     {
-        Mockito.when(dao.updateBaseCurrency(Mockito.anyString(),Mockito.anyString())).thenReturn(user.baseCurr().get());
+        Mockito.when(dao.updateBaseCurrency(Mockito.anyString(),Mockito.anyString())).thenReturn(userParser.baseCurr().get());
         String baseCurr = portfolioService.updateBaseCurrency("1", "INR");
-        assertEquals(baseCurr, user.baseCurr().get());
+        assertEquals(baseCurr, userParser.baseCurr().get());
     }
 
 }

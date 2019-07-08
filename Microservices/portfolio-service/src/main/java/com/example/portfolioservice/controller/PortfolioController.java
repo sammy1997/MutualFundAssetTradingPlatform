@@ -7,9 +7,7 @@ import com.example.portfolioservice.utils.Constants;
 import com.example.portfolioservice.utils.ServiceUtils;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -33,9 +31,9 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/")
-    public ImmutableUserDBModel getUserById(@HeaderParam("Authorization") String token)
+    public ImmutableUser getUserById(@HeaderParam("Authorization") String token)
     {
-        ImmutableUserDBModel user = portfolioService.getUser("1");
+        ImmutableUser user = portfolioService.getUser("1");
         System.out.println("\n\n"+user);
         return user;
     }
@@ -70,26 +68,26 @@ public class PortfolioController
     @DELETE
     @Produces("application/json")
     @Path("/delete/{userId}")
-    public Optional<UserDBModel> deleteUserById(@PathParam("userId") String userId)
+    public Optional<User> deleteUserById(@PathParam("userId") String userId)
     {
         return portfolioService.delete(userId);
     }
 
 
-    // Update user
+    // Update userParser
     // Internal access
     @PATCH
     @Produces("application/json")
-    @Path("/update/user")
+    @Path("/update/userParser")
     public Response updateUserById(@HeaderParam("Authorization") String token,
-                                                @QueryParam("secret") String secret_key, User2 user)
+                                                @QueryParam("secret") String secret_key, UserParser userParser)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
-            if (user.all_funds().isPresent() && userId!=null){
-                List<Fund2> currFunds = user.all_funds().get();
-                List<Fund2> updateProfitsOfFunds = new ArrayList<>();
-                for (Fund2 fund: currFunds){
+            if (userParser.all_funds().isPresent() && userId!=null){
+                List<Fund> currFunds = userParser.all_funds().get();
+                List<Fund> updateProfitsOfFunds = new ArrayList<>();
+                for (Fund fund: currFunds){
                     ClientResponse response =
                             client.get()
                             .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=" + fund.fundNumber())
@@ -102,7 +100,7 @@ public class PortfolioController
                     if (parsedFund!=null){
                         float profit = (parsedFund.nav().get() - fund.originalNav().get())*fund.quantity().get();
                         float profitPercent = (parsedFund.nav().get() - fund.originalNav().get())/fund.originalNav().get();
-                        Fund2 updatedFund = ImmutableFund2.builder().fundNumber(fund.fundNumber())
+                        Fund updatedFund = ImmutableFund.builder().fundNumber(fund.fundNumber())
                                 .fundName(parsedFund.fundName()).invCurrency(parsedFund.invCurrency())
                                 .invManager(parsedFund.invManager())
                                 .moodysRating(parsedFund.moodysRating())
@@ -116,9 +114,9 @@ public class PortfolioController
                         updateProfitsOfFunds.add(updatedFund);
                     }
                 }
-                user = ImmutableUser2.builder().userId(userId).currBal(user.currBal())
+                userParser = ImmutableUserParser.builder().userId(userId).currBal(userParser.currBal())
                         .all_funds(updateProfitsOfFunds).build();
-                portfolioService.update(user);
+                portfolioService.update(userParser);
                 return Response.status(200).entity("Updated profile successfully").build();
             }
 
@@ -134,7 +132,6 @@ public class PortfolioController
     public String updateBaseCurrency(@HeaderParam("Authorization") String token,
                                      @QueryParam("currency") String newCurrency)
     {
-
         String userId = ServiceUtils.decodeJWTForUserId(token);
         return portfolioService.updateBaseCurrency(userId, newCurrency);
 
@@ -155,17 +152,17 @@ public class PortfolioController
 
         String userId = ServiceUtils.decodeJWTForUserId(token);
         if (portfolioService.getUser(userId) != null){
-            return Response.status(400).entity("User already exists").build();
+            return Response.status(400).entity("UserParser already exists").build();
         }
 
-        User2 user = ImmutableUser2.builder()
+        UserParser userParser = ImmutableUserParser.builder()
                 .userId(userId)
                 .baseCurr(baseCurr)
                 .all_funds(new ArrayList<>())
                 .currBal(balance)
                 .build();
-        portfolioService.createUser(user);
-        return Response.status(200).entity("User added to DB").build();
+        portfolioService.createUser(userParser);
+        return Response.status(200).entity("UserParser added to DB").build();
     }
 
 
@@ -173,10 +170,10 @@ public class PortfolioController
     @GET
     @Produces("application/json")
     @Path("/getFunds/")
-    public List<Fund2> getFunds(@HeaderParam("Authorization") String token)
+    public List<Fund> getFunds(@HeaderParam("Authorization") String token)
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        ImmutableUserDBModel user = portfolioService.getUser(userId);
+        ImmutableUser user = portfolioService.getUser(userId);
         if (user==null)
             return null;
         return user.all_funds();

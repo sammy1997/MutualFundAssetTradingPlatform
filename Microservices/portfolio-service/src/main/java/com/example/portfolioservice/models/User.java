@@ -9,15 +9,15 @@ import java.util.List;
 
 
 @Value.Immutable
-@Mongo.Repository(collection = "User")
-@JsonSerialize(as = ImmutableUserDBModel.class)
-@JsonDeserialize(as = ImmutableUserDBModel.class)
-public interface UserDBModel
+@Mongo.Repository(collection = "UserParser")
+@JsonSerialize(as = ImmutableUser.class)
+@JsonDeserialize(as = ImmutableUser.class)
+public interface User
 {
     @Mongo.Id
     String userId();
 //    float balance();
     float currBal();
     String baseCurr();
-    List<Fund2> all_funds();
+    List<Fund> all_funds();
 }
