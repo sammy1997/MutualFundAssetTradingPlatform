@@ -16,9 +16,12 @@
   .software {
       color: white;
   }
+
+  .table-container{
+    margin-top: 100px;
+  }
   
   #myTable {
-    margin-top: 100px; 
     border-collapse: collapse; /* Collapse borders */
     width: 100%; /* Full-width */
     border: 1px solid #ddd; /* Add a grey border */

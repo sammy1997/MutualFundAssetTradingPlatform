@@ -19,7 +19,8 @@ class AddFund extends Component {
             nav: "",
             invCurrency: "",
             sAndPRating: "",
-            moodysRating: ""
+            moodysRating: "",
+            errorResponse: []
         }
     }
     
@@ -62,8 +63,11 @@ class AddFund extends Component {
             if(error.response.status === 401 || error.response.status === 403){
                 document.cookie = "token=;"
                 window.location = "/";
-            }
-            else{
+            }else if (error.response.status === 500){
+                this.setState({
+                    errorResponse: [<p>The server is down. Please try again later.</p>]
+                })
+            }else{
                 alert(error.response.data)
             }
         });
@@ -73,6 +77,9 @@ class AddFund extends Component {
         M.updateTextFields();
         return (
             <div className="form-container center-align">
+                <div class="error-response">
+                    {this.state.errorResponse}
+                </div>
                 <FileUpload endUrl='funds/addFund' buttonText='Add Fund from File'></FileUpload>
                 <div className="form-card">
                     <div className="row">

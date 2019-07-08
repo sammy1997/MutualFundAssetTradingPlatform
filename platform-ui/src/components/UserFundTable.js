@@ -17,7 +17,8 @@ class UserFunds extends Component
             selectedFunds:[],
             list : [],
             searchableFields: [],
-            open: false 
+            open: false,
+            errorResponse: [] 
         }
     }
 
@@ -80,24 +81,47 @@ class UserFunds extends Component
                     searchableFields: [0,1,2,4]
                 })
             })
-            .catch( err => {
-                // if(err.response.status === 401){
-                //     document.cookie = "token=";
-                //     this.props.history.push('/');
-                // }
-                console.log(err);
+            .catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
+                }
             });  
         }else if(!(this.props.portfolio)){
             axios.get('http://localhost:8762/fund-handling/api/entitlements/get', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
+                if(res.status == 200){
+                    this.setState({
+                        list : res.data
+                    })
+                }
                 this.setState({
-                    list : res.data,
                     searchableFields: [0,1,2,4]
                 })
-            }).catch( err => {
-                if(err.response.status === 401){
-                    document.cookie = "token=";
-                    this.props.history.push('/');
+            }).catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
                 }
             });   
         }
@@ -108,7 +132,12 @@ class UserFunds extends Component
             fontSize: '18px'  
         };
         return (   
-            <div>
+            <div class="table-container">
+                
+                <div className="error-response">
+                    {this.state.errorResponse}
+                </div>
+                
                 <table align = "center" id = "myTable">
                     <thead>
                     <tr className = "software">
@@ -136,19 +165,16 @@ class UserFunds extends Component
                                 onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
                             <td><input type="text" id="myInput2"  
                                 onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            <td></td>
-                            {this.props.portfolio?<td></td>:""}
-                            <td></td>
-                            <td></td>
-                            {/* <td><input type="text" id="myInput3"  onKeyUp={() => this.searchContent()} /></td> */}
-                            {this.props.portfolio?<td></td>:""}
-                            {this.props.portfolio?<td></td>:""}
-                            <td></td>
-                            <td></td>
-                            {/* <td><input type="text" id="myInput3"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
-                            {this.props.portfolio?<td></td>:""}
-                            {this.props.portfolio?<td></td>:""}
+                            <td>-N/A-</td>
+                            {this.props.portfolio?<td>-N/A-</td>:""}
+                            <td>-N/A-</td>
+                            <td>-N/A-</td>
+                            {this.props.portfolio?<td>-N/A-</td>:""}
+                            {this.props.portfolio?<td>-N/A-</td>:""}
+                            <td>-N/A-</td>
+                            <td>-N/A-</td>
+                            {this.props.portfolio?<td>-N/A-</td>:""}
+                            {this.props.portfolio?<td>-N/A-</td>:""}
                         </tr>
                         {               
                             this.state.list.map(item => <tr key={item.fundNumber}>
