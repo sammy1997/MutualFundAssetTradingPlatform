@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 
 import java.util.Optional;
 
+@SuppressWarnings("ALL")
 @Value.Immutable
 @JsonSerialize(as = ImmutableFundParser.class)
 @JsonDeserialize(as = ImmutableFundParser.class)

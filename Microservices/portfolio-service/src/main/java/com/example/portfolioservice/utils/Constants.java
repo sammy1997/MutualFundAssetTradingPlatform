@@ -3,9 +3,12 @@ package com.example.portfolioservice.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 public class Constants {
-    public static String SECRET_TOKEN = "ggmuekp69t11p6914qrl7pk4598679hm";
-    public static final Map<String, Float> FX_USD = new HashMap<String, Float>() {
+
+    public static final String SECRET_TOKEN = "ggmuekp69t11p6914qrl7pk4598679hm";
+
+    public static Map<String, Float> FX_USD = new HashMap<String, Float>() {
         {
             put("INR", (float) 69.1605);
             put("USD", (float) 1);
@@ -15,5 +18,8 @@ public class Constants {
             put("SAR", (float) 3.7500);
             put("JPY", (float) 107.6890);
         }
-    };
+    };;
+
+    public Constants() { }
+
 }

@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 @Path("/")
 public class PortfolioController
@@ -82,23 +83,23 @@ public class PortfolioController
     {
         String userId = ServiceUtils.decodeJWTForUserId(token);
         if (Constants.SECRET_TOKEN.equals(secret_key)){
-            if (userParser.all_funds().isPresent() && userId!=null){
+            if (userParser.all_funds().isPresent() && userId != null) {
                 List<Fund> currFunds = userParser.all_funds().get();
                 List<Fund> updateProfitsOfFunds = new ArrayList<>();
-                for (Fund fund: currFunds){
+                for (Fund fund: currFunds) {
                     ClientResponse response =
                             client.get()
-                            .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=" +
-                                    fund.fundNumber())
+                            .uri("http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber="
+                                    + fund.fundNumber())
                             .header("Authorization", "Bearer " + token)
                             .exchange()
                             .block();
 
                     FundParser parsedFund = response.bodyToMono(FundParser.class).block();
-
-                    if (parsedFund!=null){
-                        float profit = (parsedFund.nav().get() - fund.originalNav().get())*fund.quantity().get();
-                        float profitPercent = (parsedFund.nav().get() - fund.originalNav().get())/fund.originalNav().get();
+                    if (parsedFund != null) {
+                        float profit = (parsedFund.nav().get() - fund.originalNav().get()) * fund.quantity().get();
+                        float profitPercent = (parsedFund.nav().get() - fund.originalNav().get())
+                                / fund.originalNav().get();
                         Fund updatedFund = ImmutableFund.builder().fundNumber(fund.fundNumber())
                                 .fundName(parsedFund.fundName()).invCurrency(parsedFund.invCurrency())
                                 .invManager(parsedFund.invManager())

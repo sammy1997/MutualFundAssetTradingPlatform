@@ -7,11 +7,11 @@ import org.immutables.value.Value;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("ALL")
 @Value.Immutable
 @JsonSerialize(as = ImmutableUserParser.class)
 @JsonDeserialize(as = ImmutableUserParser.class)
-public interface UserParser
-{
+public interface UserParser  {
     Optional<String> userId();
     float currBal();
     Optional<String> baseCurr();

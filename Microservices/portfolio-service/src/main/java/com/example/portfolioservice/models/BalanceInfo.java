@@ -3,14 +3,14 @@ package com.example.portfolioservice.models;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@SuppressWarnings("CheckStyle")
 @JsonDeserialize(as = BalanceInfo.class)
 @JsonSerialize(as = BalanceInfo.class)
 public class BalanceInfo {
+
     private String baseCurr;
 
-    //    float balance;
     private float currBal;
-
 
     public BalanceInfo() {
     }
@@ -19,7 +19,7 @@ public class BalanceInfo {
         return baseCurr;
     }
 
-    public void setBaseCurr(String baseCurr) {
+    public void setBaseCurr(final String baseCurr) {
         this.baseCurr = baseCurr;
     }
 
@@ -27,7 +27,7 @@ public class BalanceInfo {
         return currBal;
     }
 
-    public void setCurrBal(float currBal) {
+    public void setCurrBal(final float currBal) {
         this.currBal = currBal;
     }
 

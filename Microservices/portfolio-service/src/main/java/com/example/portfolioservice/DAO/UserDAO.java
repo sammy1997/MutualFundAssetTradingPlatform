@@ -7,23 +7,20 @@ import org.immutables.mongo.repository.RepositorySetup;
 import static com.example.portfolioservice.utils.Constants.FX_USD;
 
 
-public class UserDAO
-{
+@SuppressWarnings("ALL")
+public class UserDAO {
 
     private UserRepository repository;
     private UserRepository.Criteria where;
 
 
-
-    public UserDAO()
-    {
-        repository =new UserRepository(RepositorySetup.forUri("mongodb://localhost:27017/portfolio"));
+    public UserDAO() {
+        repository = new UserRepository(RepositorySetup.forUri("mongodb://localhost:27017/portfolio"));
         where = repository.criteria();
     }
 
 
-    public String createUser(UserParser userParser)
-    {
+    public String createUser(final UserParser userParser) {
         User user;
         user = ImmutableUser.builder()
                 .userId(userParser.userId().get())
@@ -36,29 +33,28 @@ public class UserDAO
 
     }
 
-    public Optional<User> getUser(String id)
-    {
+    public Optional<User> getUser(final String id) {
         return repository.find(where.userId(id)).fetchFirst().getUnchecked();
     }
 
-    public Optional<User> update(UserParser userParser)
-    {
+    public Optional<User> update(UserParser userParser) {
         Optional<User> user = repository.find(where.userId(userParser.userId().get())).fetchFirst().getUnchecked();
-        if(user.isPresent())
-        {
+        if(user.isPresent()) {
             User updated_user = user.get();
             repository.upsert(
                     ImmutableUser.builder()
                     .userId(updated_user.userId()).currBal(userParser.currBal())
-                            .baseCurr(userParser.baseCurr().isPresent()? userParser.baseCurr().get(): updated_user.baseCurr())
-                            .all_funds(userParser.all_funds().isPresent()? userParser.all_funds().get():updated_user.all_funds())
+                            .baseCurr(userParser.baseCurr().isPresent() ? userParser.baseCurr().get()
+                                    : updated_user.baseCurr())
+                            .all_funds(userParser.all_funds().isPresent() ? userParser.all_funds().get()
+                                    : updated_user.all_funds())
                     .build()
             );
         }
         return user;
     }
 
-    public Optional<User> delete(String userId)
+    public Optional<User> delete(final String userId)
     {
         return repository.findByUserId(userId).deleteFirst().getUnchecked();
     }
@@ -76,8 +72,7 @@ public class UserDAO
         return null;
     }
 
-    public float updateBalance(String userId, float balance)
-    {
+    public float updateBalance(final String userId, float balance) {
         Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())
         {
@@ -92,7 +87,7 @@ public class UserDAO
         }
         return 0;
     }
-    public String updateBaseCurrency(String userId, String newCurrency)
+    public String updateBaseCurrency(final String userId, final String newCurrency)
     {
         Optional<User> user = repository.find(where.userId(userId)).fetchFirst().getUnchecked();
         if(user.isPresent())

@@ -8,12 +8,12 @@ import org.immutables.value.Value;
 import java.util.List;
 
 
+@SuppressWarnings("ALL")
 @Value.Immutable
 @Mongo.Repository(collection = "UserParser")
 @JsonSerialize(as = ImmutableUser.class)
 @JsonDeserialize(as = ImmutableUser.class)
-public interface User
-{
+public interface User  {
     @Mongo.Id
     String userId();
     float currBal();

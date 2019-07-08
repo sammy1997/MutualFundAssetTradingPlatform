@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 
 import java.util.Optional;
 
+@SuppressWarnings("ALL")
 @Mongo.Repository
 @Value.Immutable
 @JsonSerialize(as = ImmutableFund.class)
