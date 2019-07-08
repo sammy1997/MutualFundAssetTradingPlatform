@@ -49,7 +49,7 @@ public class UserTradeService {
                 return fund;
             }
         }
-        return null;
+        return ImmutableFund.builder().build();
     }
 
     // Helper function to get balance
@@ -102,7 +102,7 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers){
             ImmutableFund oldFund = existFunds(entitlements, t);
-            if (oldFund!=null){
+            if (oldFund!= ImmutableFund.builder().build()) {
                 Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                             .fundName(oldFund.fundName())
                                             .avgNav(oldFund.nav())
@@ -116,7 +116,7 @@ public class UserTradeService {
                                             .build();
                 trades.add(newTrade);
             } else {
-                return null;
+                return new ArrayList<>();
             }
         }
         return trades;

@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collections;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -46,7 +47,7 @@ public class TradeServiceController {
             String userId = ServiceUtils.decodeJWTForUserId(header);
             List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
             System.out.println(trades);
-            if (trades == null) return Response.status(400).entity("Trades not verified").build();
+            if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
             float res = userTradeService.exchangeTrade(userId, trades, header);
             if (res == 0) return Response.status(400).entity("Trades not verified").build();
             else {
@@ -63,7 +64,7 @@ public class TradeServiceController {
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
         List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
-        if (trades == null) return Response.status(400).entity("Trades not verified").build();
+        if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();
         return Response.status(400).entity("Trades not verified").build();
