@@ -13,6 +13,8 @@ export class FundItem extends Component {
         }
     }
     
+    
+
     onChangeHandlerQuantity = (event) => {
         this.setState({
             quantity: event.target.value
@@ -41,6 +43,10 @@ export class FundItem extends Component {
         })       
     }
 
+    delHandler = () => {
+        this.props.delFund(this.props.fundNumber)
+    }
+
     render() {
         const {fundName, fundNumber, invManager} = this.props;
         return (
@@ -55,9 +61,13 @@ export class FundItem extends Component {
                         <option value="purchase">Buy</option>
                     </select>
                 </td>
+                <td><button onClick={this.delHandler}>X</button></td>
             </tr> 
         )
     }
+
+
+    
 }
 
 export default FundItem

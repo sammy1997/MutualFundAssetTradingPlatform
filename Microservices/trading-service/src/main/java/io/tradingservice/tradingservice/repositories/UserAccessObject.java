@@ -26,7 +26,7 @@ public class UserAccessObject {
     // Helper function to get specific fund info based on the userId and fundId(fundNumber)
     private ImmutableTrade getFundById(List<ImmutableTrade> trades, String fundId){
 
-        // Loop through funds
+        // Loop through existing user trades
         for (ImmutableTrade t: trades) {
 
             // Find the fund trade
@@ -107,7 +107,7 @@ public class UserAccessObject {
     }
 
     // Verify Trades
-    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr){
+    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr) {
 
         // Count is used to make sure all trades are verified
         int count = 0;
@@ -116,43 +116,57 @@ public class UserAccessObject {
         if (userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()){
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             List<ImmutableTrade> currTrades = user.trades();
-            for (Trade t: newTrades){
+
+            for (Trade t: newTrades) {
 
                 // If the trade status is set to purchase
-                if (t.status().equals("purchase")){
+                if (t.status().equals("purchase")) {
 
                     // Calculate new balance after the trade
                     float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
                     System.out.println(t.quantity());
                     balance -= debit;
                     count++;
-                    System.out.println(balance);
-                    System.out.println("HERE");
+                    System.out.println("HERE" + balance);
                 }
 
                 // If the trade status is set to sell
-                if (t.status().equals("sell")){
+                if (t.status().equals("sell")) {
 
                     // Loop through existing assets
-                    for (ImmutableTrade tradeExist: currTrades){
+                    for (ImmutableTrade tradeExist: currTrades) {
 
                         // Find the fund through existing assets
                         if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
 
                             // Calculate new balance after the trade
-                            float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
-                            balance += credit;
+                            if (t.setCycle() == 0) {
+                                float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                                balance += credit;
+                            }
                             count++;
                             break;
                         }
                     }
                 }
             }
+            System.out.print("Count = " + count);
+            System.out.println("Size = " + newTrades.size());
+            System.out.println("Balance = " + balance);
 
             // If all trades are carried out and positive balance
-            if (count == newTrades.size() && balance >= 0) return true;
-            else return false;
-        } else return false;
+            if (count == newTrades.size() && balance >= 0){
+                System.out.println("Trades verified");
+                return true;
+            }
+            else {
+                System.out.println("Not veri");
+                return false;
+            }
+        } else {
+            System.out.println("not verified");
+            return false;
+        }
     }
 
 
