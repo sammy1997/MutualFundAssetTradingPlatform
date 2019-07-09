@@ -37,6 +37,13 @@ public class EntitlementController {
         return service.addEntitlements(entitlement, token);
     }
 
+    @Path("/update")
+    @POST
+    public Response updateEntitlements(EntitlementParser entitlement) {
+        LOGGER.info("Entitlement add endpoint hit.");
+        return service.updateEntitlements(entitlement);
+    }
+
     @Path("/delete")
     @DELETE
     public Response deleteEntitlements(EntitlementParser entitlement, @HeaderParam("Authorization") String token) {

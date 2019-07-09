@@ -6,6 +6,7 @@ import SearchBar from './SearchBar.js'
 import axios from 'axios';
 import getCookie from './Cookie';
 import FileUpload from './FileUploadComponent';
+import autocomplete from './utility/Autocomplete';
 
 class AddEntitlements extends Component {
     constructor(props) {
@@ -26,73 +27,6 @@ class AddEntitlements extends Component {
         });
     }
 
-    autocomplete(inp, handleSearchItemClick, arr, funds) {
-        var currentFocus;
-        inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
-            closeAllLists();
-            if (!val) { return false;}
-            currentFocus = -1;
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            this.parentNode.appendChild(a);
-            for (i = 0; i < arr.length; i++) {
-              if (arr[i].toUpperCase().indexOf(val.toUpperCase())!==-1 || 
-                    funds[i].fundName.toUpperCase().indexOf(val.toUpperCase())!==-1) {
-                b = document.createElement("DIV");
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length) + " : " + funds[i].fundName;
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                    b.addEventListener("click", function(e) {
-                        handleSearchItemClick(this.getElementsByTagName("input")[0].value);
-                        closeAllLists();
-                    });
-                a.appendChild(b);
-              }
-            }
-        });
-        
-        inp.addEventListener("keydown", function(e) {
-            var x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode === 40) {
-              currentFocus++;
-              addActive(x);
-            } else if (e.keyCode === 38) {
-              currentFocus--;
-              addActive(x);
-            } else if (e.keyCode === 13) {
-              e.preventDefault();
-              if (currentFocus > -1) {
-                if (x) x[currentFocus].click();
-              }
-            }
-        });
-        function addActive(x) {
-          if (!x) return false;
-          removeActive(x);
-          if (currentFocus >= x.length) currentFocus = 0;
-          if (currentFocus < 0) currentFocus = (x.length - 1);
-          x[currentFocus].classList.add("autocomplete-active");
-        }
-        function removeActive(x) {
-          for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-          }
-        }
-        function closeAllLists(elmnt) {
-            var x = document.getElementsByClassName("autocomplete-items");
-            for (var i = 0; i < x.length; i++) {
-                if (elmnt !== x[i] && elmnt !== inp) {
-                    x[i].parentNode.removeChild(x[i]);
-                }
-            }
-        }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
-    }
 
     componentDidMount(){
         var baseUrl = "http://localhost:8762/";
@@ -152,7 +86,7 @@ class AddEntitlements extends Component {
         });
     }
     componentDidUpdate(){
-        this.autocomplete(document.getElementById("searchId"), this.handleSearchItemClick, 
+        autocomplete(document.getElementById("searchId"), this.handleSearchItemClick, 
                         this.state.fundSuggestions, this.state.funds);
     }
     handleSearchItemClick(content){

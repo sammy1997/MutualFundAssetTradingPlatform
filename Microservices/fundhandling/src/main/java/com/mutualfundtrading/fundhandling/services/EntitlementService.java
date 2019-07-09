@@ -5,6 +5,7 @@ import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 
 import com.mutualfundtrading.fundhandling.models.*;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,11 +28,11 @@ public class EntitlementService {
     private FundService fundService;
 
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClient;
 
     // Add entitlements
     public Response addEntitlements(EntitlementParser entitlement, String token) {
-        String response = webClient.get()
+        String response = webClient.build().get()
                 .uri(BASE_URL + "list-all")
                 .header("Authorization", "Bearer " + token)
                 .retrieve()
@@ -59,12 +60,7 @@ public class EntitlementService {
         }
 
         if (entitlement.entitledTo().isPresent()) {
-            List<String> temp = new ArrayList<>();
-            for (String fundId : entitlement.entitledTo().get()) {
-                if (fundService.getFund(fundId) != null) {
-                    temp.add(fundId);
-                }
-            }
+            List<String> temp = ServiceUtils.checkFunds(fundService, entitlement);
             if (temp.size() == 0) {
                 return Response.status(404).entity("None of the funds exists in the database").build();
             }
@@ -76,9 +72,31 @@ public class EntitlementService {
                         .entity("Some of the funds were not found in the database. Remaining were added").build();
             }
             return Response.status(200).entity("All entitlements added").build();
-        } else {
-            return Response.status(404).entity("Fund list cannot be empty").build();
         }
+        return Response.status(404).entity("Fund list cannot be empty").build();
+    }
+
+    public Response updateEntitlements(EntitlementParser entitlements) {
+
+        if(!entitlements.userId().isPresent())
+            return Response.status(400).entity("User ID missing in request").build();
+
+        if (entitlements.entitledTo().isPresent()) {
+            List<String> temp = ServiceUtils.checkFunds(fundService, entitlements);
+
+            if (temp.size() == 0) {
+                return Response.status(404).entity("None of the funds exists in the database").build();
+            }
+
+            dao.update(entitlements);
+
+            if (temp.size() < entitlements.entitledTo().get().size()) {
+                return Response.status(200)
+                        .entity("Some of the funds were not found in the database. Remaining were added").build();
+            }
+            return Response.status(200).entity("All entitlements added").build();
+        }
+        return Response.status(400).entity("Fund list cannot be empty").build();
     }
 
     // Delete entitlements
