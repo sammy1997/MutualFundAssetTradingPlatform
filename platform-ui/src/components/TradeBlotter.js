@@ -44,6 +44,15 @@ class TradeBlotter extends Component {
             })
     }.bind(this);
 
+    delTrade = (fundNumber) => {
+        var getTrades = [...this.state.funds]
+        var obj = getTrades.find(o => o.fundNumber === fundNumber)
+        getTrades.splice(obj, 1)
+        this.setState({
+            funds: getTrades
+        })
+    }
+
     callBackFund = (trade) => {
         const newTrade = {
             fundNumber: trade.fundNumber,
@@ -90,7 +99,9 @@ class TradeBlotter extends Component {
                         // Render all the funds 
                         this.state.funds.map((f) => (
                             <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager} 
-                            callBack={this.callBackFund}/> 
+                            callBack={this.callBackFund} delFund = {this.delTrade} />
+                                
+                            
                         ))
                         }                          
                     </tbody>

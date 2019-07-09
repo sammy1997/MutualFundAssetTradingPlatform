@@ -61,8 +61,9 @@ export class FundItem extends Component {
                         <option value="purchase">Buy</option>
                     </select>
                 </td>
-                <td><button onClick={this.delHandler}>X</button></td>
+                <td className="remove-button"><button id="x-button" onClick={this.delHandler}>x</button></td>
             </tr> 
+              
         )
     }
 
