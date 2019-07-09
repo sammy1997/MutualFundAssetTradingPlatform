@@ -1,17 +1,19 @@
 package com.mutualfundtrading.fundhandling.services;
 
+import com.google.gson.Gson;
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 
-import com.mutualfundtrading.fundhandling.models.EntitlementParser;
-import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
+import com.mutualfundtrading.fundhandling.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mutualfundtrading.fundhandling.utils.ServiceUtils.BASE_URL;
 
 @Service
 public class EntitlementService {
@@ -24,8 +26,38 @@ public class EntitlementService {
     @Autowired
     private FundService fundService;
 
+    @Autowired
+    private WebClient webClient;
+
     // Add entitlements
-    public Response addEntitlements(EntitlementParser entitlement) {
+    public Response addEntitlements(EntitlementParser entitlement, String token) {
+        String response = webClient.get()
+                .uri(BASE_URL + "list-all")
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        response = "{\"users\":" + response + "}";
+
+        UserList listOfUsers = new Gson().fromJson(response, UserList.class);
+
+        if (!entitlement.userId().isPresent()){
+            return Response.status(400).entity("User ID is missing").build();
+        }
+
+        boolean flag = false;
+        for (User user: listOfUsers.getUsers()){
+            if (user.userId().equals(entitlement.userId().get())){
+                flag = true;
+                break;
+            }
+        }
+
+        if (!flag){
+            return Response.status(400).entity("User not present in database").build();
+        }
+
         if (entitlement.entitledTo().isPresent()) {
             List<String> temp = new ArrayList<>();
             for (String fundId : entitlement.entitledTo().get()) {
@@ -51,6 +83,9 @@ public class EntitlementService {
 
     // Delete entitlements
     public Response deleteEntitlements(EntitlementParser entitlement) {
+        if (!entitlement.userId().isPresent()){
+            return Response.status(400).entity("User ID is missing").build();
+        }
         if (entitlement.entitledTo().isPresent() && entitlement.entitledTo().get().size()>0) {
             String message = dao.delete(entitlement.userId().get(), entitlement.entitledTo().get());
             if (message == null) {

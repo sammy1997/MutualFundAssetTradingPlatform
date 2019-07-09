@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ServiceUtils {
+    public static String BASE_URL = "http://localhost:8762/create/";
     private static String FILE_PATH = "C:\\Users\\somchakr\\Desktop\\upload\\";
     public static String decodeJWTForUserId(String jwtToken) {
 

@@ -7,7 +7,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 
-@SpringBootApplication
+@SpringBootApplication()
 @EnableEurekaClient
 public class FundhandlingApplication extends SpringBootServletInitializer {
 

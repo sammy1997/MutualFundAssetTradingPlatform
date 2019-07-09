@@ -7,7 +7,6 @@ import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.tradingservice.tradingservice.utils.Constants;
-import org.hibernate.validator.internal.metadata.raw.ConstrainedType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

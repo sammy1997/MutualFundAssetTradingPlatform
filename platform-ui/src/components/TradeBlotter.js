@@ -7,7 +7,10 @@ import FundItem from './FundItem';
 import VerifyButton from './VerifyButton';
 import 'materialize-css/dist/css/materialize.min.css';
 import './css/tradeBlotter.css'
+import LoadingOverlay from 'react-loading-overlay';
+import Loader from './Loader';
 //import M from 'materialize-css'
+
 
 class TradeBlotter extends Component {
 
@@ -15,7 +18,8 @@ class TradeBlotter extends Component {
         super(props)
     
         this.state = {
-            funds: []
+            funds: [],
+            trades: []
         }
     }
 
@@ -40,12 +44,37 @@ class TradeBlotter extends Component {
             })
     }.bind(this);
 
+    callBackFund = (trade) => {
+        const newTrade = {
+            fundNumber: trade.fundNumber,
+            quantity: trade.quantity,
+            status: trade.status
+        }
+        
+        var newTrades = [...this.state.trades]
+        var index = newTrades.indexOf(newTrades.find(t => t.fundNumber === newTrade.fundNumber))
+
+        if (index!=-1){
+            newTrades.splice(index, 1)
+            newTrades.push(newTrade)
+        } else {
+            newTrades.push(newTrade)
+        }
+
+        this.setState({
+            trades: newTrades   
+        }, () => {
+            console.log(this.state.trades)
+        })
+        
+    }
     
+
 
     render() {
         return (
             <div className="page-content">
-                
+                <h3 align="center">Trade Blotter</h3>
                 <table className='centered' id="trade-blotter-table">
                     <thead>
                         <tr>
@@ -60,15 +89,16 @@ class TradeBlotter extends Component {
                     <tbody> {
                         // Render all the funds 
                         this.state.funds.map((f) => (
-                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager}
-                             /> 
+                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager} 
+                            callBack={this.callBackFund}/> 
                         ))
                         }                          
                     </tbody>
                 </table>
                         
                 <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length}/>
-                <VerifyButton numberOfTrades={this.props.funds.length}/> 
+                <VerifyButton numberOfTrades={this.props.funds.length} trades={this.state.trades}/> 
+    
             </div>
         )
     }

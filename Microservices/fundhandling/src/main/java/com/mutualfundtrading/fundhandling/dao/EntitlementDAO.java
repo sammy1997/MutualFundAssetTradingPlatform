@@ -69,21 +69,19 @@ public class EntitlementDAO {
 
     public List<ImmutableFund> getEntitledFunds(String userId) {
         Optional<Entitlements> entitlementsOptional = repository.findByUserId(userId).fetchFirst().getUnchecked();
-
+        List<ImmutableFund> entitlements = new ArrayList<>();
         if (entitlementsOptional.isPresent()) {
-
             List<String> entitledFunds = entitlementsOptional.get().entitledTo();
-            List<ImmutableFund> entitlements = new ArrayList<>();
 
             for (String fundNumber:entitledFunds) {
                 ImmutableFund fund = fundDAO.getFund(fundNumber);
+
                 if(fund != null) {
                     entitlements.add(fund);
                 }
             }
-            return entitlements;
         }
-        return null;
+        return entitlements;
     }
 
     public List<String> getEntitlementListForUser(String userId){
