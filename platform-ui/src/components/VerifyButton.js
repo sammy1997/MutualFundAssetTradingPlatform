@@ -3,6 +3,10 @@ import React, { Component } from 'react'
 import Modal from 'react-responsive-modal';
 import axios from 'axios'
 import './css/tradeBlotter.css'
+import getCookie from './Cookie';
+import { Resolver } from 'dns';
+import LoadingOverlay from 'react-loading-overlay'
+import Loader from './Loader';
 
 class VerifyButton extends Component {
     constructor(props) {
@@ -11,8 +15,17 @@ class VerifyButton extends Component {
         this.state = {
              numberOfFunds: 0,
              verified: false, 
-             open: false 
+             open: false,
+             trades: [], 
+             active: true  
         }
+    }
+
+
+    componentDidMount = () => {
+        this.setState({
+            active: false  
+        })
     }
 
     onCloseModal = () => {
@@ -24,35 +37,78 @@ class VerifyButton extends Component {
     };
 
     verifyHandler = () => {
-        this.props.numberOfTrades < 6 ? this.setState({
-            verified: true 
-        }) :    alert (`Max trades to place is only 5`) 
-
-        //axios post request to check for verification
-        axios.post('http://localhost:8762/trade/verify', {headers: {}, body: this.props.funds})
-        .then(Response => {
-            Response.equals(`Verified Trades`) ? (
+        this.setState({
+            active: true 
+        })
+        var jwt = getCookie('token');
+        if (!jwt) {
+            this.props.history.push('/');
+        } else {
             this.setState({
-                verified: true  
+            trades: this.props.trades
+        }, () => {
+            var getTrades = [...this.state.trades] 
+            // console.log(jwt) 
+            console.log(this.state.trades)
+            this.props.numberOfTrades < 6 ? ( 
+                axios({
+                    method: `POST`,
+                    url: 'http://localhost:8762/trade/verify',
+                    headers: {Authorization: `Bearer ${jwt}`}, 
+                    data: getTrades 
+                })
+                .then(Response => {
+                    console.log(Response);
+                    (Response.data === `Verified Trades`) ? (
+                    this.setState({
+                        verified: true  
+                    })
+                    ) : (console.log("Not verified"))
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert(`Trades not verified, please check again`)
+                })
+            ) : alert(`Max Trades that can be placed is 5`)
             })
-        ) : (console.log("Not verified"))
-        }).catch(error => console.log(error))
+        }
+        
+    }
+    
+    noClickhandler = () => {
+        this.setState({
+            open: false 
+        })
     }
 
-    submitHandler = (e) => {
-        e.preventDefault();
-        this.setState({
-            open: false
-        })
+    submitHandler = (event) => {
+        event.preventDefault();      
+        var jwt = getCookie('token')
+        if(!jwt){
+            this.props.history.push('/');
+        } else {
+            var getTrades = [...this.state.trades]
+            this.state.verified === true ? (
+                axios({
+                    method: `POST`,
+                    url: 'http://localhost:8762/trade/exchange',
+                    headers: {Authorization: `Bearer ${jwt}`}, 
+                    data: getTrades 
+                })
+                .then(Response => {
+                    this.setState({
+                        active: true 
+                    })
+                    if (Response.status === 201) {
+                        window.location = "/portfolio"; 
+                        console.log(`Exchanged trades`) 
+                     } else console.log(`Error occurred`)
+                })) : (
+                    console.log(`Not verified`)
+                )   
         
-        //axios post request to place trades from trade blotter
-        this.state.verified === true ? (
-            axios.post(`http://localhost:8762/trade/exchange`, {headers: {}, body: this.props.funds})
-            .then(Response => {
-                Response.status === 201 ? console.log(`Exchanged trades`) : console.log(`Error occurred`)
-            })) : (
-                console.log(`Not verified`)
-            ) 
+        }
+         
     }
 
     render() { 
@@ -67,12 +123,14 @@ class VerifyButton extends Component {
                         <p align="center">Are you sure you want to place trades?</p>
                         <form onSubmit={this.submitHandler}>
                             <button className='submitTrade' type="submit">Yes</button> 
-                            <button className='submitTrade' type='submit'>No</button>
+                            <button className='submitTrade' onClick={this.noClickhandler}>No</button>
                         </form>
                     </div>
                 </Modal>
             </div> )
-        : ( <div><button className='verifyTrade' onClick={this.verifyHandler}>VERIFY TRADES</button> </div> )
+        : ( <div>
+                    <button className='verifyTrade' onClick={this.verifyHandler}>VERIFY TRADES</button> 
+            </div> )
     }
 }
 

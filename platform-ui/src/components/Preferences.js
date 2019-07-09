@@ -23,7 +23,8 @@ class Preferences extends Component {
         this.state={
             userId:'',
             fullName:'',
-            baseCurr:''
+            baseCurr:'',
+            errorResponse: []
         }
     }
 
@@ -35,7 +36,36 @@ class Preferences extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        // axios.post("http://localhost:8762/portfolio/update?balance=" + )
+        var jwt = getCookie('token');
+        if(!jwt){
+            this.props.history.push('/');
+        }else{
+            // console.log(jwt);
+            axios({
+                method: "POST",
+                url: "http://localhost:8762/portfolio/update/baseCurrency?Currency=" + this.state.baseCurr, 
+                headers : { Authorization: `Bearer ${jwt}` } 
+            })
+            .then( res => {
+                window.location = "/portfolio"
+            })
+            .catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
+                }
+            });
+        }
     }
 
 
@@ -51,10 +81,22 @@ class Preferences extends Component {
                     fullName : parseJwt(jwt).name,
                     baseCurr: res.data.baseCurr
                 })
-                console.log(res.data);
-            }).catch( err => {
-                document.cookie = "";
-                this.props.history.push('/');
+                // console.log(res.data);
+            }).catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
+                }
             });
         }
     }
@@ -65,7 +107,10 @@ class Preferences extends Component {
     render(){ 
         M.updateTextFields();
         return (
-            <div>
+            <div class="preferences-container">
+                <div className="error-response">
+                    {this.state.errorResponse}
+                </div>
                 <div className="row page-content">
                     <div className="card-container">
                     <div className="card ">
@@ -79,13 +124,13 @@ class Preferences extends Component {
                                     <label htmlFor="fullName" className="label-content">
                                         Name :
                                     </label>
-                                    <textarea type="text" id="fullName" value={this.state.fullName} onChange={this.handleChange} required></textarea>
+                                    <textarea type="text" id="fullName" value={this.state.fullName} disabled readOnly></textarea>
                                 </div>
                                 <div className="col s12 form-content">
                                     <label className="label-content">
                                         Base Currency :
                                     </label>
-                                    <select className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
+                                    <select id="baseCurr" className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
                                         <option value="INR">INR</option>
                                         <option value="USD">USD</option>
                                         <option value="GBP">GBP</option>

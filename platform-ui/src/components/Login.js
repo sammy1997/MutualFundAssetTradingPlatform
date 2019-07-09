@@ -38,19 +38,30 @@ class Login extends Component {
             var token = authorization.replace('Bearer ','');
             document.cookie = "token=" + token;
             var role = parseJwt(token).authorities[0];
-            console.log(parseJwt(token));
             if((role === "ROLE_TRADER") || (role === "ROLE_VIEWER")){
                 window.location = "/portfolio";
             }else{
                 window.location = "/admin";
             }
         })
-        .catch(function(error){
-            // console.log(error.response.status);
-            if(error.response.status === 401){
-                
+        .catch(error => {
+            if(error.response){ //The request was made and the server responded with a status code that falls out of the range of 2xx
+                //  console.log("Response Status: " + error.response.status);
+                if(error.response.status === 401 ){
+                    this.setState({
+                        errorResponse: [<p>Invalid Credentials</p>],
+                        userId: '',
+                        password: ''
+                    })
+                }else if(error.response.status === 500){
+                    this.setState({
+                        errorResponse: [<p>The server is down. Please try again later.</p>],
+                        userId: '',
+                        password: ''
+                    })
+                }
             }
-        })
+        });
     }
 
     render(){ 
@@ -61,7 +72,7 @@ class Login extends Component {
                     <h1>Login</h1>
                 </div>
                 <div className="error-response">
-                    <p>{this.state.errorResponse}</p>
+                    {this.state.errorResponse}
                 </div>
                 <div>
                     <div className="row form-container-custom">

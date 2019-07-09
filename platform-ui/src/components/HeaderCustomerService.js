@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import 'materialize-css/dist/css/materialize.min.css'
 import './css/header.css'
-import getCookie from './Cookie'
-import axios from 'axios'
 import M from 'materialize-css'
 
 class Header extends Component {
@@ -16,14 +14,22 @@ class Header extends Component {
         }
     }
 
-
+    logout(){
+        document.cookie = "token=";
+        this.props.history.push('/');
+    }
     
     render() {
         M.updateTextFields();
         return (
             <nav>
                 <div className="nav-wrapper">
-                    <a className="right username">{this.props.name}</a>
+                    <a href="/" onClick={this.logout}className="right sign-out-icon">
+                        <div className="separator"></div>
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    </a>
+                    <a href="#" className="right username">{this.props.name}</a>
+
                     <ul id="nav-mobile" className="left hide-on-med-and-down">
                         <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                         <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>

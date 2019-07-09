@@ -24,9 +24,9 @@ class HeaderPortfolio extends Component {
             li1: "PORTFOLIO",
             li2: "FUND FINDER",
             li3: "PREFERENCES",
-            currBal: undefined,
-            baseCurr: undefined,
-            fullName: undefined,
+            currBal: 0,
+            baseCurr: 0,
+            fullName: "NO NAME",
         }
     }
 
@@ -60,7 +60,7 @@ class HeaderPortfolio extends Component {
             <nav>
                 <div className="nav-wrapper teal lighten-1">
                     <a href="/" onClick={this.logout}className="right sign-out-icon">
-                        {/* <div className="separator"></div> */}
+                        <div className="separator"></div>
                         <i class="fa fa-sign-out" aria-hidden="true"></i>
                     </a>
                     <a href="#" className="right username">{this.state.fullName}</a>
