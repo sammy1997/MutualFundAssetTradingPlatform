@@ -1,6 +1,7 @@
 package io.tradingservice.tradingservice.controllerTests;
 
 import io.tradingservice.tradingservice.models.ImmutableTrade;
+import io.tradingservice.tradingservice.models.TradeParser;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 import io.tradingservice.tradingservice.services.UserTradeService;
 import org.junit.Before;
@@ -19,6 +20,8 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.ws.rs.core.Response.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -42,13 +45,12 @@ public class ControllerTests {
 
     ImmutableTrade trade;
     List<ImmutableTrade> trades;
+    TradeParser t;
 
     @Test
     public void successTest(){
         assert 1==1;
     }
-
-    /* Tests
 
     //Setting up dummy trade
     @Before
@@ -60,37 +62,38 @@ public class ControllerTests {
     }
 
     //View trades end point
-    @Test
-    public void viewTradeEndpointTest() throws Exception{
-        URI uri = new URI(baseUrl + "/view");
 
-        List<ImmutableTrade> trades = new ArrayList<>();
-        trades.add(trade);
-
-        Mockito.when(userTradeService.getAllTrades(Mockito.anyString())).thenReturn(trades);
-
-        ResponseEntity<String> entity= this.restTemplate.getForEntity(uri, String.class);
-
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        String expected = "[{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"avgNav\":22.0,\"status\":\"purchase\",\"quantity\":7.0,\"invManager\":\"GS\",\"setCycle\":2,\"invCurr\":\"INR\",\"sAndPRating\":23.2,\"moodysRating\":12.0}]";
-        assertThat(expected).isEqualTo(entity.getBody());
-    }
+//    @Test
+//    public void viewTradeEndpointTest() throws Exception{
+//        URI uri = new URI(baseUrl + "/view");
+//
+//        List<ImmutableTrade> trades = new ArrayList<>();
+//        trades.add(trade);
+//
+//        Mockito.when(userTradeService.getAllTrades(Mockito.anyString())).thenReturn(trades);
+//
+//        ResponseEntity<String> entity= this.restTemplate.getForEntity(uri, String.class);
+//
+//        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//
+//        String expected = "[{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"avgNav\":22.0,\"status\":\"purchase\",\"quantity\":7.0,\"invManager\":\"GS\",\"setCycle\":2,\"invCurr\":\"INR\",\"sAndPRating\":23.2,\"moodysRating\":12.0}]";
+//        assertThat(expected).isEqualTo(entity.getBody());
+//    }
 
     //Exchange trades end point
-    @Test
+   /* @Test
     public void exchangeTradesEndpointTest() throws Exception{
         URI uri = new URI(baseUrl + "/exchange");
 
-        List<ImmutableTrade> trades = new ArrayList<>();
+        List<TradeParser> t1 = new ArrayList<>();
         trades.add(trade);
 
         Mockito.when(userTradeService.exchangeTrade(Mockito.anyString(), Mockito.anyList(),
-                Mockito.anyString())).thenReturn(Response.status(201).entity("Exchanged Requested trade").build());
+                Mockito.anyString())).thenReturn(Response.status(200).build());
 
         ResponseEntity<String> entity= this.restTemplate.getForEntity(uri, String.class);
 
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getStatusCodeValue()).isEqualTo(200);
 
         String expected = "[{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"avgNav\":22.0,\"status\":\"purchase\",\"quantity\":7.0,\"invManager\":\"GS\",\"setCycle\":2,\"invCurr\":\"INR\",\"sAndPRating\":23.2,\"moodysRating\":12.0}]";
         assertThat(expected).isEqualTo(entity.getBody());
@@ -101,7 +104,7 @@ public class ControllerTests {
     public void verifyTradesEndpointTest() throws Exception{
         URI uri = new URI(baseUrl + "/verify");
 
-        Mockito.when(userTradeService.verifyTrades(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(Response.status(200).entity("Verified trades").build());
+        Mockito.when(userTradeService.verifyTrades(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(true);
 
         ResponseEntity<String> result = this.restTemplate.getForEntity(uri, String.class);
 
@@ -109,10 +112,10 @@ public class ControllerTests {
 
         String expected = "{\"status\":200,\"message\":\"Success\"}";
         assertThat(expected).isEqualTo(result.getBody());
-    }
+    }*/
 
     // Add user end point (not required)
-    @Test
+    /*@Test
     public void verifyTradesEndpointTest() throws Exception{
         URI uri = new URI(baseUrl + "/addUser?userId=123");
 
