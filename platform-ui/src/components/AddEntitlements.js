@@ -16,7 +16,8 @@ class AddEntitlements extends Component {
              fundSuggestions: [],
              userSuggestions: [],
              funds: [],
-             users: []
+             users: [],
+             errorResponse: []
         }
     }
 
@@ -125,6 +126,10 @@ class AddEntitlements extends Component {
             if(error.response.status === 401 || error.response.status === 403){
                 document.cookie = "token=;"
                 window.location = "/";
+            }else if (error.response.status === 500){
+                this.setState({
+                    errorResponse: [<p>The server is down. Please try again later.</p>]
+                })
             }
         });
 
@@ -253,6 +258,9 @@ class AddEntitlements extends Component {
     render() {
         return (
             <div className="wrapper">
+                <div class="error-response">
+                    {this.state.errorResponse}
+                </div>
                 <div className="user-search">
                         <label>Search users by user id</label>
                         <Chips value={this.state.chips} onChange={this.onChipsChange} 

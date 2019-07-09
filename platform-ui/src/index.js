@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Link, Redirect, Switch, BrowserRouter as Router } from 'react-router-dom';
+import { Route,  Switch, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 // import AddFund from './components/AddFund';
 // import Login from './components/Login';
 import LoginScreen from './components/LoginScreen';
 import * as serviceWorker from './serviceWorker';
-import PreferencesScreen from './components/PreferencesScreen';
 import CustomerService from './components/CustomerService';
 import AuthComponent from './components/AuthComponent';
 

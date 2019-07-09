@@ -12,7 +12,8 @@ class FundFinder extends Component {
     
         this.state = {
             searchableFields: [0,1,2,5],
-            fundList: []
+            fundList: [],
+            errorResponse: []
         }
     }
 
@@ -34,10 +35,14 @@ class FundFinder extends Component {
                 fundList: response.data
             })
         }).catch(error =>{
-            console.log(error);
+            // console.log(error);
             if(error.response.status === 401 || error.response.status === 403){
                 document.cookie = "token=;"
                 window.location = "/";
+            }else if (error.response.status === 500){
+                this.setState({
+                    errorResponse: [<p>The server is down. Please try again later.</p>]
+                });
             }
         });
     }
@@ -45,6 +50,9 @@ class FundFinder extends Component {
     render() {
         return (
             <div className="table-wrapper">
+                <div class="error-response">
+                    {this.state.errorResponse}
+                </div>
                 <table id='all-funds'>
                     <thead>
                         <tr>
