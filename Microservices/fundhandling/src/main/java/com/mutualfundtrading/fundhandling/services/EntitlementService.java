@@ -27,11 +27,11 @@ public class EntitlementService {
     private FundService fundService;
 
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClient;
 
     // Add entitlements
     public Response addEntitlements(EntitlementParser entitlement, String token) {
-        String response = webClient.get()
+        String response = webClient.build().get()
                 .uri(BASE_URL + "list-all")
                 .header("Authorization", "Bearer " + token)
                 .retrieve()

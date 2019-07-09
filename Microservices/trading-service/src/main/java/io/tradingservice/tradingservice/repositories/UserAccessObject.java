@@ -32,7 +32,7 @@ public class UserAccessObject {
             // Find the fund trade
             if (t.fundNumber().equals(fundId)) return t;
         }
-        return null;
+        return ImmutableTrade.builder().build();
     }
 
 
@@ -103,7 +103,7 @@ public class UserAccessObject {
         boolean isPresent = userRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent();
         if (isPresent) {
             return userRepository.findByUserId(userId).fetchFirst().getUnchecked().get().trades();
-        } return null;
+        } return new ArrayList<>();
     }
 
     // Verify Trades

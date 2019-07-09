@@ -43,13 +43,22 @@ public class UserTradeService {
     }
 
     // Helper function to find the fund details
-    private boolean existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
+    private ImmutableFund existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
         for (ImmutableFund fund: entitlements){
             if (fund.fundNumber().equals(tradeParser.getFundNumber())){
-                return true;
+                return fund;
             }
         }
-        return false;
+        return ImmutableFund.builder()
+                .fundNumber("None")
+                .fundName("None")
+                .invManager("None")
+                .nav(-1)
+                .invCurrency("None")
+                .setCycle(-1)
+                .sAndPRating(-1)
+                .moodysRating(-1)
+                .build();
     }
 
     // Helper function to get balance
@@ -101,27 +110,22 @@ public class UserTradeService {
         List<ImmutableFund> entitlements = getEntitlements(header);
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
-            if (existFunds(entitlements, t)){
-                ImmutableFund oldFund;
-                for (oldFund : entitlements){
-                    if (oldFund.fundNumber().equals(t.getFundNumber())){
-
-                    }
-                }
-                Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
-                                            .fundName(oldFund.fundName())
-                                            .avgNav(oldFund.nav())
-                                            .status(t.getStatus())
-                                            .quantity(t.getQuantity())
-                                            .invManager(oldFund.invManager())
-                                            .setCycle(oldFund.setCycle())
-                                            .invCurr(oldFund.invCurrency())
-                                            .sAndPRating(oldFund.sAndPRating())
-                                            .moodysRating(oldFund.moodysRating())
-                                            .build();
-                trades.add(newTrade);
+            ImmutableFund oldFund = existFunds(entitlements, t);
+                if (oldFund.setCycle()!=-1){
+                    Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
+                                                .fundName(oldFund.fundName())
+                                                .avgNav(oldFund.nav())
+                                                .status(t.getStatus())
+                                                .quantity(t.getQuantity())
+                                                .invManager(oldFund.invManager())
+                                                .setCycle(oldFund.setCycle())
+                                                .invCurr(oldFund.invCurrency())
+                                                .sAndPRating(oldFund.sAndPRating())
+                                                .moodysRating(oldFund.moodysRating())
+                                                .build();
+                    trades.add(newTrade);
             } else {
-                return [];
+                return new ArrayList<>();
             }
         }
         return trades;
@@ -173,13 +177,14 @@ public class UserTradeService {
 
             // Add trades
             for (Trade t : trades) {
+                if (t.quantity()==0) return -2;
                 balance += userAccessObject.addTrade(userId, t, balance, baseCurr);
             }
-
+            System.out.println("YOUR BALANCE HERE IS " + balance);
             // Create the funds for sending update request
-             updateUser(userId, header, balance);
+            // updateUser(userId, header, balance);
             return balance;
-        } else return 0;
+        } else return -1;
     }
 
     public void updateUser(String userId, String header, float newBalance){
