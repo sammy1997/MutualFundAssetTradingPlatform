@@ -38,7 +38,7 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // all are allowed to access the auth service through POST method
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers(HttpMethod.POST, "/create").permitAll()
+                .antMatchers(HttpMethod.POST, "/create").hasRole("ADMIN")
                 .antMatchers("/create/list-all").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/funds/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/add/**").hasRole("ADMIN")

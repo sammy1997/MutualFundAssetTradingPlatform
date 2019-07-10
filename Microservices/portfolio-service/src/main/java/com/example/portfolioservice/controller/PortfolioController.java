@@ -42,8 +42,8 @@ public class PortfolioController {
     @GET
     @Produces("application/json")
     @Path("/")
-    public Optional<User> getUserById(@HeaderParam("Authorization") String token) {
-        return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
+    public User getUserById(@HeaderParam("Authorization") String token) {
+        return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token)).get();
     }
 
     // Get user balance
@@ -84,7 +84,7 @@ public class PortfolioController {
     // Internal access
     @PATCH
     @Produces("application/json")
-    @Path("/update/userParser")
+    @Path("/update/user")
     public Response updateUserById(@HeaderParam("Authorization") String token,
                                                 @QueryParam("secret") String secret_key,
                                                 UserParser userParser) {
