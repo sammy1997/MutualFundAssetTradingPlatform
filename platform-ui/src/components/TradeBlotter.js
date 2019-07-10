@@ -81,6 +81,8 @@ class TradeBlotter extends Component {
         this.setState({
             trades: newTrades   
         })
+
+        this.unVerify()
         
     }
     

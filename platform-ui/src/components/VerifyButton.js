@@ -18,14 +18,19 @@ class VerifyButton extends Component {
              open: false,
              trades: [],
              active: false,
-             disabled: false    
+             disabled: false,
+             submitLoading: false,    
+             verifyLoading: false
         }
     }
 
 
     componentDidMount = () => {
         this.setState({
-            verified: false
+            verified: false,
+            submitLoading: false,    
+            verifyLoading: false,
+            trades: []
         })
         this.props.onRef(this)
     }
@@ -43,6 +48,9 @@ class VerifyButton extends Component {
     };
 
     verifyHandler = () => {
+        this.setState({
+            verifyLoading: true,
+        })
         var jwt = getCookie('token');
         if (!jwt) {
             this.props.history.push('/');
@@ -70,7 +78,7 @@ class VerifyButton extends Component {
                             this.setState({
                                 verified: true  
                             })
-                        ) : (console.log("Not verified"))
+                        ) : (console.log(Response.data))
                         }).catch(error => {
                             console.log(error)
                             alert(`Trades not verified, please check again`)
@@ -84,7 +92,8 @@ class VerifyButton extends Component {
     
     unVerifyHandler = () =>{
         this.setState({
-            verified: false 
+            verified: false, 
+            verifyLoading: false 
         })
     }
 
@@ -97,7 +106,8 @@ class VerifyButton extends Component {
     submitHandler = (event) => {
         event.preventDefault();     
         this.setState({
-            disabled: true 
+            disabled: true,
+            submitLoading: true 
         }) 
         var jwt = getCookie('token')
         if(!jwt){
@@ -128,24 +138,25 @@ class VerifyButton extends Component {
     }
 
     render() { 
-        const {open} = this.state 
+        const {open, submitLoading, verifyLoading} = this.state  
+        let submitContent;
+        if (submitLoading) {
+            submitContent = <div><p align="center">Placing requested Trade...</p><img className="loading" src={require('./loader2.gif')}/></div>
+        } else {
+            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form onSubmit={this.submitHandler}><button className='submitTrade' type="submit" disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
+        }
+        
         return this.state.verified ? 
         (
             <div>
                 <button className='verifyTrade' onClick={this.onOpenModal}>PLACE TRADES</button> 
                 <p align='center'> Successfully Verified trades! </p>
                 <Modal open={open} onClose={this.onCloseModal} center>
-                    <div>
-                        <p align="center">Are you sure you want to place trades?</p>
-                        <form onSubmit={this.submitHandler}>
-                            <button className='submitTrade' type="submit" disabled={this.state.disabled}>Yes</button> 
-                            <button className='submitTrade' onClick={this.noClickhandler}>No</button>
-                        </form>
-                    </div>
+                    {submitContent} 
                 </Modal>
             </div> )
         : ( <div>
-                    <button className='verifyTrade' onClick={this.verifyHandler}>VERIFY TRADES</button> 
+                <button className='verifyTrade' onClick={this.verifyHandler}>VERIFY TRADES</button>
             </div> )
     }
 }
