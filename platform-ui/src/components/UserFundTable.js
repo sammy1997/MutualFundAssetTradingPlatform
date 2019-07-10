@@ -56,6 +56,7 @@ class UserFunds extends Component
                         open: true 
                     })
                 }
+                
                 selected.push(temp);
             }
             this.setState({
