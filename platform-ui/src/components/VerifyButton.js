@@ -16,16 +16,22 @@ class VerifyButton extends Component {
              numberOfFunds: 0,
              verified: false, 
              open: false,
-             trades: [], 
-             active: true  
+             trades: [],
+             active: false,
+             disabled: false    
         }
     }
 
 
     componentDidMount = () => {
         this.setState({
-            active: false  
+            verified: false
         })
+        this.props.onRef(this)
+    }
+
+    componentWillUnmount() {
+        this.props.onRef(undefined)
     }
 
     onCloseModal = () => {
@@ -37,44 +43,51 @@ class VerifyButton extends Component {
     };
 
     verifyHandler = () => {
-        this.setState({
-            active: true 
-        })
         var jwt = getCookie('token');
         if (!jwt) {
             this.props.history.push('/');
         } else {
             this.setState({
-            trades: this.props.trades
-        }, () => {
-            var getTrades = [...this.state.trades] 
-            // console.log(jwt) 
-            console.log(this.state.trades)
-            this.props.numberOfTrades < 6 ? ( 
-                axios({
-                    method: `POST`,
-                    url: 'http://localhost:8762/trade/verify',
-                    headers: {Authorization: `Bearer ${jwt}`}, 
-                    data: getTrades 
-                })
-                .then(Response => {
-                    console.log(Response);
-                    (Response.data === `Verified Trades`) ? (
-                    this.setState({
-                        verified: true  
-                    })
-                    ) : (console.log("Not verified"))
-                })
-                .catch(error => {
-                    console.log(error)
-                    alert(`Trades not verified, please check again`)
-                })
-            ) : alert(`Max Trades that can be placed is 5`)
-            })
+                trades: this.props.trades
+                }, () => {
+                    var getTrades = [...this.state.trades]
+                    var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
+                    if (index!=-1){
+                        alert(`Please enter quantity`)
+                        console.log(index)
+                    } else {
+                    // console.log(jwt) 
+                    console.log(this.state.trades)
+                    this.props.numberOfTrades < 6 ? ( 
+                    axios({
+                        method: `POST`,
+                        url: 'http://localhost:8762/trade/verify',
+                        headers: {Authorization: `Bearer ${jwt}`}, 
+                        data: getTrades 
+                    }).then(Response => {
+                        console.log(Response);
+                        (Response.data === `Verified Trades`) ? (
+                            this.setState({
+                                verified: true  
+                            })
+                        ) : (console.log("Not verified"))
+                        }).catch(error => {
+                            console.log(error)
+                            alert(`Trades not verified, please check again`)
+                        })
+                    ) : alert(`Max Trades that can be placed is 5`)
+                    }
+                }
+            )
         }
-        
     }
     
+    unVerifyHandler = () =>{
+        this.setState({
+            verified: false 
+        })
+    }
+
     noClickhandler = () => {
         this.setState({
             open: false 
@@ -82,7 +95,10 @@ class VerifyButton extends Component {
     }
 
     submitHandler = (event) => {
-        event.preventDefault();      
+        event.preventDefault();     
+        this.setState({
+            disabled: true 
+        }) 
         var jwt = getCookie('token')
         if(!jwt){
             this.props.history.push('/');
@@ -122,7 +138,7 @@ class VerifyButton extends Component {
                     <div>
                         <p align="center">Are you sure you want to place trades?</p>
                         <form onSubmit={this.submitHandler}>
-                            <button className='submitTrade' type="submit">Yes</button> 
+                            <button className='submitTrade' type="submit" disabled={this.state.disabled}>Yes</button> 
                             <button className='submitTrade' onClick={this.noClickhandler}>No</button>
                         </form>
                     </div>

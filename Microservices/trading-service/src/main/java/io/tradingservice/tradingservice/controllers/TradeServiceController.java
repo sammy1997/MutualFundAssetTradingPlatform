@@ -44,14 +44,15 @@ public class TradeServiceController {
     public Response exchangeTrade(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers) {
         if (tradeParsers.size() <= 5) {
             String userId = ServiceUtils.decodeJWTForUserId(header);
-            List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
+            List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
             System.out.println(trades);
-            if (trades == null) return Response.status(400).entity("Trades not verified").build();
+            if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
             float res = userTradeService.exchangeTrade(userId, trades, header);
-            if (res == 0) return Response.status(400).entity("Trades not verified").build();
+            if (res == -1) return Response.status(400).entity("Trades not verified").build();
+            else if (res == -2) return Response.status(400).entity("Trades not verified: Enter quantity greater than 0").build();
             else {
                 System.out.println(res);
-                userTradeService.updateUser(userId, header, res-1);
+                userTradeService.updateUser(userId, header, res);
                 return Response.status(201).entity("Exchanged Requested trade").build();
             }
         } else return Response.status(400).entity("Max trade request is 5").build();
@@ -62,8 +63,8 @@ public class TradeServiceController {
     @Path("/verify")
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
-        List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
-        if (trades == null) return Response.status(400).entity("Trades not verified").build();
+        List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
+        if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();
         return Response.status(400).entity("Trades not verified").build();
