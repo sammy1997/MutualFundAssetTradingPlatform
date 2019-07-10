@@ -83,6 +83,4 @@ public class TradeServiceController {
         } else return Response.status(403).entity("Unauthorized request")
                                             .build();
     }
-
-
 }
