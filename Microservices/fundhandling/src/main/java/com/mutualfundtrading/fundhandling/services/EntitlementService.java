@@ -17,7 +17,7 @@ import java.util.List;
 import static com.mutualfundtrading.fundhandling.utils.ServiceUtils.BASE_URL;
 
 @Service
-public class EntitlementService {
+public class EntitlementService implements EntitlementServiceModel {
     @Autowired
     private EntitlementDAO dao;
 
@@ -25,7 +25,7 @@ public class EntitlementService {
     private FundDAO fundDAO;
 
     @Autowired
-    private FundService fundService;
+    private FundServiceModel fundService;
 
     @Autowired
     private WebClient.Builder webClient;
@@ -105,8 +105,8 @@ public class EntitlementService {
             return Response.status(400).entity("User ID is missing").build();
         }
         if (entitlement.entitledTo().isPresent() && entitlement.entitledTo().get().size()>0) {
-            String message = dao.delete(entitlement.userId().get(), entitlement.entitledTo().get());
-            if (message == null) {
+            boolean status = dao.delete(entitlement.userId().get(), entitlement.entitledTo().get());
+            if (!status) {
                 return Response.status(404).entity("User with user ID " + entitlement.userId()
                         .get() + " not found.").build();
             }
@@ -119,7 +119,7 @@ public class EntitlementService {
     }
 
     // Fetch entitlements
-    public List<ImmutableFund> getEntitlements(String userId) {
+    public List<Fund> getEntitlements(String userId) {
         return dao.getEntitledFunds(userId);
     }
 

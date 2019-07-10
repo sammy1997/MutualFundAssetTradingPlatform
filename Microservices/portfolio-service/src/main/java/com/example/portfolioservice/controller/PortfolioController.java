@@ -42,8 +42,9 @@ public class PortfolioController {
     @GET
     @Produces("application/json")
     @Path("/")
-    public Optional<User> getUserById(@HeaderParam("Authorization") String token) {
-        return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
+    public User getUserById(@HeaderParam("Authorization") String token) {
+        Optional<User> user = portfolioService.getUser(token);
+        return user.isPresent()? user.get():null;
     }
 
     // Get user balance
@@ -51,7 +52,7 @@ public class PortfolioController {
     @Produces("application/json")
     @Path("/getBalance")
     public BalanceInfo getBalanceById(@HeaderParam("Authorization") String token) {
-        return portfolioService.getBalanceById(ServiceUtils.decodeJWTForUserId(token)).get();
+        return portfolioService.getBalanceById(token).get();
     }
 
     // Update user balance
@@ -160,8 +161,8 @@ public class PortfolioController {
         }
 
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        if (portfolioService.getUser(userId).isPresent()){
-            return Response.status(400).entity("UserParser already exists").build();
+        if (portfolioService.getUser(token).isPresent()){
+            return Response.status(400).entity("User already exists").build();
         }
 
         UserParser userParser = ImmutableUserParser.builder()
@@ -171,7 +172,7 @@ public class PortfolioController {
                 .currBal(balance)
                 .build();
         portfolioService.createUser(userParser);
-        return Response.status(200).entity("UserParser added to DB").build();
+        return Response.status(200).entity("User added to DB").build();
     }
 
 
@@ -180,8 +181,7 @@ public class PortfolioController {
     @Produces("application/json")
     @Path("/getFunds/")
     public List<Fund> getFunds(@HeaderParam("Authorization") String token) {
-        String userId = ServiceUtils.decodeJWTForUserId(token);
-        Optional<User> user = portfolioService.getUser(userId);
+        Optional<User> user = portfolioService.getUser(token);
         if (user.isPresent())
             return user.get().all_funds();
         List<Fund> emptyFunds = new ArrayList<>();

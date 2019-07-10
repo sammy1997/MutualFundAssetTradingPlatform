@@ -65,7 +65,7 @@ public class EntitlementDAO {
         }
     }
 
-    public String delete(String userId, List<String> deleteEntitlements) {
+    public boolean delete(String userId, List<String> deleteEntitlements) {
         Optional<Entitlements> entitlementsOptional = repository.findByUserId(userId).fetchFirst().getUnchecked();
 
         if (entitlementsOptional.isPresent()) {
@@ -77,19 +77,19 @@ public class EntitlementDAO {
             currentEntitlements.removeAll(entitlementsToDelete);
 
             repository.upsert(ImmutableEntitlements.builder().userId(userId).entitledTo(currentEntitlements).build());
-            return "Entitlements deleted";
+            return true;
         }
-        return null;
+        return false;
     }
 
-    public List<ImmutableFund> getEntitledFunds(String userId) {
+    public List<Fund> getEntitledFunds(String userId) {
         Optional<Entitlements> entitlementsOptional = repository.findByUserId(userId).fetchFirst().getUnchecked();
-        List<ImmutableFund> entitlements = new ArrayList<>();
+        List<Fund> entitlements = new ArrayList<>();
         if (entitlementsOptional.isPresent()) {
             List<String> entitledFunds = entitlementsOptional.get().entitledTo();
 
             for (String fundNumber:entitledFunds) {
-                ImmutableFund fund = fundDAO.getFund(fundNumber);
+                Fund fund = fundDAO.getFund(fundNumber);
 
                 if(fund != null) {
                     entitlements.add(fund);

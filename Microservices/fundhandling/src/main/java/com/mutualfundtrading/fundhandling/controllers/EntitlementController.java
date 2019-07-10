@@ -2,9 +2,8 @@ package com.mutualfundtrading.fundhandling.controllers;
 
 import com.mutualfundtrading.fundhandling.models.EntitlementParser;
 import com.mutualfundtrading.fundhandling.models.Fund;
-import com.mutualfundtrading.fundhandling.models.ImmutableEntitlementParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFund;
-import com.mutualfundtrading.fundhandling.services.EntitlementService;
+import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -12,23 +11,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 
 
 @Path("/entitlements")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
-public class EntitlementController {
+public class EntitlementController implements EntitlementControllerModel{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
 
     @Autowired
-    EntitlementService service;
-    private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
+    private EntitlementServiceModel service;
+
+    @Autowired
+    private ServiceUtils serviceUtils;
 
     @Path("/add")
     @POST
@@ -40,7 +41,7 @@ public class EntitlementController {
     @Path("/update")
     @POST
     public Response updateEntitlements(EntitlementParser entitlement) {
-        LOGGER.info("Entitlement add endpoint hit.");
+        LOGGER.info("Entitlement update endpoint hit.");
         return service.updateEntitlements(entitlement);
     }
 
@@ -53,7 +54,7 @@ public class EntitlementController {
 
     @Path("/get")
     @GET
-    public List<ImmutableFund> getEntitlements(@HeaderParam("Authorization") String token) {
+    public List<Fund> getEntitlements(@HeaderParam("Authorization") String token) {
         LOGGER.info("Get entitlements endpoint hit.");
         return service.getEntitlements(ServiceUtils.decodeJWTForUserId(token));
     }
@@ -88,7 +89,7 @@ public class EntitlementController {
     @Consumes({MediaType.MULTIPART_FORM_DATA_VALUE})
     public Response uploadCsvFile(@FormDataParam("file") InputStream fileInputStream,
                                     @FormDataParam("file") FormDataContentDisposition fileMetaData) {
-        int status = ServiceUtils.fileUpload(fileInputStream, fileMetaData);
+        int status = serviceUtils.fileUpload(fileInputStream, fileMetaData);
         if (status ==404) {
             LOGGER.info("Wrong file format.");
             return Response.status(status).entity("Provide excel or csv files").build();
@@ -97,7 +98,7 @@ public class EntitlementController {
             return Response.status(status).entity("Error while uploading file. Try again").build();
         } else {
             LOGGER.info("File upload successful");
-            return ServiceUtils.addEntitlementsFromCSV(fileMetaData.getFileName());
+            return serviceUtils.addEntitlementsFromCSV(fileMetaData);
         }
     }
 }

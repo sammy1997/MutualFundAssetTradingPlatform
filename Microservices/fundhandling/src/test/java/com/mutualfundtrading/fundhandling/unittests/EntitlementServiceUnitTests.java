@@ -5,7 +5,8 @@ import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.models.*;
 import com.mutualfundtrading.fundhandling.services.EntitlementService;
-import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -33,14 +32,8 @@ public class EntitlementServiceUnitTests {
     @Mock
     private FundDAO fundDAO;
 
-    @Mock
-    private FundService fundService;
-
-    @Mock
-    private WebClient webClient;
-
     @InjectMocks
-    EntitlementService service;
+    private EntitlementServiceModel service = new EntitlementService();
 
     private String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYW1teTE5OTciLCJhdXRob3JpdGllcyI6WyJST0" +
             "xFX0FETUlOIiwiUk9MRV9UUkFERVIiXSwiaWF0IjoxNTYyNTY5MjcwLCJuYW1lIjoiU29tYnVkZGhhIiwiZXhwI" +
@@ -68,8 +61,8 @@ public class EntitlementServiceUnitTests {
 
     @Test
     public void getEntitlementsServiceTest(){
-        List<ImmutableFund> funds = new ArrayList<>();
-        funds.add((ImmutableFund) fundDb);
+        List<Fund> funds = new ArrayList<>();
+        funds.add(fundDb);
         Mockito.when(dao.getEntitledFunds(Mockito.anyString())).thenReturn(funds);
         assertThat(funds).isEqualTo(service.getEntitlements(Mockito.anyString()));
     }
@@ -129,7 +122,7 @@ public class EntitlementServiceUnitTests {
 
         // Test when user not found
         Mockito.when(dao.delete(entitlement.userId().get(), entitlement.entitledTo().get()))
-                .thenReturn(null);
+                .thenReturn(false);
 
         response = service.deleteEntitlements(entitlement);
         assertThat(response.getStatus()).isEqualTo(404);
@@ -138,7 +131,7 @@ public class EntitlementServiceUnitTests {
 
         // Test when user is found
         Mockito.when(dao.delete(entitlement.userId().get(), entitlement.entitledTo().get()))
-                .thenReturn("Entitlements deleted");
+                .thenReturn(true);
 
         response = service.deleteEntitlements(entitlement);
         assertThat(response.getStatus()).isEqualTo(200);
