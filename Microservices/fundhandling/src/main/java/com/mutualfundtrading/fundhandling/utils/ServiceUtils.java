@@ -1,8 +1,10 @@
 package com.mutualfundtrading.fundhandling.utils;
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
+import com.mutualfundtrading.fundhandling.models.EntitlementParser;
 import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundParser;
+import com.mutualfundtrading.fundhandling.services.FundService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,6 +14,7 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ServiceUtils {
     public static String BASE_URL = "http://localhost:8762/create/";
@@ -156,5 +159,15 @@ public class ServiceUtils {
         } catch (IOException e) {
             return 422;
         }
+    }
+
+    public static List<String> checkFunds(FundService fundService, EntitlementParser entitlement){
+        List<String> temp = new ArrayList<>();
+        for (String fundId : entitlement.entitledTo().get()) {
+            if (fundService.getFund(fundId) != null) {
+                temp.add(fundId);
+            }
+        }
+        return temp;
     }
 }

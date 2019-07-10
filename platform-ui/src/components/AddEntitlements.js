@@ -6,6 +6,7 @@ import SearchBar from './SearchBar.js'
 import axios from 'axios';
 import getCookie from './Cookie';
 import FileUpload from './FileUploadComponent';
+import autocomplete from './utility/Autocomplete';
 
 class AddEntitlements extends Component {
     constructor(props) {
@@ -17,83 +18,67 @@ class AddEntitlements extends Component {
              userSuggestions: [],
              funds: [],
              users: [],
+             updateUser: false,
              errorResponse: []
         }
     }
 
     onChipsChange = chips => {
-        this.setState({ 
-            chips: chips 
-        });
+        if(!this.state.updateUser){
+            this.setState({ 
+                chips: chips 
+            });
+        }else{
+            var chip = [];
+            if(chips.length > 0){
+                chip.push(chips[chips.length-1])
+            }
+            this.setState({
+                chips: chip
+            })
+            if(chip.length > 0) {
+                var baseUrl = "http://localhost:8762/";
+                var token = getCookie('token');
+                if(!token){
+                    this.props.history.push('/');
+                }
+                // Setting headers
+                var headers ={
+                    Authorization: 'Bearer ' + token
+                }
+                axios({
+                    method: 'get',
+                    url: baseUrl + 'fund-handling/api/funds/entitlements?userId=' + chip[0],
+                    headers: headers
+                }).then(res => {
+                    document.getElementById("added-funds").innerHTML = "";
+                    res.data.forEach(fund =>{
+                        var currentList = document.getElementById("added-funds");
+                        var length = currentList.getElementsByTagName('li').length;
+                        var li= document.createElement('li');
+                        li.id = 'select' + length;
+                        li.innerHTML = fund.fundNumber;
+                        var i = document.createElement('i');
+                        i.className = 'fa fa-trash';
+                        li.append(i);
+                        i.onclick = (event) => {
+                            var elem = event.target.parentNode;
+                            var parent = elem.parentNode;
+                            parent.removeChild(elem);
+                            var updateIdList = parent.getElementsByTagName("li")
+                            for(var i=0; i<updateIdList.length; i++){
+                                updateIdList[i].id = 'select' + i;
+                            }
+                        }
+                        currentList.appendChild(li);
+                    })
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+        }
     }
 
-    autocomplete(inp, handleSearchItemClick, arr, funds) {
-        var currentFocus;
-        inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
-            closeAllLists();
-            if (!val) { return false;}
-            currentFocus = -1;
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            this.parentNode.appendChild(a);
-            for (i = 0; i < arr.length; i++) {
-              if (arr[i].toUpperCase().indexOf(val.toUpperCase())!==-1 || 
-                    funds[i].fundName.toUpperCase().indexOf(val.toUpperCase())!==-1) {
-                b = document.createElement("DIV");
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length) + " : " + funds[i].fundName;
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                    b.addEventListener("click", function(e) {
-                        handleSearchItemClick(this.getElementsByTagName("input")[0].value);
-                        closeAllLists();
-                    });
-                a.appendChild(b);
-              }
-            }
-        });
-        
-        inp.addEventListener("keydown", function(e) {
-            var x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode === 40) {
-              currentFocus++;
-              addActive(x);
-            } else if (e.keyCode === 38) {
-              currentFocus--;
-              addActive(x);
-            } else if (e.keyCode === 13) {
-              e.preventDefault();
-              if (currentFocus > -1) {
-                if (x) x[currentFocus].click();
-              }
-            }
-        });
-        function addActive(x) {
-          if (!x) return false;
-          removeActive(x);
-          if (currentFocus >= x.length) currentFocus = 0;
-          if (currentFocus < 0) currentFocus = (x.length - 1);
-          x[currentFocus].classList.add("autocomplete-active");
-        }
-        function removeActive(x) {
-          for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-          }
-        }
-        function closeAllLists(elmnt) {
-            var x = document.getElementsByClassName("autocomplete-items");
-            for (var i = 0; i < x.length; i++) {
-                if (elmnt !== x[i] && elmnt !== inp) {
-                    x[i].parentNode.removeChild(x[i]);
-                }
-            }
-        }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
-    }
 
     componentDidMount(){
         var baseUrl = "http://localhost:8762/";
@@ -157,7 +142,7 @@ class AddEntitlements extends Component {
         });
     }
     componentDidUpdate(){
-        this.autocomplete(document.getElementById("searchId"), this.handleSearchItemClick, 
+        autocomplete(document.getElementById("searchId"), this.handleSearchItemClick, 
                         this.state.fundSuggestions, this.state.funds);
     }
     handleSearchItemClick(content){
@@ -234,13 +219,13 @@ class AddEntitlements extends Component {
             
             axios({
                 method: 'post',
-                url: baseUrl + 'fund-handling/api/entitlements/add',
+                url: baseUrl + 'fund-handling/api/entitlements/' + (this.state.updateUser? 'update': 'add'),
                 headers: headers,
                 data: payload
             // eslint-disable-next-line no-loop-func
             }).then(response =>{
                 console.log(response.data)
-                alert('Response for user ' + this.state.chips[i] + " : " + response.data);
+                alert('Response for user ' + payload.userId + " : " + response.data);
             }).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
@@ -255,6 +240,15 @@ class AddEntitlements extends Component {
         document.getElementById("added-funds").innerHTML = "";
     }
     
+    onSwitchChanged = (event) =>{
+        this.setState({
+            updateUser: event.target.checked
+        })
+        this.setState({
+            chips: []
+        })
+    }
+
     render() {
         return (
             <div className="wrapper">
@@ -262,11 +256,19 @@ class AddEntitlements extends Component {
                     {this.state.errorResponse}
                 </div>
                 <div className="user-search">
-                        <label>Search users by user id</label>
+                        <label id = "search-text">Search users by user id</label>
                         <Chips value={this.state.chips} onChange={this.onChipsChange} 
                                 suggestions={this.state.userSuggestions} >
 
                         </Chips>
+                        <div className="switch">
+                            <label>
+                                Add Entitlements
+                                <input type="checkbox" onChange = {this.onSwitchChanged}/>
+                                <span className="lever"></span>
+                                Update Entitlements
+                            </label>
+                        </div>
                 </div>
                 
                 <div className="entitlements">
@@ -286,7 +288,7 @@ class AddEntitlements extends Component {
                             <ul id="added-funds">
                             </ul>
                             <button className="btn waves-effect waves-light add-entitlements" onClick={this.addEntitlementsToUsers}>
-                                Add Entitlements
+                                {this.state.updateUser? "Update Entitlements": "Add Entitlements"}
                             </button>
                         </div>
                     </div>    

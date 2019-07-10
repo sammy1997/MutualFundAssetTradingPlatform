@@ -44,9 +44,24 @@ public class EntitlementDAO {
                     entitledFundList.add(newEntitledFundId);
                 }
             }
-            repository.upsert(ImmutableEntitlements.builder().userId(userId).entitledTo(entitledFundList).build());
+            repository.upsert(ImmutableEntitlements.builder().userId(userId)
+                    .entitledTo(entitledFundList).build());
         } else {
-            repository.insert(ImmutableEntitlements.builder().userId(userId).entitledTo(entitleTo).build());
+            repository.insert(ImmutableEntitlements.builder().userId(userId)
+                    .entitledTo(entitleTo).build());
+        }
+    }
+
+    public void update(EntitlementParser entitlement){
+        Optional<Entitlements> entitlementsOptional = repository.findByUserId(entitlement.userId().get())
+                .fetchFirst().getUnchecked();
+
+        if (entitlementsOptional.isPresent()) {
+
+            repository.upsert(ImmutableEntitlements.builder()
+                    .userId(entitlement.userId().get())
+                    .entitledTo(entitlement.entitledTo().get()).build());
+
         }
     }
 
