@@ -1,4 +1,4 @@
-package com.example.portfolioservice.models;
+package com.mutualfundtrading.portfolioservice.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

@@ -1,4 +1,4 @@
-package com.example.portfolioservice.utils;
+package com.mutualfundtrading.portfolioservice.utils;
 import java.util.HashMap;
 import java.util.Map;
 

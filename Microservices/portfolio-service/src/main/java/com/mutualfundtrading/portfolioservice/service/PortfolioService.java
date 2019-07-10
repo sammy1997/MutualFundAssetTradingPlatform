@@ -1,10 +1,10 @@
-package com.example.portfolioservice.service;
+package com.mutualfundtrading.portfolioservice.service;
 
 
-import com.example.portfolioservice.DAO.UserDAO;
-import com.example.portfolioservice.models.BalanceInfo;
-import com.example.portfolioservice.models.UserParser;
-import com.example.portfolioservice.models.User;
+import com.mutualfundtrading.portfolioservice.DAO.UserDAO;
+import com.mutualfundtrading.portfolioservice.models.BalanceInfo;
+import com.mutualfundtrading.portfolioservice.models.UserParser;
+import com.mutualfundtrading.portfolioservice.models.User;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

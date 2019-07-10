@@ -1,11 +1,11 @@
-package com.example.portfolioservice.unitTests;
-import com.example.portfolioservice.DAO.UserDAO;
-import com.example.portfolioservice.models.*;
+package com.mutualfundtrading.portfolioservice.unitTests;
+import com.mutualfundtrading.portfolioservice.DAO.UserDAO;
+import com.mutualfundtrading.portfolioservice.models.*;
 import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.common.base.Optional;
-import com.example.portfolioservice.service.PortfolioService;
+import com.mutualfundtrading.portfolioservice.service.PortfolioService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -49,9 +49,9 @@ public class PortfolioServiceUnitTests {
 
     @Test
     public void test_createUser() {
-        Mockito.doReturn("UserParser Created").when(dao).createUser(userParser);
+        Mockito.doReturn("User Created").when(dao).createUser(userParser);
         String message = portfolioService.createUser(userParser);
-        assertEquals(message, "UserParser Created");
+        assertEquals(message, "User Created");
     }
 
     @Test

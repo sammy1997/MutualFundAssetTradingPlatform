@@ -1,10 +1,10 @@
-package com.example.portfolioservice.DAO;
+package com.mutualfundtrading.portfolioservice.DAO;
 
-import com.example.portfolioservice.models.*;
+import com.mutualfundtrading.portfolioservice.models.*;
 import com.google.common.base.Optional;
 import org.immutables.mongo.repository.RepositorySetup;
 
-import static com.example.portfolioservice.utils.Constants.FX_USD;
+import static com.mutualfundtrading.portfolioservice.utils.Constants.FX_USD;
 
 
 @SuppressWarnings("ALL")

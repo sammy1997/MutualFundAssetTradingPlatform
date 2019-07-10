@@ -1,12 +1,13 @@
-package com.example.portfolioservice.unitTests;
-import com.example.portfolioservice.models.*;
-import static com.example.portfolioservice.utils.Constants.SECRET_TOKEN;
+package com.mutualfundtrading.portfolioservice.unitTests;
+import com.mutualfundtrading.portfolioservice.models.*;
+
 import static org.junit.Assert.assertEquals;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.common.base.Optional;
-import com.example.portfolioservice.service.PortfolioService;
+import com.mutualfundtrading.portfolioservice.service.PortfolioService;
+import com.mutualfundtrading.portfolioservice.utils.Constants;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -87,7 +88,7 @@ public class PortfolioControllerUnitTests {
 
     @Test
     public void test_getBalanceById() throws Exception {
-        URI uri = new URI(baseURL + "/getBalance");
+        URI uri = new URI(baseURL + "/balance");
         Mockito.when(portfolioService.getBalanceById(Mockito.anyString()))
                     .thenReturn(Optional.of(balanceInfo));
         HttpHeaders headers = new HttpHeaders();
@@ -104,7 +105,7 @@ public class PortfolioControllerUnitTests {
     @Test
     public void test_updateBaseCurrency()throws Exception {
         String newCurr = "USD";
-        URI uri = new URI(baseURL + "/update/baseCurrency/?Currency="+newCurr);
+        URI uri = new URI(baseURL + "/baseCurrency/?Currency="+newCurr);
         Mockito.when(portfolioService.updateBaseCurrency(Mockito.anyString(),
                     Mockito.anyString())).thenReturn(newCurr);
         HttpHeaders headers = new HttpHeaders();
@@ -112,7 +113,7 @@ public class PortfolioControllerUnitTests {
         headers.set("Authorization", token);
         HttpEntity<String> request = new HttpEntity<String>(null, headers);
         ResponseEntity<String> entity = this.restTemplate.exchange
-                (uri, HttpMethod.PATCH, request, String.class);
+                (uri, HttpMethod.POST, request, String.class);
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertEquals(entity.getBody(), newCurr);
     }
@@ -135,7 +136,7 @@ public class PortfolioControllerUnitTests {
 
     @Test
     public void test_addExistingUser()throws Exception {
-        URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="
+        URI uri = new URI(baseURL + "/add/user?secret=" + Constants.SECRET_TOKEN + "&balance="
                 + userParser.currBal() + "&baseCurr="
                 + userParser.baseCurr().get());
         Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class)))
@@ -153,7 +154,7 @@ public class PortfolioControllerUnitTests {
 
     @Test
     public void test_addUser()throws Exception {
-        URI uri = new URI(baseURL + "/add/user?secret=" + SECRET_TOKEN + "&balance="
+        URI uri = new URI(baseURL + "/add/user?secret=" + Constants.SECRET_TOKEN + "&balance="
                 + userParser.currBal() + "&baseCurr="+ userParser.baseCurr().get());
 
         Mockito.when(portfolioService.createUser(Mockito.any(UserParser.class)))
@@ -174,7 +175,7 @@ public class PortfolioControllerUnitTests {
     public void test_updateBalance()throws Exception {
         float newBal = 34.56f;
         URI uri = new URI(baseURL + "/update?balance=" + userParser.currBal()
-                            + "&secret=" + SECRET_TOKEN);
+                            + "&secret=" + Constants.SECRET_TOKEN);
         Mockito.when(portfolioService.updateBalance(Mockito.anyString()
                         , Mockito.anyFloat())).thenReturn(newBal);
         HttpHeaders headers = new HttpHeaders();
@@ -202,7 +203,7 @@ public class PortfolioControllerUnitTests {
     @Test
     public void test_updateUser() throws Exception {
         Optional<User> user = Optional.of(userDB);
-        URI uri = new URI(baseURL + "/update/userParser/?secret=" + SECRET_TOKEN);
+        URI uri = new URI(baseURL + "/update/userParser/?secret=" + Constants.SECRET_TOKEN);
         Mockito.when(portfolioService.update(Mockito.any())).thenReturn(user);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);

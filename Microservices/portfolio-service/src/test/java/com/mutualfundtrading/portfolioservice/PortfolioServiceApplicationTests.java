@@ -1,4 +1,4 @@
-package com.example.portfolioservice;
+package com.mutualfundtrading.portfolioservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

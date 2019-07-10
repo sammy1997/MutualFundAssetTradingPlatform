@@ -1,18 +1,19 @@
-package com.example.portfolioservice.controller;
+package com.mutualfundtrading.portfolioservice.controller;
 
-import com.example.portfolioservice.models.User;
-import com.example.portfolioservice.models.UserParser;
-import com.example.portfolioservice.models.Fund;
-import com.example.portfolioservice.models.FundParser;
-import com.example.portfolioservice.models.BalanceInfo;
-import com.example.portfolioservice.models.ImmutableFund;
-import com.example.portfolioservice.models.ImmutableUserParser;
-import com.example.portfolioservice.service.PortfolioService;
-import com.example.portfolioservice.utils.Constants;
-import com.example.portfolioservice.utils.ServiceUtils;
+import com.mutualfundtrading.portfolioservice.models.User;
+import com.mutualfundtrading.portfolioservice.models.UserParser;
+import com.mutualfundtrading.portfolioservice.models.Fund;
+import com.mutualfundtrading.portfolioservice.models.FundParser;
+import com.mutualfundtrading.portfolioservice.models.BalanceInfo;
+import com.mutualfundtrading.portfolioservice.models.ImmutableFund;
+import com.mutualfundtrading.portfolioservice.models.ImmutableUserParser;
+import com.mutualfundtrading.portfolioservice.service.PortfolioService;
+import com.mutualfundtrading.portfolioservice.utils.Constants;
+import com.mutualfundtrading.portfolioservice.utils.ServiceUtils;
 import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import javax.ws.rs.GET;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
+@Controller
 @Component
 @Path("/")
 public class PortfolioController {
@@ -41,7 +43,6 @@ public class PortfolioController {
     // Fetch user details
     @GET
     @Produces("application/json")
-    @Path("/")
     public Optional<User> getUserById(@HeaderParam("Authorization") String token) {
         return portfolioService.getUser(ServiceUtils.decodeJWTForUserId(token));
     }

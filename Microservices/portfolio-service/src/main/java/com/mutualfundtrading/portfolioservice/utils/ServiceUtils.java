@@ -1,4 +1,4 @@
-package com.example.portfolioservice.utils;
+package com.mutualfundtrading.portfolioservice.utils;
 import org.apache.commons.codec.binary.Base64;
 
 @SuppressWarnings("ALL")

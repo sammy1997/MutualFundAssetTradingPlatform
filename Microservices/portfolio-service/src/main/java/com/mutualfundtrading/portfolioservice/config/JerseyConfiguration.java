@@ -1,6 +1,6 @@
-package com.example.portfolioservice;
+package com.mutualfundtrading.portfolioservice.config;
 
-import com.example.portfolioservice.controller.PortfolioController;
+import com.mutualfundtrading.portfolioservice.controller.PortfolioController;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
 
