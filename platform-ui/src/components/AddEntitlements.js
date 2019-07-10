@@ -18,14 +18,65 @@ class AddEntitlements extends Component {
              userSuggestions: [],
              funds: [],
              users: [],
+             updateUser: false,
              errorResponse: []
         }
     }
 
     onChipsChange = chips => {
-        this.setState({ 
-            chips: chips 
-        });
+        if(!this.state.updateUser){
+            this.setState({ 
+                chips: chips 
+            });
+        }else{
+            var chip = [];
+            if(chips.length > 0){
+                chip.push(chips[chips.length-1])
+            }
+            this.setState({
+                chips: chip
+            })
+            if(chip.length > 0) {
+                var baseUrl = "http://localhost:8762/";
+                var token = getCookie('token');
+                if(!token){
+                    this.props.history.push('/');
+                }
+                // Setting headers
+                var headers ={
+                    Authorization: 'Bearer ' + token
+                }
+                axios({
+                    method: 'get',
+                    url: baseUrl + 'fund-handling/api/funds/entitlements?userId=' + chip[0],
+                    headers: headers
+                }).then(res => {
+                    document.getElementById("added-funds").innerHTML = "";
+                    res.data.forEach(fund =>{
+                        var currentList = document.getElementById("added-funds");
+                        var length = currentList.getElementsByTagName('li').length;
+                        var li= document.createElement('li');
+                        li.id = 'select' + length;
+                        li.innerHTML = fund.fundNumber;
+                        var i = document.createElement('i');
+                        i.className = 'fa fa-trash';
+                        li.append(i);
+                        i.onclick = (event) => {
+                            var elem = event.target.parentNode;
+                            var parent = elem.parentNode;
+                            parent.removeChild(elem);
+                            var updateIdList = parent.getElementsByTagName("li")
+                            for(var i=0; i<updateIdList.length; i++){
+                                updateIdList[i].id = 'select' + i;
+                            }
+                        }
+                        currentList.appendChild(li);
+                    })
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+        }
     }
 
 
@@ -168,13 +219,13 @@ class AddEntitlements extends Component {
             
             axios({
                 method: 'post',
-                url: baseUrl + 'fund-handling/api/entitlements/add',
+                url: baseUrl + 'fund-handling/api/entitlements/' + (this.state.updateUser? 'update': 'add'),
                 headers: headers,
                 data: payload
             // eslint-disable-next-line no-loop-func
             }).then(response =>{
                 console.log(response.data)
-                alert('Response for user ' + this.state.chips[i] + " : " + response.data);
+                alert('Response for user ' + payload.userId + " : " + response.data);
             }).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
@@ -189,6 +240,15 @@ class AddEntitlements extends Component {
         document.getElementById("added-funds").innerHTML = "";
     }
     
+    onSwitchChanged = (event) =>{
+        this.setState({
+            updateUser: event.target.checked
+        })
+        this.setState({
+            chips: []
+        })
+    }
+
     render() {
         return (
             <div className="wrapper">
@@ -196,11 +256,19 @@ class AddEntitlements extends Component {
                     {this.state.errorResponse}
                 </div>
                 <div className="user-search">
-                        <label>Search users by user id</label>
+                        <label id = "search-text">Search users by user id</label>
                         <Chips value={this.state.chips} onChange={this.onChipsChange} 
                                 suggestions={this.state.userSuggestions} >
 
                         </Chips>
+                        <div className="switch">
+                            <label>
+                                Add Entitlements
+                                <input type="checkbox" onChange = {this.onSwitchChanged}/>
+                                <span className="lever"></span>
+                                Update Entitlements
+                            </label>
+                        </div>
                 </div>
                 
                 <div className="entitlements">
@@ -220,7 +288,7 @@ class AddEntitlements extends Component {
                             <ul id="added-funds">
                             </ul>
                             <button className="btn waves-effect waves-light add-entitlements" onClick={this.addEntitlementsToUsers}>
-                                Add Entitlements
+                                {this.state.updateUser? "Update Entitlements": "Add Entitlements"}
                             </button>
                         </div>
                     </div>    

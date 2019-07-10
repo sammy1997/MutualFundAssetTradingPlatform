@@ -23,7 +23,7 @@ class AddFund extends Component {
             moodysRating: "",
             update: false,
             funds: [],
-            fundSuggestions: []
+            fundSuggestions: [],
             errorResponse: []
         }
     }
