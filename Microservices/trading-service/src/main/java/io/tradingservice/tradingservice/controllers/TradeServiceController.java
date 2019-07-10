@@ -67,7 +67,7 @@ public class TradeServiceController {
         if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();
-        return Response.status(400).entity("Trades not verified").build();
+        return Response.status(200).entity("Trades not verified").build();
     }
 
     // Add user

@@ -102,3 +102,7 @@ button:hover {
   background-color: #ffffff;
   border: none;
 }
+
+.loading {
+  float: center;
+}
