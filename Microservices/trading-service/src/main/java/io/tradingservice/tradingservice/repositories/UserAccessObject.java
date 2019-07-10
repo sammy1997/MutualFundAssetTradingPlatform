@@ -2,8 +2,10 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.utils.Constants;
+import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
 
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class UserAccessObject {
             if (t.fundNumber().equals(fundId)){
 
                 // Drop the funds
-                userRepository.findByUserId(userId)
+                FluentFuture<Optional<User>> x =userRepository.findByUserId(userId)
                         .andModifyFirst()
                         .removeTrades(t)
                         .upsert();

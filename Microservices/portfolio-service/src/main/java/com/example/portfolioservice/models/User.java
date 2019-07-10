@@ -10,7 +10,7 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 @Value.Immutable
-@Mongo.Repository(collection = "UserParser")
+@Mongo.Repository(collection = "User")
 @JsonSerialize(as = ImmutableUser.class)
 @JsonDeserialize(as = ImmutableUser.class)
 public interface User {
