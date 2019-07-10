@@ -39,7 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 // Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
                 // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN") or hasAnyRole("TRADER", "ADMIN")).
                 List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(user.role());
-                System.out.println(user.role());
                 // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
                 // And used by auth manager to verify and check user authentication.
                 return new User(user.userId(), user.password(), grantedAuthorities);
