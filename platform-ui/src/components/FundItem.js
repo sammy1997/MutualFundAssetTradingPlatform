@@ -8,7 +8,7 @@ export class FundItem extends Component {
         super(props)
     
         this.state = {
-            quantity: undefined,
+            quantity: 0,
             status: "sell"
         }
     }
@@ -47,6 +47,15 @@ export class FundItem extends Component {
         this.props.delFund(this.props.fundNumber)
     }
 
+    componentDidMount(){
+        const trade = {
+            fundNumber: this.props.fundNumber,
+            quantity: this.state.quantity,
+            status: this.state.status
+        }
+        this.props.callBack(trade)
+    }
+
     render() {
         const {fundName, fundNumber, invManager} = this.props;
         return (
@@ -54,8 +63,8 @@ export class FundItem extends Component {
                 <td>{fundName}</td>
                 <td>{fundNumber}</td>
                 <td>{invManager}</td>
-                <td><input id={"quantity-" + fundNumber} type="number" placeholder="Enter quantity" onChange={this.onChangeHandlerQuantity}></input></td>
-                <td>
+                <td><input id={"quantity-" + fundNumber} className="quantity-field" type="number" placeholder="Enter quantity" value={this.state.quantity} onChange={this.onChangeHandlerQuantity}></input></td>
+                <td class="purchase-sell-switch">
                     <select onChange={this.onChangeHandlerStatus}>
                         <option value="sell">Sell</option>
                         <option value="purchase">Buy</option>

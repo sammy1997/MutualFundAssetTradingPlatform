@@ -59,6 +59,7 @@ class VerifyButton extends Component {
                 trades: this.props.trades
                 }, () => {
                     var getTrades = [...this.state.trades]
+                    console.log(this.props.trades);
                     var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
                     if (index!=-1){
                         alert(`Please enter quantity`)
@@ -73,7 +74,7 @@ class VerifyButton extends Component {
                         headers: {Authorization: `Bearer ${jwt}`}, 
                         data: getTrades 
                     }).then(Response => {
-                        console.log(Response);
+                        
                         (Response.data === `Verified Trades`) ? (
                             this.setState({
                                 verified: true  
@@ -121,11 +122,11 @@ class VerifyButton extends Component {
                     headers: {Authorization: `Bearer ${jwt}`}, 
                     data: getTrades 
                 })
-                .then(Response => {
+                .then(response => {
                     this.setState({
                         active: true 
                     })
-                    if (Response.status === 201) {
+                    if (response.status === 201) {
                         window.location = "/portfolio"; 
                         console.log(`Exchanged trades`) 
                      } else console.log(`Error occurred`)
