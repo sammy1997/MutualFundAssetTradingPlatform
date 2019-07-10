@@ -1,7 +1,10 @@
 package com.example.portfolioservice.utils;
 import org.apache.commons.codec.binary.Base64;
 
+@SuppressWarnings("ALL")
 public class ServiceUtils {
+    public ServiceUtils() { }
+
     public static String decodeJWTForUserId(String jwtToken){
 
         String[] split_string = jwtToken.split("\\.");
@@ -13,8 +16,8 @@ public class ServiceUtils {
         String userId = null;
         try {
             userId = body.split(",")[0].split(":")[1];
-            userId = userId.substring(1, userId.length()-1);
-        }catch (Exception e){
+            userId = userId.substring(1, userId.length() - 1);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return userId;

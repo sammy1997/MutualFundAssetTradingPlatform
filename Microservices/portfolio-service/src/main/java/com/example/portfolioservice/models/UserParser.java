@@ -7,14 +7,13 @@ import org.immutables.value.Value;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("ALL")
 @Value.Immutable
-@JsonSerialize(as = ImmutableUser2.class)
-@JsonDeserialize(as = ImmutableUser2.class)
-public interface User2
-{
+@JsonSerialize(as = ImmutableUserParser.class)
+@JsonDeserialize(as = ImmutableUserParser.class)
+public interface UserParser  {
     Optional<String> userId();
-//    float balance();
     float currBal();
     Optional<String> baseCurr();
-    Optional<List<Fund2>> all_funds();
+    Optional<List<Fund>> all_funds();
 }

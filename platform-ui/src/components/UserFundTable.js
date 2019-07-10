@@ -4,7 +4,9 @@ import 'materialize-css/dist/css/materialize.min.css'
 import getCookie from './Cookie';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import searchContent from './utility/SearchTableContent'
+import searchContent from './utility/SearchTableContent';
+import TradeBlotter from './TradeBlotter';
+import Modal from 'react-responsive-modal';
 
 class UserFunds extends Component
 {
@@ -12,26 +14,64 @@ class UserFunds extends Component
     {
         super()
         this.state = {
+            selectedFunds:[],
+            numberOfSelectedFunds: 0,
             list : [],
-            searchableFields: []
+            searchableFields: [],
+            open: false,
+            errorResponse: [] 
         }
     }
 
+    closeModalHandler = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    onSelect = () =>{
+        this.setState({
+            numberOfSelectedFunds: document.querySelectorAll('input[type="checkbox"]:checked').length
+        })
+    }
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
         if (checked.length === 0) {
             alert('Please select atleast 1 fund to trade');
         } else {
+            var selected = [];
             for(var i = 0; i< checked.length; i++){
                 var tr = checked[i].parentNode.parentNode.parentNode;
                 var table_cells = tr.getElementsByTagName('td')
+                
+                var fieldName = ['fundName', 'invManager', 'fundNumber']
+                var temp = {};
                 for(var j = 0; j< table_cells.length; j++){
                     console.log(table_cells[j].textContent);
+                    if(j<3){
+                        temp[fieldName[j]] = table_cells[j].textContent;
+                    }
+                    
+                    this.setState({
+                        open: true 
+                    })
                 }
+                selected.push(temp);
             }
+            this.setState({
+                selectedFunds: selected
+            })
         }
     }
 
+    loadAssets(res){
+        var assetsValue = 0;
+        for(var i=0; i<res.data.all_funds.length; i++){
+            assetsValue += res.data.all_funds[i].quantity*res.data.all_funds[i].presentNav;
+        }
+        this.props.updateAssets(assetsValue);
+        
+    }
 
     componentDidMount(){
         var jwt = getCookie('token');
@@ -40,28 +80,54 @@ class UserFunds extends Component
         }else if(this.props.portfolio){
             axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
-                console.log(res.data.all_funds);
+                this.loadAssets(res);
+                console.log(res);
                 this.setState({
                     list : res.data.all_funds,
                     searchableFields: [0,1,2,4]
                 })
-            }).catch( err => {
-                if(err.response.status === 401){
-                    document.cookie = "token=";
-                    this.props.history.push('/');
+            })
+            .catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
                 }
-            });    
+            });  
         }else if(!(this.props.portfolio)){
             axios.get('http://localhost:8762/fund-handling/api/entitlements/get', {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
+                if(res.status == 200){
+                    this.setState({
+                        list : res.data
+                    })
+                }
                 this.setState({
-                    list : res.data,
                     searchableFields: [0,1,2,4]
                 })
-            }).catch( err => {
-                if(err.response.status === 401){
-                    document.cookie = "token=";
-                    this.props.history.push('/');
+            }).catch( error => {
+                if(error.response){
+                    if(error.response.status === 500){
+                        this.setState({
+                            errorResponse: [<p>The server is down at the moment. Please try again later.</p>]
+                        })
+                    }else if (error.response.status === 403){
+                        this.setState({
+                            errorResponse: [<p>You are not authorized to access this page. Please Logout.</p>]
+                        })
+                    }else if (error.response.status === 401){
+                        document.cookie = "token= ";
+                        window.location = "/"
+                    }
                 }
             });   
         }
@@ -72,7 +138,32 @@ class UserFunds extends Component
             fontSize: '18px'  
         };
         return (   
-            <div>
+            <div class="table-container">
+                
+                <div className="error-response">
+                    {this.state.errorResponse}
+                </div>
+
+                <div className="row ">
+                    <form className = "search-form">
+                        <div className = "input-field col s4">
+                            <label htmlFor="myInput0">Search By Fund Name</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Fund Name" id="myInput0" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                            
+                        </div>  
+                        <div className = "input-field col s4">
+                            <label htmlFor="myInput1">Search By Investment Manager</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Investment Manager" id="myInput1" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                        </div>  
+                        <div className = "input-field col s4">  
+                            <label htmlFor="myInput2">Search By Fund Number</label>
+                            <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                            <input type="text" palceholder="Search By Fund Number" id="myInput2" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
+                        </div>
+                    </form>
+                </div>
                 <table align = "center" id = "myTable">
                     <thead>
                     <tr className = "software">
@@ -94,31 +185,28 @@ class UserFunds extends Component
 
                     <tbody>
                         <tr>
-                            <td><input type="text" id="myInput0"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> 
-                            <td><input type="text" id="myInput1" 
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            <td><input type="text" id="myInput2"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            <td></td>
-                            {this.props.portfolio?<td></td>:""}
-                            <td></td>
-                            <td></td>
-                            {/* <td><input type="text" id="myInput3"  onKeyUp={() => this.searchContent()} /></td> */}
-                            {this.props.portfolio?<td></td>:""}
-                            {this.props.portfolio?<td></td>:""}
-                            <td></td>
-                            <td></td>
-                            {/* <td><input type="text" id="myInput3"  
+                            {/* <td><input type="text" id="myInput0"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>  */}
+                            {/* <td><input type="text" id="myInput1" 
                                 onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
-                            {this.props.portfolio?<td></td>:""}
-                            {this.props.portfolio?<td></td>:""}
+                            {/* <td><input type="text" id="myInput2"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
+                            {/* <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            {this.props.portfolio?<td>N/A</td>:""}
+                            {this.props.portfolio?<td>N/A</td>:""} */}
                         </tr>
                         {               
                             this.state.list.map(item => <tr key={item.fundNumber}>
                             <td>
                                 <label>
-                                    <input type="checkbox" />
+                                    <input type="checkbox" onChange={this.onSelect} />
                                     <span id="fund-name" style={spanStyle} className="fundname-label">{item.fundName}</span>
                                 </label>
                             </td>
@@ -144,9 +232,15 @@ class UserFunds extends Component
                     </tbody>
                 </table>
 
+                <h5>You have selected {this.state.numberOfSelectedFunds} funds. Start trading?</h5>
                 <button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
                     Place trade
                 </button>
+                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                    <div> 
+                        <TradeBlotter funds = {this.state.selectedFunds}/> 
+                    </div> 
+                </Modal>
           </div>
         )
     }

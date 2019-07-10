@@ -1,38 +1,66 @@
 package com.mutualfundtrading.fundhandling.services;
 
+import com.google.gson.Gson;
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
-import com.mutualfundtrading.fundhandling.models.Entitlements;
-import com.mutualfundtrading.fundhandling.models.FundDBModel;
-import com.mutualfundtrading.fundhandling.models.ImmutableFundDBModel;
 
+import com.mutualfundtrading.fundhandling.models.*;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mutualfundtrading.fundhandling.utils.ServiceUtils.BASE_URL;
+
 @Service
 public class EntitlementService {
     @Autowired
-    EntitlementDAO dao;
+    private EntitlementDAO dao;
 
     @Autowired
-    FundDAO fundDAO;
+    private FundDAO fundDAO;
 
     @Autowired
-    FundService fundService;
+    private FundService fundService;
 
-//    Add entitlements
-    public Response addEntitlements(Entitlements entitlement){
-        if (entitlement.entitledTo().isPresent()) {
-            List<String> temp = new ArrayList<>();
-            for (String fundId : entitlement.entitledTo().get()) {
-                if (fundService.getFund(fundId) != null) {
-                    temp.add(fundId);
-                }
+    @Autowired
+    private WebClient.Builder webClient;
+
+    // Add entitlements
+    public Response addEntitlements(EntitlementParser entitlement, String token) {
+        String response = webClient.build().get()
+                .uri(BASE_URL + "list-all")
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        response = "{\"users\":" + response + "}";
+
+        UserList listOfUsers = new Gson().fromJson(response, UserList.class);
+
+        if (!entitlement.userId().isPresent()){
+            return Response.status(400).entity("User ID is missing").build();
+        }
+
+        boolean flag = false;
+        for (User user: listOfUsers.getUsers()){
+            if (user.userId().equals(entitlement.userId().get())){
+                flag = true;
+                break;
             }
+        }
+
+        if (!flag){
+            return Response.status(400).entity("User not present in database").build();
+        }
+
+        if (entitlement.entitledTo().isPresent()) {
+            List<String> temp = ServiceUtils.checkFunds(fundService, entitlement);
             if (temp.size() == 0) {
                 return Response.status(404).entity("None of the funds exists in the database").build();
             }
@@ -44,43 +72,68 @@ public class EntitlementService {
                         .entity("Some of the funds were not found in the database. Remaining were added").build();
             }
             return Response.status(200).entity("All entitlements added").build();
-        }else {
-            return Response.status(404).entity("Fund list cannot be empty").build();
         }
+        return Response.status(404).entity("Fund list cannot be empty").build();
     }
 
-//    Delete entitlements
-    public Response deleteEntitlements(Entitlements entitlement){
-        if (entitlement.entitledTo().isPresent() && entitlement.entitledTo().get().size()>0){
+    public Response updateEntitlements(EntitlementParser entitlements) {
+
+        if(!entitlements.userId().isPresent())
+            return Response.status(400).entity("User ID missing in request").build();
+
+        if (entitlements.entitledTo().isPresent()) {
+            List<String> temp = ServiceUtils.checkFunds(fundService, entitlements);
+
+            if (temp.size() == 0) {
+                return Response.status(404).entity("None of the funds exists in the database").build();
+            }
+
+            dao.update(entitlements);
+
+            if (temp.size() < entitlements.entitledTo().get().size()) {
+                return Response.status(200)
+                        .entity("Some of the funds were not found in the database. Remaining were added").build();
+            }
+            return Response.status(200).entity("All entitlements added").build();
+        }
+        return Response.status(400).entity("Fund list cannot be empty").build();
+    }
+
+    // Delete entitlements
+    public Response deleteEntitlements(EntitlementParser entitlement) {
+        if (!entitlement.userId().isPresent()){
+            return Response.status(400).entity("User ID is missing").build();
+        }
+        if (entitlement.entitledTo().isPresent() && entitlement.entitledTo().get().size()>0) {
             String message = dao.delete(entitlement.userId().get(), entitlement.entitledTo().get());
-            if (message == null){
-                return Response.status(404).entity("User with user ID " + entitlement.userId().get() + " not found.").build();
+            if (message == null) {
+                return Response.status(404).entity("User with user ID " + entitlement.userId()
+                        .get() + " not found.").build();
             }
             return Response.status(200)
-                    .entity("The required entitlements for user "+ entitlement.userId().get() +" have been deleted.").build();
-        }else {
+                    .entity("The required entitlements for user "+ entitlement.userId()
+                            .get() +" have been deleted.").build();
+        } else {
             return  Response.status(404).entity("Fund list cannot be empty").build();
         }
     }
 
-//    Fetch entitlements
-    public List<ImmutableFundDBModel> getEntitlements(String userId){
+    // Fetch entitlements
+    public List<ImmutableFund> getEntitlements(String userId) {
         return dao.getEntitledFunds(userId);
     }
 
-//    Search entitlements
-    public List<FundDBModel> searchEntitlements(String userId, String field, String searchTerm){
+    // Search entitlements
+    public List<Fund> searchEntitlements(String userId, String field, String searchTerm) {
         List<String> entitlements = dao.getEntitlementListForUser(userId);
-        if (entitlements != null){
-            if (field.equals("Name")){
+        if (entitlements != null) {
+            if (field.equals("Name")) {
                 return fundDAO.searchFundNameInEntitlements(searchTerm, entitlements);
-            }
-            else if (field.equals("Fund Number")){
+            } else if (field.equals("Fund Number")) {
                 return fundDAO.searchFundNumberInEntitlements(searchTerm, entitlements);
-            }
-            else if (field.equals("Currency")){
+            } else if (field.equals("Currency")) {
                 return fundDAO.searchInvCurrencyInEntitlements(searchTerm, entitlements);
-            }else if (field.equals("Manager")){
+            } else if (field.equals("Manager")) {
                 return fundDAO.searchInvManagerInEntitlements(searchTerm, entitlements);
             }
             return null;

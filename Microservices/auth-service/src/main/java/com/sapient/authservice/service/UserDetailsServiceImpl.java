@@ -1,8 +1,8 @@
 package com.sapient.authservice.service;
 
 
-import com.sapient.authservice.dao.UsersDAO;
-import com.sapient.authservice.entities.ImmutableUsersDBModel;
+import com.sapient.authservice.dao.UserDAO;
+import com.sapient.authservice.entities.ImmutableUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -19,16 +19,16 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    UsersDAO dao;
+    UserDAO dao;
 
-    public ImmutableUsersDBModel findByUserId(String userId){
+    public ImmutableUser findByUserId(String userId){
         return dao.getUserByUserId(userId);
     }
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
-        ImmutableUsersDBModel user = findByUserId(userId);
+        ImmutableUser user = findByUserId(userId);
         String id = user.userId();
 
         if(id == null){
@@ -39,7 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 // Spring needs roles to be in this format: "ROLE_" + userRole (i.e. "ROLE_ADMIN")
                 // So, we need to set it to that format, so we can verify and compare roles (i.e. hasRole("ADMIN") or hasAnyRole("TRADER", "ADMIN")).
                 List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(user.role());
-                System.out.println(user.role());
                 // The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
                 // And used by auth manager to verify and check user authentication.
                 return new User(user.userId(), user.password(), grantedAuthorities);

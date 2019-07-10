@@ -3,13 +3,17 @@
     margin-bottom: 50px;
 }
 
+.preferences-container{
+    margin-top: 100px;
+}
+
 .card-action{
     padding-bottom: 60px !important;
 }
 
-.page-content{
+/* .page-content{
     margin-top: 100px;
-}
+} */
 
 #info{
     float: left;

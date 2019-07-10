@@ -1,9 +1,11 @@
   table{
     width:1400px;
   }
+
   table, th, td {
     border: 1px solid black;
   }
+  
   th,td{
     padding: 15px;
   }
@@ -14,9 +16,21 @@
   .software {
       color: white;
   }
+
+  .table-container{
+    margin-top: 100px;
+  }
+
+
+  .search-icon{ 
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: grey;
+  }
+
   
   #myTable {
-    margin-top: 100px; 
     border-collapse: collapse; /* Collapse borders */
     width: 100%; /* Full-width */
     border: 1px solid #ddd; /* Add a grey border */

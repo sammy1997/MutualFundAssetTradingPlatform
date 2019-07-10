@@ -1,57 +1,50 @@
 //component for displaying funds
 
 import React, { Component } from 'react'
-import './tradeBlotter.css' 
+// import './tradeBlotter.css' 
 import AddTrade from './AddTrade'
 import FundItem from './FundItem';
 import VerifyButton from './VerifyButton';
 import 'materialize-css/dist/css/materialize.min.css';
 import './css/tradeBlotter.css'
+import LoadingOverlay from 'react-loading-overlay';
+import Loader from './Loader';
 //import M from 'materialize-css'
 
-class Table extends Component {
+
+class TradeBlotter extends Component {
 
     constructor(props) {
         super(props)
     
         this.state = {
-            funds: [
-                //  Objects of the form 
-                // {
-                //     fundName: '',
-                //     fundNumber: '',
-                //     invManager: '',
-                //     invCurr: '',
-                //     setCycle: '',
-                //     nav: '',
-                //     sAndPRating: '',
-                //     moodyRating: '',
-                //     quantity: ''
-                // }
-            ]
+            funds: [],
+            fundsPrevious: [], 
+            trades: [],
+            verified: false 
+
         }
     }
 
     // Set funds from fund finder page ui 
     componentDidMount () {
-    //     this.setState({
-    //         funds: this.props.funds 
-    //     })
+        this.setState({
+            funds: this.props.funds, 
+            verified: false 
+        })
+    }
+
+    unVerify = () => {
+        this.child.unVerifyHandler()
     }
 
     // Add Trade method
-    addTrade = function (fundName, fundNumber, invManager, invCurr, setCycle, nav, sAndPRating, moodyRating, quantity) {
-        console.log({fundName}, {fundNumber}); 
+    addTrade = function (fundName, fundNumber, invManager) {
+        // console.log({fundName}, {fundNumber}); 
         const newFund = {
             fundName,
             fundNumber,
-            invManager: 'GS',
-            invCurr: 'INR',
-            setCycle: '12',
-            nav: '10',
-            sAndPRating: '6',
-            moodyRating: '9' ,
-            quantity: '10'
+            invManager
            }
            this.setState (
             {
@@ -59,42 +52,74 @@ class Table extends Component {
             })
     }.bind(this);
 
+    delTrade = (fundNumber) => {
+        var getTrades = [...this.state.funds]
+        var obj = getTrades.find(o => o.fundNumber === fundNumber)
+        getTrades.splice(obj, 1)
+        this.setState({
+            funds: getTrades
+        })
+    }
+
+    callBackFund = (trade) => {
+        const newTrade = {
+            fundNumber: trade.fundNumber,
+            quantity: trade.quantity,
+            status: trade.status
+        }
+    
+        var newTrades = [...this.state.trades]
+        var index = newTrades.indexOf(newTrades.find(t => t.fundNumber === newTrade.fundNumber))
+
+        if (index!=-1){
+            newTrades.splice(index, 1)
+            newTrades.push(newTrade)
+        } else {
+            newTrades.push(newTrade)
+        }
+
+        this.setState({
+            trades: newTrades   
+        })
+
+        this.unVerify()
+        
+    }
+    
+
+
     render() {
         return (
             <div className="page-content">
-                
-                <table className='centered'>
+                <h3 align="center">Trade Blotter</h3>
+                <table className='centered' id="trade-blotter-table">
                     <thead>
                         <tr>
                             <th>Fund Name</th>
                             <th>Fund Number</th>
                             <th>Investment Manager</th>
-                            <th>Investment Currency</th>
-                            <th>Set Cycle</th>
-                            <th>NAV</th>
-                            <th>S&P Rating</th>
-                            <th>Moody Rating</th>
                             <th>Quantity</th>
+                            <th>Buy/Sell</th>
                         </tr>
                     </thead>
 
                     <tbody> {
                         // Render all the funds 
                         this.state.funds.map((f) => (
-                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager}
-                            invCurr={f.invCurr} setCycle={f.setCycle} nav={f.nav} sAndPRating={f.sAndPRating} moodyRating={f.moodyRating}
-                            quantity={f.quantity}
-                             /> 
+                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} 
+                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>
                 </table>
                         
-                <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length}/>
-                <VerifyButton numberOfTrades={this.state.funds.length}/> 
+                <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length} unverify={this.unVerify}/>
+                <VerifyButton numberOfTrades={this.props.funds.length} trades={this.state.trades} 
+                verified={this.state.verified} onRef={ref => (this.child = ref)}/> 
+    
             </div>
         )
     }
 }
 
-export default Table;
+export default TradeBlotter;

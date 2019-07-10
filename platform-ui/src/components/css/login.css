@@ -1,5 +1,5 @@
 *{
-    font-family: "Raleway";
+    font-family: "Lato";
 }
 .top{
     text-align: center;
@@ -25,4 +25,11 @@
 
 .button-container{
     text-align: center;
+}
+
+
+.error-response{
+    text-align: center;
+    color : red;
+    font-size: 30px;
 }

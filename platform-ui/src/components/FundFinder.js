@@ -12,7 +12,8 @@ class FundFinder extends Component {
     
         this.state = {
             searchableFields: [0,1,2,5],
-            fundList: []
+            fundList: [],
+            errorResponse: []
         }
     }
 
@@ -34,10 +35,14 @@ class FundFinder extends Component {
                 fundList: response.data
             })
         }).catch(error =>{
-            console.log(error);
-            document.cookie = "token=;"
-            if(error.response.status === 401){
-                this.props.history.push('/')
+            // console.log(error);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }else if (error.response.status === 500){
+                this.setState({
+                    errorResponse: [<p>The server is down. Please try again later.</p>]
+                });
             }
         });
     }
@@ -45,6 +50,9 @@ class FundFinder extends Component {
     render() {
         return (
             <div className="table-wrapper">
+                <div class="error-response">
+                    {this.state.errorResponse}
+                </div>
                 <table id='all-funds'>
                     <thead>
                         <tr>
@@ -61,22 +69,22 @@ class FundFinder extends Component {
                     <tbody>
                         <tr>
                             <th scope="row">
-                                <SearchBar index={0} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={0} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Fund Number">
                                 </SearchBar>
                             </th>
                             <th scope="row">
-                                <SearchBar index={1} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={1} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Fund Name"></SearchBar>
                             </th>
                             <th scope="row">
-                                <SearchBar index={2} searchHandler={searchContent} tableId='all-funds'
+                                <SearchBar index={2} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Manager"></SearchBar>
                             </th>
                             <td>-N/A-</td>
                             <td>-N/A-</td>
                             <th scope="row">
-                                <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' 
+                                <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Currency"></SearchBar>
                             </th>
                             <td>-N/A-</td>

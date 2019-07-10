@@ -5,6 +5,8 @@ import './css/addFund.css'
 import axios from 'axios';
 import getCookie from './Cookie';
 import { withRouter } from 'react-router-dom';
+import FileUpload from './FileUploadComponent';
+import autocomplete from './utility/Autocomplete';
 
 class AddFund extends Component {
     constructor(props) {
@@ -14,11 +16,15 @@ class AddFund extends Component {
             fundNumber: "",
             fundName: "",
             invManager: "",
-            setCycle: 0,
-            nav: 0.0,
+            setCycle: "",
+            nav: "",
             invCurrency: "",
-            sAndPRating: 0,
-            moodysRating: 0
+            sAndPRating: "",
+            moodysRating: "",
+            update: false,
+            funds: [],
+            fundSuggestions: [],
+            errorResponse: []
         }
     }
     
@@ -37,7 +43,9 @@ class AddFund extends Component {
 
     addFundRequest = (event) =>{
         event.preventDefault()
-
+        this.setState({
+            fundNumber: document.getElementById('fundNumber').value
+        })
         var baseUrl = "http://localhost:8762/fund-handling/api/funds/";
         var token =getCookie('token');
         
@@ -47,36 +55,118 @@ class AddFund extends Component {
         var headers ={
             Authorization: 'Bearer ' + token
         }
-
         axios({
-            method: 'post',
-            url: baseUrl + 'create',
+            method: (this.state.update? 'patch': 'post'),
+            url: baseUrl + (this.state.update? 'update': 'create'),
             headers: headers,
             data: this.state
         }).then(response =>{
-            console.log(response);
+            console.log(response.data)
+            alert(response.data)
         }).catch(error =>{
-            console.log(error);
-            document.cookie = "token=;"
-            if(error.response.status === 401){
-                this.props.history.push('/')
+            // console.log(error.response);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }else if (error.response.status === 500){
+                this.setState({
+                    errorResponse: [<p>The server is down. Please try again later.</p>]
+                })
+            }else{
+                alert(error.response.data)
             }
         });
+    }
+
+    onSwitchChanged = (event) =>{
+        this.setState({
+            update: event.target.checked
+        })
+    }
+
+    componentDidMount(){
+        var baseUrl = "http://localhost:8762/";
+        var token = getCookie('token');
+        if(!token){
+            this.props.history.push('/');
+        }
+        // Setting headers
+        var headers ={
+            Authorization: 'Bearer ' + token
+        }
+
+        axios({
+            method: 'get',
+            url: baseUrl + 'fund-handling/api/funds/all',
+            headers: headers
+        }).then(response =>{
+            console.log(response.data);
+            var fundNumbers = [];
+            response.data.forEach(fund => {
+                fundNumbers.push(fund.fundNumber);
+            });
+            this.setState({
+                funds: response.data,
+                fundSuggestions: fundNumbers
+            })
+        }).catch(error =>{
+            console.log(error);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+        });
+    }
+
+    componentDidUpdate(){
+        autocomplete(document.getElementById("fundNumber"), this.handleSearchItemClick, 
+        this.state.fundSuggestions, this.state.funds)
+    }
+
+    handleSearchItemClick = fundNumber =>{
+        document.getElementById('fundNumber').value = fundNumber;
+        for(var i=0; i< this.state.funds.length; i++){
+            var fund = this.state.funds[i];
+            if(fundNumber === fund.fundNumber){
+                this.setState({
+                    fundNumber: fund.fundNumber,
+                    fundName: fund.fundName,
+                    invManager: fund.invManager,
+                    setCycle: fund.setCycle,
+                    nav: fund.nav,
+                    invCurrency: fund.invCurrency,
+                    sAndPRating: fund.sAndPRating,
+                    moodysRating: fund.moodysRating
+                })
+                break;
+            }
+        }
     }
 
     render() {
         M.updateTextFields();
         return (
             <div className="form-container center-align">
-                <button className="btn waves-effect waves-light" id="csv-add" name="action">Add Funds from CSV
-                            </button>
+                <div class="error-response">
+                    {this.state.errorResponse}
+                </div>
+                <FileUpload endUrl='funds/addFund' buttonText='Add Fund from File'></FileUpload>
                 <div className="form-card">
                     <div className="row">
                         <form className="col s12">
                             <div className="row">
-                                <div className="input-field col s12">
-                                    <input id="fundNumber" value={this.state.fundNumber} type="text" 
-                                        onChange={this.onChange} className="validate"/>
+                                <div className="switch">
+                                    <label>
+                                        Add fund
+                                        <input type="checkbox" onChange = {this.onSwitchChanged}/>
+                                        <span className="lever"></span>
+                                        Update fund
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="input-field col s12 autocomplete">
+                                    <input id="fundNumber" type="text" className="validate" autoComplete="off"/>
                                     <label htmlFor="fundNumber">Fund Number</label>
                                 </div>
                             </div>

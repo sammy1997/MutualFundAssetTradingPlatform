@@ -38,14 +38,17 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // all are allowed to access the auth service through POST method
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers(HttpMethod.POST, "/create").permitAll()
+                .antMatchers(HttpMethod.POST, "/create").hasRole("ADMIN")
                 .antMatchers("/create/list-all").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/funds/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/add/**").hasRole("ADMIN")
                 .antMatchers("/fund-handling/api/entitlements/delete/**").hasRole("ADMIN")
-                .antMatchers("/portfolio/update**").hasAnyRole( "TRADER", "VIEWER")
+                .antMatchers("/fund-handling/api/entitlements/addEntitlements/**").hasRole("ADMIN")
+                .antMatchers("/portfolio/update/baseCurrency**").hasRole("TRADER")
+                .antMatchers("/portfolio/update/**").hasAnyRole( "TRADER", "VIEWER")
                 .antMatchers("/portfolio/add/user**").hasAnyRole( "TRADER", "VIEWER")
                 .antMatchers("/portfolio/delete/**").hasRole( "ADMIN")
+                .antMatchers("/portfolio/**").hasRole( "TRADER")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }

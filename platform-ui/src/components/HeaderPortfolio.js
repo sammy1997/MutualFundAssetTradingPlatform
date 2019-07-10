@@ -24,10 +24,9 @@ class HeaderPortfolio extends Component {
             li1: "PORTFOLIO",
             li2: "FUND FINDER",
             li3: "PREFERENCES",
-            assets: 25000,
-            currBal: undefined,
-            baseCurr: undefined,
-            fullName: undefined,
+            currBal: 0,
+            baseCurr: 0,
+            fullName: "NO NAME",
         }
     }
 
@@ -47,19 +46,26 @@ class HeaderPortfolio extends Component {
         }
     }
 
+    logout(){
+        document.cookie = "token=";
+        this.props.history.push('/');
+    }
+
     render() {
         var tabClass=["tab"];
         if(this.props.active){
             tabClass.push('active');
         }
         return (
-            
-            
             <nav>
                 <div className="nav-wrapper teal lighten-1">
+                    <a href="/" onClick={this.logout}className="right sign-out-icon">
+                        <div className="separator"></div>
+                        <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    </a>
                     <a href="#" className="right username">{this.state.fullName}</a>
                         <ul id="nav-mobile" className="left user-info">
-                            <li><a>Total Assets : {this.state.assets}</a></li>
+                            <li><a>Total Assets : {this.props.totalAssets}</a></li>
                             <li><a>Total Balance : {this.state.currBal}</a></li>
                             <li><a>Base Currency : {this.state.baseCurr}</a></li>
                         </ul>

@@ -5,8 +5,6 @@ import axios from 'axios';
 import './css/login.css' ;
 import parseJwt from './utility/JwtParser'
 
-
-
 class Login extends Component {
     constructor(props){
         super(props);
@@ -14,7 +12,7 @@ class Login extends Component {
         this.state={
             userId:'',
             password:'',
-            status: []
+            errorResponse: []
         }
     }
 
@@ -40,16 +38,29 @@ class Login extends Component {
             var token = authorization.replace('Bearer ','');
             document.cookie = "token=" + token;
             var role = parseJwt(token).authorities[0];
-            console.log(parseJwt(token));
             if((role === "ROLE_TRADER") || (role === "ROLE_VIEWER")){
                 window.location = "/portfolio";
             }else{
                 window.location = "/admin";
             }
         })
-        .catch(function(error){
-            console.log(error.response.status);
-        })
+        .catch(error => {
+            if(error.response){ 
+                if(error.response.status === 401 ){
+                    this.setState({
+                        errorResponse: [<p>Invalid Credentials</p>],
+                        userId: '',
+                        password: ''
+                    })
+                }else if(error.response.status === 500){
+                    this.setState({
+                        errorResponse: [<p>The server is down. Please try again later.</p>],
+                        userId: '',
+                        password: ''
+                    })
+                }
+            }
+        });
     }
 
     render(){ 
@@ -58,6 +69,9 @@ class Login extends Component {
             <div>
                 <div className="top">
                     <h1>Login</h1>
+                </div>
+                <div className="error-response">
+                    {this.state.errorResponse}
                 </div>
                 <div>
                     <div className="row form-container-custom">

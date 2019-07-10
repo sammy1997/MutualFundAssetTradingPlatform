@@ -5,35 +5,36 @@
 
 .page-content{
   margin: 50px auto;
-  width: 90%;
+  width: 100%;
 }
 
-table{
+#trade-blotter-table{
   border: 2px solid #26a69a !important;
+  width: 100% !important;
 }
 
-thead tr, .fund-item{
+#trade-blotter-table thead tr, .fund-item{
   background-color: #26a69a;
   text-align: center;
   color: white;
   text-shadow: #000 0px 0px 1px;
 }
 
-th {
-  padding: 12px 15px;
+#trade-blotter-table th {
+  /* padding: 12px 15px; */
 }
 
-tbody td,
-tbody tr, 
+#trade-blotter-table tbody td,
+#trade-blotter-table tbody tr, 
 .fund-item {
   border-bottom: 1px solid #dddddd;
 }
 
-tbody tr:nth-of-type(even) {
+#trade-blotter-table tbody tr:nth-of-type(even) {
   background-color: #def7ef;
 }
 
-tbody tr:last-of-type {
+#trade-blotter-table tbody tr:last-of-type {
   border-bottom: 1px solid #26a69a;
 }
   
@@ -73,7 +74,11 @@ button:hover {
 } 
 
 .styles_modalCenter__L9F2w{
-  width: 50%;
+  width: 80%;
+}
+
+.styles_modal__gNwvD{
+  max-width: 1000px;
 }
 
 .fundSubmit {
@@ -87,4 +92,17 @@ button:hover {
 .add-fund-btn {
   float: right;
   margin-top: 15px;
+}
+
+#x-button {
+  border: none !important 
+}
+
+.remove-button {
+  background-color: #ffffff;
+  border: none;
+}
+
+.loading {
+  float: center;
 }

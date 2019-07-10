@@ -52,6 +52,10 @@
     margin-bottom: 10px;
 }
 
+#search-text{
+    margin-left: 20px; 
+}
+
 .autocomplete-items {
     position: absolute;
     border: 1px solid #d4d4d4;
@@ -97,10 +101,11 @@
   #added-funds{
       margin: 10px;
       height: 90%;
+      overflow: auto;
       background-color: #F5F5F5;
   }
   .add-entitlements{
-      width: 50%;
+      width: 60%;
       margin-left: 25%;
   }
 

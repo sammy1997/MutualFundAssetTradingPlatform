@@ -9,13 +9,19 @@ class SearchBar extends Component {
         }
         return (
             <div className="wrap">
-                <div className="search autocomplete">
+                <div className="input-field search autocomplete">
+                <i className="fa fa-search search-icon-custom" aria-hidden="true"></i>
                     <input type="text" style={searchBarStyle} id={"searchId" + this.props.index} 
                         className="searchTerm" placeholder={this.props.searchTerm}
-                        onKeyUp={() => this.props.searchHandler('searchId', this.props.tableId, this.props.searchableFields)}/>
-                    <button type="submit" className="searchButton">
-                        <i className="fa fa-search"></i>
-                    </button>
+                        onKeyUp={() => {
+                                if(this.props.finder){
+                                    this.props.searchHandler('searchId', this.props.tableId, this.props.searchableFields)
+                                }
+                            }
+                        }/>
+                    {/* <button type="submit"> */}
+                        
+                    {/* </button> */}
                 </div>
             </div>
         )
