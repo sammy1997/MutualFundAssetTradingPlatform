@@ -93,3 +93,16 @@ button:hover {
   float: right;
   margin-top: 15px;
 }
+
+#x-button {
+  border: none !important 
+}
+
+.remove-button {
+  background-color: #ffffff;
+  border: none;
+}
+
+.loading {
+  float: center;
+}
