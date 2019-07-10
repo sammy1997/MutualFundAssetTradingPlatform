@@ -63,6 +63,7 @@ public class TradeServiceController {
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
         List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
+        System.out.println(trades);
         if (trades == null) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();

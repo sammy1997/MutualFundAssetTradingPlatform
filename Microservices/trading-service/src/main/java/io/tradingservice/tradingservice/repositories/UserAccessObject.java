@@ -117,7 +117,7 @@ public class UserAccessObject {
             User user = userRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             List<ImmutableTrade> currTrades = user.trades();
             for (Trade t: newTrades){
-
+                System.out.println(t.status());
                 // If the trade status is set to purchase
                 if (t.status().equals("purchase")){
 

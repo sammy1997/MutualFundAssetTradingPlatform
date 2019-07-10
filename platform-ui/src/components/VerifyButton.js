@@ -95,11 +95,11 @@ class VerifyButton extends Component {
                     headers: {Authorization: `Bearer ${jwt}`}, 
                     data: getTrades 
                 })
-                .then(Response => {
+                .then(response => {
                     this.setState({
                         active: true 
                     })
-                    if (Response.status === 201) {
+                    if (response.status === 201) {
                         window.location = "/portfolio"; 
                         console.log(`Exchanged trades`) 
                      } else console.log(`Error occurred`)
