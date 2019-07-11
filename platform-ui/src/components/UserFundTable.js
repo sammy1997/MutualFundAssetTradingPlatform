@@ -146,6 +146,13 @@ class UserFunds extends Component
         var spanStyle = {
             fontSize: '18px'  
         };
+        let content1, content2, content, content3;
+        content3 = <button className="btn waves-effect waves-light"  onClick = {() => this.placeTradeClicked()}>
+        Place trade
+        </button>
+        this.state.list.length!=0 ? (content1 = <h5>You have selected {this.state.numberOfSelectedFunds} fund(s).</h5>) :(content1 =<h5>You don't have any funds to trade at the moment. Please head to the fund finder page</h5>)
+        content = <p/>
+        this.state.role === "ROLE_VIEWER" ? ( content2 = <h5 className ="alert">You are not allowed to place any trades</h5>):(content2 = content1)
         return (   
             <div class="table-container">
                 
@@ -243,10 +250,10 @@ class UserFunds extends Component
 
                 
                 
-                {this.state.list.length!=0?<h5>You have selected {this.state.numberOfSelectedFunds} funds.</h5>:<h5>You don't have any funds to trade at the moment. Please head to the fund finder page</h5>}
-                {this.state.role === "ROLE_VIEWER"?<h5 className ="alert">You are not allowed to place any trades</h5>:<button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
-                    Place trade
-                </button>}
+                {/* {this.state.role === "ROLE_VIEWER"? ():content1 } */}
+                {content2}
+                {this.state.role !== "ROLE_VIEWER" ? content3 : content}
+                
                 <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
                         <TradeBlotter funds = {this.state.selectedFunds}/> 

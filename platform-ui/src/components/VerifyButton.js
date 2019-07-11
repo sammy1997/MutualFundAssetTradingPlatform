@@ -84,7 +84,7 @@ class VerifyButton extends Component {
                                 if(error.response.status === 403 ){
                                     alert('You are not authorized to place any trades');
                                 }else if(error.response.status === 400){
-                                    alert("You are not entitled to trade in any one of the fund(s)");
+                                    alert("You are not entitled to any one (or more) of the fund (s)");
                                 }
                         })
                     ) : alert(`Max Trades that can be placed is 5`)
