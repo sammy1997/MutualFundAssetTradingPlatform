@@ -63,7 +63,7 @@ export class FundItem extends Component {
                 <td>{fundName}</td>
                 <td>{fundNumber}</td>
                 <td>{invManager}</td>
-                <td><input id={"quantity-" + fundNumber} className="quantity-field" type="number" placeholder="Enter quantity" value={this.state.quantity} onChange={this.onChangeHandlerQuantity}></input></td>
+                <td><input id={"quantity-" + fundNumber} className="quantity-field" type="number" placeholder="Enter quantity"  onChange={this.onChangeHandlerQuantity}></input></td>
                 <td class="purchase-sell-switch">
                     <select onChange={this.onChangeHandlerStatus}>
                         <option value="sell">Sell</option>

@@ -130,10 +130,13 @@ class Preferences extends Component {
                                     <label className="label-content">
                                         Base Currency :
                                     </label>
-                                    <select id="baseCurr" className="" value={this.state.baseCurr} onChange={this.handleChange} required>
-                                        <option value="INR">Indian Rupee</option>
-                                        <option value="USD">United States Dollar</option>
-                                        <option value="GBP">Pounds</option>
+                                    <select id="baseCurr" className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
+                                        <option value="INR">Indian Rupees</option>
+                                        <option value="USD">United States Dollars</option>
+                                        <option value="GBP">Great Britain Pounds</option>
+                                        <option value="EUR">Euros</option>
+                                        <option value="AED">Arab Emirates Dollar</option>
+                                        <option value="SAR">Saudi Arabian Riyal</option>
                                     </select>
                                 </div>
                                 

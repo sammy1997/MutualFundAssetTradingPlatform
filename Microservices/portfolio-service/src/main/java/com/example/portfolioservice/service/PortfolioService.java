@@ -61,6 +61,8 @@ public class PortfolioService {
                             .profitAmount(profit).profitPercent(profitPercent)
                             .build();
                     updateProfitsOfFunds.add(updatedFund);
+                }else {
+                    updateProfitsOfFunds.add(fund);
                 }
             }
             UserParser u = ImmutableUserParser.builder()

@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import searchContent from './utility/SearchTableContent';
 import TradeBlotter from './TradeBlotter';
 import Modal from 'react-responsive-modal';
+import parseJwt from './utility/JwtParser';
 
 class UserFunds extends Component
 {
@@ -14,12 +15,13 @@ class UserFunds extends Component
     {
         super()
         this.state = {
-            selectedFunds:[],
+            selectedFunds:undefined,
             numberOfSelectedFunds: 0,
             list : [],
             searchableFields: [],
             open: false,
-            errorResponse: [] 
+            errorResponse: [],
+            role: undefined
         }
     }
 
@@ -53,7 +55,7 @@ class UserFunds extends Component
                     }
                     
                     this.setState({
-                        open: true 
+                        open: true,
                     })
                 }
                 
@@ -61,7 +63,9 @@ class UserFunds extends Component
             }
             this.setState({
                 selectedFunds: selected
-            })
+            }, () => {console.log(this.state.selectedFunds)})
+            
+              
         }
     }
 
@@ -83,10 +87,13 @@ class UserFunds extends Component
             .then(res => {
                 this.loadAssets(res);
                 console.log(res);
+                
                 this.setState({
                     list : res.data.all_funds,
-                    searchableFields: [0,1,2,4]
+                    searchableFields: [0,1,2,4],
+                    role: parseJwt(jwt).authorities[0]
                 })
+                // console.log(this.state.role);
             })
             .catch( error => {
                 if(error.response){
@@ -109,7 +116,8 @@ class UserFunds extends Component
             .then(res => {
                 if(res.status == 200){
                     this.setState({
-                        list : res.data
+                        list : res.data,
+                        role: parseJwt(jwt).authorities[0]
                     })
                 }
                 this.setState({
@@ -145,7 +153,7 @@ class UserFunds extends Component
                     {this.state.errorResponse}
                 </div>
 
-                <div className="row ">
+                {/* <div className="row ">
                     <form className = "search-form">
                         <div className = "input-field col s4">
                             <label htmlFor="myInput0">Search By Fund Name</label>
@@ -164,7 +172,7 @@ class UserFunds extends Component
                             <input type="text" palceholder="Search By Fund Number" id="myInput2" onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} />
                         </div>
                     </form>
-                </div>
+                </div> */}
                 <table align = "center" id = "myTable">
                     <thead>
                     <tr className = "software">
@@ -178,7 +186,7 @@ class UserFunds extends Component
                         {this.props.portfolio?<th>Quantity</th>:""}
                         {this.props.portfolio?<th>Purchase NAV</th>:""}
                         <th>Current NAV</th>
-                        {this.props.portfolio?<th>Total Profit/Loss</th>:""}
+                        {this.props.portfolio?<th>Expected Profit/Loss</th>:""}
                         {this.props.portfolio?<th>Profit %</th>:""}
                         {this.props.portfolio?<th>Indicator</th>:""}
                     </tr>
@@ -186,28 +194,28 @@ class UserFunds extends Component
 
                     <tbody>
                         <tr>
-                            {/* <td><input type="text" id="myInput0"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>  */}
-                            {/* <td><input type="text" id="myInput1" 
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
-                            {/* <td><input type="text" id="myInput2"  
-                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> */}
-                            {/* <td>N/A</td>
-                            {this.props.portfolio?<td>N/A</td>:""}
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            {this.props.portfolio?<td>N/A</td>:""}
-                            {this.props.portfolio?<td>N/A</td>:""}
-                            <td>N/A</td>
-                            <td>N/A</td>
-                            {this.props.portfolio?<td>N/A</td>:""}
-                            {this.props.portfolio?<td>N/A</td>:""} */}
+                            <td><input type="text" id="myInput0"  
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> 
+                            <td><input type="text" id="myInput1" 
+                                onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
+                            { <td><input type="text" id="myInput2"  
+                            onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> }
+                            { <td></td>}
+                            {this.props.portfolio?<td></td>:""}
+                            <td></td>
+                            <td></td>
+                            {this.props.portfolio?<td></td>:""}
+                            {this.props.portfolio?<td></td>:""}
+                            <td></td>
+                            <td></td>
+                            {this.props.portfolio?<td></td>:""}
+                            {this.props.portfolio?<td></td>:""} 
                         </tr>
                         {               
                             this.state.list.map(item => <tr key={item.fundNumber}>
                             <td>
                                 <label>
-                                    <input type="checkbox" onChange={this.onSelect} />
+                                    {this.state.role==="ROLE_VIEWER"?<input type="checkbox" disabled/>:<input type="checkbox" onChange={this.onSelect}/>}
                                     <span id="fund-name" style={spanStyle} className="fundname-label">{item.fundName}</span>
                                 </label>
                             </td>
@@ -221,7 +229,7 @@ class UserFunds extends Component
                             {this.props.portfolio?<td>{item.originalNav}</td>:""}
                             {this.props.portfolio?<td>{item.presentNav}</td>:<td>{item.nav}</td>}
                             {this.props.portfolio?<td>{item.profitAmount}</td>:""}
-                            {this.props.portfolio?<td>{item.profitPercent}</td>:""}
+                            {this.props.portfolio?<td>{item.profitPercent * 100}</td>:""}
                             {this.props.portfolio?
                                 <td>{
                                     (item.profitAmount>0 && item.profitPercent>0)?<i className="fa fa-arrow-up"></i>: <i className="fa fa-arrow-down"></i>
@@ -233,11 +241,12 @@ class UserFunds extends Component
                     </tbody>
                 </table>
 
-
-                {this.state.list.length!=0?<h5>You have selected {this.state.numberOfSelectedFunds} funds. Start trading?</h5>:<h5>You don't have any funds to trade at the moment. Please head to the fund finder page</h5>}
-                <button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
+                
+                
+                {this.state.list.length!=0?<h5>You have selected {this.state.numberOfSelectedFunds} funds.</h5>:<h5>You don't have any funds to trade at the moment. Please head to the fund finder page</h5>}
+                {this.state.role === "ROLE_VIEWER"?<h5 className ="alert">You are not allowed to place any trades</h5>:<button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
                     Place trade
-                </button>
+                </button>}
                 <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
                         <TradeBlotter funds = {this.state.selectedFunds}/> 
