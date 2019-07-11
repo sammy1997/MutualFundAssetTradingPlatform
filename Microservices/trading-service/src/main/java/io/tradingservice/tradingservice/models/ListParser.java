@@ -6,9 +6,6 @@ public class ListParser {
 
     private List<ImmutableFund> entitlements;
 
-    public ListParser() {
-    }
-
     public List<ImmutableFund> getEntitlements() {
         return entitlements;
     }

@@ -21,7 +21,7 @@ public class UserAccessObject {
 
     // Constructor of dao when called
     public UserAccessObject() {
-        userRepository = new UserRepository(RepositorySetup.forUri("mongodb://localhost:27017/UserTrades"));
+        userRepository = new UserRepository(RepositorySetup.forUri(Constants.mongoPort));
     }
 
 

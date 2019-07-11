@@ -59,22 +59,10 @@ class VerifyButton extends Component {
                 trades: this.props.trades
                 }, () => {
                     var getTrades = [...this.state.trades]
-<<<<<<< HEAD
-                    console.log(getTrades)
-                    var obj; 
-                    for(var i=0; i< getTrades.length; i++) {
-                        if (getTrades[i].quantity == 0){
-                            obj = getTrades[i]
-                            break
-                        }
-                    }
-                    var index = getTrades.indexOf(obj)
-=======
                     console.log(this.props.trades);
-                    var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
->>>>>>> 453f98722b8d3380af62cf4fc793cd916924d0fc
+                    var index = getTrades.indexOf(getTrades.find(o => o.quantity <= 0))
                     if (index!=-1){
-                        alert(`Please enter quantity`)
+                        alert(`Please enter valid quantity`)
                         console.log(index)
                     } else {
                     // console.log(jwt) 
@@ -91,7 +79,7 @@ class VerifyButton extends Component {
                             this.setState({
                                 verified: true  
                             })
-                        ) : (console.log(Response.data))
+                        ) : (alert(`Trades not verified`))
                         }).catch(error => {
                             console.log(error)
                             alert(`Trades not verified, please check again`)

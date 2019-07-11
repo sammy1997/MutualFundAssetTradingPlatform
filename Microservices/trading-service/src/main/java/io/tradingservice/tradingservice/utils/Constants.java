@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Constants {
+
+    // Secret key
     public static final String SECRET_KEY = "ggmuekp69t11p6914qrl7pk4598679hm";
+
+    // FX Rates
     public static final Map<String, Float> FX_USD = new HashMap<String, Float>() {
                                                         {
                                                             put("INR", (float) 69.1605);
@@ -19,5 +23,14 @@ public class Constants {
                                                             put("JPY", (float) 107.6890);
                                                         }
                                                     };
+
+    // Controller paths
+    public static final String viewEndPoint = "/view";
+    public static final String verifyEndPoint = "/verify";
+    public static final String exchangeEndPoint = "/exchange";
+    public static final String addUserEndPoint = "/addUser";
+
+    public static final String mongoPort = "mongodb://localhost:27017/UserTrades";
+
 
 }
