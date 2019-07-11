@@ -60,7 +60,7 @@ public class TradeServiceController {
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
         List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
-        if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
+        if (trades == null) return Response.status(400).entity("Trades not verified").build();
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(200).entity("Verified Trades").build();
         return Response.status(200).entity("Trades not verified").build();
@@ -79,6 +79,4 @@ public class TradeServiceController {
         } else return Response.status(403).entity("Unauthorized request")
                                             .build();
     }
-
-
 }

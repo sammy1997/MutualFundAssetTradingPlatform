@@ -46,6 +46,7 @@ class Login extends Component {
         })
         .catch(error => {
             if(error.response){ 
+                //  console.log("Response Status: " + error.response.status);
                 if(error.response.status === 401 ){
                     this.setState({
                         errorResponse: [<p>Invalid Credentials</p>],

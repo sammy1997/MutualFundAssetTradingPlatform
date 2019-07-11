@@ -121,6 +121,7 @@ public class UserAccessObject {
 
             for (Trade t: newTrades) {
 
+
                 // If the trade status is set to purchase
                 if (t.status().equals("purchase")) {
 
