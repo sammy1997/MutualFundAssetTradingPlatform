@@ -250,10 +250,8 @@ class UserFunds extends Component
 
                 
                 
-                {/* {this.state.role === "ROLE_VIEWER"? ():content1 } */}
                 {content2}
                 {this.state.role !== "ROLE_VIEWER" ? content3 : content}
-                
                 <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
                         <TradeBlotter funds = {this.state.selectedFunds}/> 
