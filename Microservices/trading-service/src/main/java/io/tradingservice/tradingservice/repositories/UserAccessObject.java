@@ -140,7 +140,7 @@ public class UserAccessObject {
                         if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
 
                             // Calculate new balance after the trade
-                            if (t.setCycle() == 0) {
+                            if (t.setCycle().equals("T")) {
                                 float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
                                 balance += credit;
                             }

@@ -56,7 +56,7 @@ public class UserTradeService {
                 .invManager("None")
                 .nav(-1)
                 .invCurrency("None")
-                .setCycle(-1)
+                .setCycle("None")
                 .sAndPRating(-1)
                 .moodysRating(-1)
                 .build();
@@ -112,7 +112,7 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-                if (oldFund.setCycle()!=-1){
+                if (!oldFund.setCycle().equals("None")){
                     Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                                 .fundName(oldFund.fundName())
                                                 .avgNav(oldFund.nav())
