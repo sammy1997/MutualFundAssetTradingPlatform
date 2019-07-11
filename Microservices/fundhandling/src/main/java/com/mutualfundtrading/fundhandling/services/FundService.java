@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.FundParser;
-import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,27 +11,32 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Service
-public class FundService {
+public class FundService implements FundServiceModel{
 
     @Autowired
     private FundDAO dao;
 
     public Response addFundService(FundParser fund) {
-        String message = dao.insert(fund);
-        if (message.equals("Successfully added")) {
-            return Response.status(200).entity(message).build();
+
+        if (!fund.fundNumber().equals("") && fund.invManager().isPresent() && fund.setCycle().isPresent()
+                && fund.moodysRating().isPresent() && fund.sAndPRating().isPresent()
+                && fund.fundName().isPresent() && fund.invCurrency().isPresent() && fund.nav().isPresent()) {
+
+            boolean status = dao.insert(fund);
+            if (status) {
+                return Response.status(200).entity("Successfully added").build();
+            }
+            return Response.status(422).entity("Fund already exists").build();
         }
-        if(message.equals("Some fields are missing")) {
-            return Response.status(400).entity(message).build();
-        }
-        return Response.status(422).entity(message).build();
+
+        return Response.status(400).entity("Some fields are missing").build();
     }
 
-    public ImmutableFund getFund(String fundNumber) {
+    public Fund getFund(String fundNumber) {
         return dao.getFund(fundNumber);
     }
 
-    public List<ImmutableFund> getAll() {
+    public List<Fund> getAll() {
         return dao.getAll();
     }
 
