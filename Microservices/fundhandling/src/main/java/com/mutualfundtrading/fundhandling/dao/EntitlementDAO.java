@@ -57,9 +57,19 @@ public class EntitlementDAO {
                 .fetchFirst().getUnchecked();
 
         if (entitlementsOptional.isPresent()) {
+            HashSet<String> updatedEntitlements = new HashSet<>();
+            List<String> entitledFundList = new ArrayList<>();
+
+            for (String newEntitledFundId: entitlement.entitledTo().get()) {
+                if (!updatedEntitlements.contains(newEntitledFundId)) {
+                    updatedEntitlements.add(newEntitledFundId);
+                    entitledFundList.add(newEntitledFundId);
+                }
+            }
+
             repository.upsert(ImmutableEntitlements.builder()
                     .userId(entitlement.userId().get())
-                    .entitledTo(entitlement.entitledTo().get()).build());
+                    .entitledTo(entitledFundList).build());
             return true;
         }
         return false;
