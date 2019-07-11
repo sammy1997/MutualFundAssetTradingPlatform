@@ -60,14 +60,19 @@ public class PortfolioServiceUnitTests {
         assertEquals(message, "UserParser Created");
     }
 
-//    @Test
-//    public void test_getUser() {
-//        Mockito.doReturn(Optional.of(this.user)).when(dao).getUser(Mockito.anyString());
-//        Optional<User> user = Optional.of(this.user);
-//        user = portfolioService.getUser("1");
-//        assertEquals(user.get(), this.user);
-//
-//    }
+    @Test
+    public void test_getUser() {
+        Mockito.doReturn(Optional.of(this.user)).when(dao).getUser(Mockito.anyString());
+        Optional<User> user = Optional.of(this.user);
+        User user2 = ImmutableUser.builder()
+                .userId("sombuddha20")
+                .currBal(34)
+                .all_funds(this.user.all_funds())
+                .baseCurr("INR").build();
+        user = portfolioService.getUser(token);
+        assertEquals(user.get(), user2);
+
+    }
 
     @Test
     public void test_update() {
