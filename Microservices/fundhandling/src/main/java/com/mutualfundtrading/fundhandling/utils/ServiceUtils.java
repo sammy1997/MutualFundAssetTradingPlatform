@@ -4,7 +4,7 @@ import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.models.EntitlementParser;
 import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundParser;
-import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,7 +37,7 @@ public class ServiceUtils {
         return userId;
     }
 
-    private static ArrayList<ArrayList<String>> readCsvFile(String fileName) {
+    private ArrayList<ArrayList<String>> readCsvFile(String fileName) {
         try {
             FileInputStream excelFile = new FileInputStream(new File(FILE_PATH + fileName));
 
@@ -78,8 +78,8 @@ public class ServiceUtils {
         }
     }
 
-    public static Response addFundsFromCSV(String fileName) {
-        ArrayList<ArrayList<String>> rows = readCsvFile(fileName);
+    public Response addFundsFromCSV(FormDataContentDisposition fileName) {
+        ArrayList<ArrayList<String>> rows = readCsvFile(fileName.getFileName());
         FundDAO dao = new FundDAO();
         if (rows == null) {
             return Response.status(422).entity("Cannot process the provided file. Ensure the format and rows are correct")
@@ -100,9 +100,8 @@ public class ServiceUtils {
                         .sAndPRating(Float.parseFloat(row.get(6)))
                         .moodysRating(Float.parseFloat(row.get(7)))
                         .build();
-                String message = dao.insert(fund);
-                if (message.equals("Fund with this fund number already exists")) {
-                    System.out.println(fund.fundNumber());
+                boolean status = dao.insert(fund);
+                if (!status) {
                     dao.update(fund);
                 }
             }
@@ -112,8 +111,8 @@ public class ServiceUtils {
         return Response.status(200).entity("Funds successfully added").build();
     }
 
-    public static Response addEntitlementsFromCSV(String fileName) {
-        ArrayList<ArrayList<String>> rows = readCsvFile(fileName);
+    public Response addEntitlementsFromCSV(FormDataContentDisposition fileName) {
+        ArrayList<ArrayList<String>> rows = readCsvFile(fileName.getFileName());
         EntitlementDAO dao = new EntitlementDAO();
         if (rows == null) {
             return Response.status(422).entity("Cannot process the provided file. Ensure the format and rows are correct")
@@ -137,7 +136,7 @@ public class ServiceUtils {
         return Response.status(200).entity("Entitlements successfully added").build();
     }
 
-    public static int fileUpload(InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
+    public int fileUpload(InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
         try {
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -161,7 +160,7 @@ public class ServiceUtils {
         }
     }
 
-    public static List<String> checkFunds(FundService fundService, EntitlementParser entitlement){
+    public List<String> checkFunds(FundServiceModel fundService, EntitlementParser entitlement){
         List<String> temp = new ArrayList<>();
         for (String fundId : entitlement.entitledTo().get()) {
             if (fundService.getFund(fundId) != null) {

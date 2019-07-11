@@ -49,7 +49,7 @@ public class UserDAO {
         List<User> users = repository.findAll().fetchAll().getUnchecked();
         List<ImmutableUser> tempList = new ArrayList<>();
         for (User allUsers: users){
-            if (!allUsers.role().contains("ADMIN")) {
+            if (allUsers.role().contains("TRADER") || allUsers.role().contains("VIEWER")) {
                 tempList.add(ImmutableUser.builder().from(allUsers).build());
             }
         }

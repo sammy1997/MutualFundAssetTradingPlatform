@@ -2,6 +2,7 @@ package com.mutualfundtrading.fundhandling.config;
 
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,5 +22,10 @@ public class BeanConfig {
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
+    }
+
+    @Bean
+    public ServiceUtils serviceUtils(){
+        return new ServiceUtils();
     }
 }
