@@ -110,5 +110,9 @@ button:hover {
 }
 
 .loading {
-  float: center;
+  margin: 0 auto;
+}
+
+.loader-container{
+  display: flex;
 }

@@ -25,7 +25,7 @@ class HeaderPortfolio extends Component {
             li2: "FUND FINDER",
             li3: "PREFERENCES",
             currBal: 0,
-            baseCurr: 0,
+            baseCurr: "Not Available",
             fullName: "NO NAME",
         }
     }

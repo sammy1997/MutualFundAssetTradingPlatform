@@ -74,15 +74,16 @@ class VerifyButton extends Component {
                         headers: {Authorization: `Bearer ${jwt}`}, 
                         data: getTrades 
                     }).then(Response => {
-                        
                         (Response.data === `Verified Trades`) ? (
                             this.setState({
                                 verified: true  
                             })
                         ) : (alert(`Trades not verified`))
                         }).catch(error => {
-                            console.log(error)
-                            alert(`Trades not verified, please check again`)
+                            if(error.response) 
+                            if(error.response.status === 403 ){
+                                alert('You are not authorized to place any trades');
+                            }
                         })
                     ) : alert(`Max Trades that can be placed is 5`)
                     }
@@ -143,7 +144,11 @@ class VerifyButton extends Component {
         const {open, submitLoading, verifyLoading} = this.state  
         let submitContent;
         if (submitLoading) {
-            submitContent = <div><p align="center">Placing requested Trade...</p><img className="loading" src={require('./loader2.gif')}/></div>
+            submitContent = <div><p align="center">Placing requested Trade...</p>
+            <div className="loader-container">
+                <img className="loading" src={require('./loader2.gif')}/>
+            </div>
+        </div>
         } else {
             submitContent = <div><p align="center">Are you sure you want to place trades?</p><form ><button className='submitTrade' onClick={this.submitHandler} disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
         }
