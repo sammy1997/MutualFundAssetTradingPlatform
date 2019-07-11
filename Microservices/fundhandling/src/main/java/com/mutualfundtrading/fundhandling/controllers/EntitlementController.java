@@ -4,6 +4,7 @@ import com.mutualfundtrading.fundhandling.models.EntitlementParser;
 import com.mutualfundtrading.fundhandling.models.Fund;
 import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -27,6 +28,9 @@ public class EntitlementController implements EntitlementControllerModel {
 
     @Autowired
     private EntitlementServiceModel service;
+
+    @Autowired
+    private FundServiceModel fundService;
 
     @Autowired
     private ServiceUtils serviceUtils;
@@ -73,16 +77,15 @@ public class EntitlementController implements EntitlementControllerModel {
     @GET
     public Fund getEntitledFundDetail(@HeaderParam("Authorization") String token,
                                              @QueryParam("fundNumber") String fundId) {
-        List<Fund> result = service.searchEntitlements(ServiceUtils.decodeJWTForUserId(token), "Fund Number", fundId);
+        Fund result = fundService.getFund(fundId);
         if (result!=null) {
-            if (result.size()>0) {
                 LOGGER.info("Get an entitled fund detail endpoint hit.");
-                return result.get(0);
-            }
+                return result;
         }
         LOGGER.info("No such entitled fund found.");
-        return ImmutableFund.builder().fundName("").fundNumber("").invCurrency("")
-                .invManager("").moodysRating(0).sAndPRating(0).nav(0).setCycle(0).build();
+//        return ImmutableFund.builder().fundName("").fundNumber("").invCurrency("")
+//                .invManager("").moodysRating(0).sAndPRating(0).nav(0).setCycle(0).build();
+        return null;
     }
 
     @POST

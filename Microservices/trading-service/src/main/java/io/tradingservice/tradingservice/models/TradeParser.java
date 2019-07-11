@@ -6,14 +6,6 @@ public class TradeParser {
     private int quantity;
     private String status;
 
-    public TradeParser() {
-    }
-
-    public TradeParser(String fundNumber, int quantity, String status) {
-        this.fundNumber = fundNumber;
-        this.quantity = quantity;
-        this.status = status;
-    }
 
     public String getFundNumber() {
         return fundNumber;

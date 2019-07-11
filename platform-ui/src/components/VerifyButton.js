@@ -30,8 +30,8 @@ class VerifyButton extends Component {
             verified: false,
             submitLoading: false,    
             verifyLoading: false,
-            trades: []
-        })
+            trades: this.props.trades
+        }, () => {console.log(this.state.trades)})
         this.props.onRef(this)
     }
 
@@ -60,9 +60,9 @@ class VerifyButton extends Component {
                 }, () => {
                     var getTrades = [...this.state.trades]
                     console.log(this.props.trades);
-                    var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
+                    var index = getTrades.indexOf(getTrades.find(o => o.quantity <= 0))
                     if (index!=-1){
-                        alert(`Please enter quantity`)
+                        alert(`Please enter valid quantity`)
                         console.log(index)
                     } else {
                     // console.log(jwt) 
@@ -78,7 +78,7 @@ class VerifyButton extends Component {
                             this.setState({
                                 verified: true  
                             })
-                        ) : (alert(Response.data))
+                        ) : (alert(`Trades not verified`))
                         }).catch(error => {
                             if(error.response) 
                             if(error.response.status === 403 ){
@@ -99,7 +99,8 @@ class VerifyButton extends Component {
         })
     }
 
-    noClickhandler = () => {
+    noClickhandler = (e) => {
+        e.preventDefault()
         this.setState({
             open: false 
         })
@@ -149,7 +150,7 @@ class VerifyButton extends Component {
             </div>
         </div>
         } else {
-            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form onSubmit={this.submitHandler}><button className='submitTrade' type="submit" disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
+            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form ><button className='submitTrade' onClick={this.submitHandler} disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
         }
         
         return this.state.verified ? 
