@@ -50,20 +50,18 @@ public class UserTradeService {
                 return fund;
             }
         }
-<<<<<<< HEAD
-        return ImmutableFund.builder().build();
-=======
+
+
         return ImmutableFund.builder()
                 .fundNumber("None")
                 .fundName("None")
                 .invManager("None")
                 .nav(-1)
                 .invCurrency("None")
-                .setCycle(-1)
+                .setCycle("None")
                 .sAndPRating(-1)
                 .moodysRating(-1)
                 .build();
->>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
     }
 
     // Helper function to get balance
@@ -116,22 +114,7 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-<<<<<<< HEAD
-            if (oldFund!= ImmutableFund.builder().build()) {
-                Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
-                                            .fundName(oldFund.fundName())
-                                            .avgNav(oldFund.nav())
-                                            .status(t.getStatus())
-                                            .quantity(t.getQuantity())
-                                            .invManager(oldFund.invManager())
-                                            .setCycle(oldFund.setCycle())
-                                            .invCurr(oldFund.invCurrency())
-                                            .sAndPRating(oldFund.sAndPRating())
-                                            .moodysRating(oldFund.moodysRating())
-                                            .build();
-                trades.add(newTrade);
-=======
-                if (oldFund.setCycle()!=-1){
+                if (!oldFund.setCycle().equals("None")){
                     Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                                 .fundName(oldFund.fundName())
                                                 .avgNav(oldFund.nav())
@@ -144,7 +127,6 @@ public class UserTradeService {
                                                 .moodysRating(oldFund.moodysRating())
                                                 .build();
                     trades.add(newTrade);
->>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
             } else {
                 return new ArrayList<>();
             }
