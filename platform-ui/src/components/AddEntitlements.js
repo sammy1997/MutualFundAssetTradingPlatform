@@ -7,6 +7,7 @@ import axios from 'axios';
 import getCookie from './Cookie';
 import FileUpload from './FileUploadComponent';
 import autocomplete from './utility/Autocomplete';
+import Modal from 'react-responsive-modal';
 
 class AddEntitlements extends Component {
     constructor(props) {
@@ -19,7 +20,10 @@ class AddEntitlements extends Component {
              funds: [],
              users: [],
              updateUser: false,
-             errorResponse: []
+             open: false,
+             errorResponse: [],
+             entitledUser: undefined,
+             entitledToList: []
         }
     }
 
@@ -57,6 +61,7 @@ class AddEntitlements extends Component {
                         var length = currentList.getElementsByTagName('li').length;
                         var li= document.createElement('li');
                         li.id = 'select' + length;
+                        console.log(fund);
                         li.innerHTML = fund.fundNumber;
                         var i = document.createElement('i');
                         i.className = 'fa fa-trash';
@@ -172,6 +177,7 @@ class AddEntitlements extends Component {
             var currentList = document.getElementById("added-funds");
             var length = currentList.getElementsByTagName('li').length;
             var elem = list[it].innerText;
+            // console.log(elem);
             elem = elem.split("<i")[0].trim();
             var li= document.createElement('li');
             li.id = 'select' + length;
@@ -204,7 +210,7 @@ class AddEntitlements extends Component {
             Authorization: 'Bearer ' + token
         }
 
-        console.log(this.state.chips)
+        // console.log(this.state.chips)
         var listOfFunds = document.getElementById("added-funds").getElementsByTagName('li');
         var entitledTo = [];
         for(var i=0; i< listOfFunds.length; i++){
@@ -214,7 +220,7 @@ class AddEntitlements extends Component {
         for(var i=0; i< this.state.chips.length; i++){
             var payload ={
                 userId: this.state.chips[i],
-                entitledTo: entitledTo
+                entitledTo: entitledTo,
             };
             
             axios({
@@ -224,8 +230,12 @@ class AddEntitlements extends Component {
                 data: payload
             // eslint-disable-next-line no-loop-func
             }).then(response =>{
-                console.log(response.data)
-                alert('Response for user ' + payload.userId + " : " + response.data);
+                console.log()
+                this.setState({
+                    open: true,
+                    entitledUser: payload.userId,
+                    entitledToList: payload.entitledTo
+                })
             }).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
@@ -237,7 +247,7 @@ class AddEntitlements extends Component {
             });
         }
 
-        document.getElementById("added-funds").innerHTML = "";
+        // document.getElementById("added-funds").innerHTML = "";
     }
     
     onSwitchChanged = (event) =>{
@@ -249,7 +259,17 @@ class AddEntitlements extends Component {
         })
     }
 
-    render() {
+    closeModalHandler = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    closePopUp = () => {
+        window.location="/admin";
+    }
+
+    render() {       
         return (
             <div className="wrapper">
                 <div class="error-response">
@@ -294,6 +314,21 @@ class AddEntitlements extends Component {
                     </div>    
                 </div>
                 <FileUpload endUrl='entitlements/addEntitlements' buttonText='Add Entitlements from File'></FileUpload>         
+                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                    <div>
+                        <h5 align="center"><b>{this.state.entitledUser}</b> has been entitled to the following funds</h5>
+                        <ul>
+                            {
+                                this.state.entitledToList.map(entitled => 
+                                    <li align="center"> {entitled} </li>
+                                )
+                            }
+                        </ul>
+                        <div align="center">
+                            <button type="button" className="btn" onClick={this.closePopUp}>OK</button>
+                        </div>
+                    </div>
+                </Modal>
             </div>
         )
     }

@@ -22,6 +22,14 @@ class CustomerService extends Component {
         this.setState({
             currTab: tab
         });
+        var tablet = document.getElementsByClassName('tab');
+        var numberOfTabs = this.state.childComponents.length;
+        if(!tablet[tab].classList.contains('active')){
+            for(var i=0; i<numberOfTabs; i++){
+                tablet[i].classList.remove('active');
+            }
+            tablet[tab].classList.add('active'); 
+        }
     }
     componentDidMount(){
         var token = getCookie("token");
@@ -41,7 +49,7 @@ class CustomerService extends Component {
         var component = this.state.childComponents[this.state.currTab];
         return (
             <div>
-                <Header name={this.state.name} tabHandler={this.tabHandler}></Header>
+                <Header name={this.state.name} active={this.state.active} tabHandler={this.tabHandler}></Header>
                 {component}
             </div>
         )

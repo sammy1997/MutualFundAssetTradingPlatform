@@ -59,7 +59,7 @@ class VerifyButton extends Component {
                 trades: this.props.trades
                 }, () => {
                     var getTrades = [...this.state.trades]
-                    console.log(this.props.trades);
+                    console.log("props.trade: " + this.props.trades);
                     var index = getTrades.indexOf(getTrades.find(o => o.quantity <= 0))
                     if (index!=-1){
                         alert(`Please enter valid quantity`)
@@ -81,9 +81,11 @@ class VerifyButton extends Component {
                         ) : (alert(`Trades not verified`))
                         }).catch(error => {
                             if(error.response) 
-                            if(error.response.status === 403 ){
-                                alert('You are not authorized to place any trades');
-                            }
+                                if(error.response.status === 403 ){
+                                    alert('You are not authorized to place any trades');
+                                }else if(error.response.status === 400){
+                                    alert("You are not entitled to any one (or more) of the fund (s)");
+                                }
                         })
                     ) : alert(`Max Trades that can be placed is 5`)
                     }
