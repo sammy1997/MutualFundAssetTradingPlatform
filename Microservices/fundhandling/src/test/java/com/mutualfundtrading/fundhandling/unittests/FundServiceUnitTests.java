@@ -7,6 +7,7 @@ import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFund;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundParser;
 import com.mutualfundtrading.fundhandling.services.FundService;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +32,10 @@ public class FundServiceUnitTests {
     private FundDAO dao;
 
     @InjectMocks
-    private FundService service;
+    private FundServiceModel service = new FundService();
 
     private FundParser fund;
+    private FundParser fundAllFields;
     private Fund fundDb;
 
 
@@ -45,6 +47,9 @@ public class FundServiceUnitTests {
     @Before
     public void setUp(){
         fund = ImmutableFundParser.builder().fundName("Hedge").fundNumber("1234").build();
+        fundAllFields = ImmutableFundParser.builder().fundName("Hedge").fundNumber("1234")
+                .sAndPRating((float)23.2).nav(22).invCurrency("INR")
+                .setCycle(2).invManager("GS").moodysRating(12).build();
         fundDb = ImmutableFund.builder().fundName("Hedge").fundNumber("1234")
                 .sAndPRating((float)23.2).nav(22).invCurrency("INR")
                 .setCycle(2).invManager("GS").moodysRating(12).build();
@@ -52,20 +57,19 @@ public class FundServiceUnitTests {
 
     @Test
     public void addFundServiceTest(){
-        Mockito.when(dao.insert(Mockito.any(FundParser.class))).thenReturn("Successfully added");
-        Response response = service.addFundService(fund);
+        Mockito.when(dao.insert(Mockito.any(FundParser.class))).thenReturn(true);
+        Response response = service.addFundService(fundAllFields);
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getEntity()).isEqualTo("Successfully added");
 
-        Mockito.when(dao.insert(Mockito.any(FundParser.class))).thenReturn("Some fields are missing");
         response = service.addFundService(fund);
         assertThat(response.getStatus()).isEqualTo(400);
         assertThat(response.getEntity()).isEqualTo("Some fields are missing");
 
-        Mockito.when(dao.insert(Mockito.any(FundParser.class))).thenReturn("Fund with this fund number already exists");
-        response = service.addFundService(fund);
+        Mockito.when(dao.insert(Mockito.any(FundParser.class))).thenReturn(false);
+        response = service.addFundService(fundAllFields);
         assertThat(response.getStatus()).isEqualTo(422);
-        assertThat(response.getEntity()).isEqualTo("Fund with this fund number already exists");
+        assertThat(response.getEntity()).isEqualTo("Fund already exists");
     }
 
     @Test
@@ -76,8 +80,8 @@ public class FundServiceUnitTests {
 
     @Test
     public void getAllFundServiceTest(){
-        List<ImmutableFund> funds = new ArrayList<>();
-        funds.add((ImmutableFund) fundDb);
+        List<Fund> funds = new ArrayList<>();
+        funds.add(fundDb);
 
         Mockito.when(dao.getAll()).thenReturn(funds);
         Assert.assertEquals(funds, service.getAll());
