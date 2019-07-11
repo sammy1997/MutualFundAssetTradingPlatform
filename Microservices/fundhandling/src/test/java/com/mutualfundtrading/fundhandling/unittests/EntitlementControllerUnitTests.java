@@ -1,12 +1,19 @@
 package com.mutualfundtrading.fundhandling.unittests;
 
+import com.mutualfundtrading.fundhandling.controllers.EntitlementController;
+import com.mutualfundtrading.fundhandling.controllers.EntitlementControllerModel;
 import com.mutualfundtrading.fundhandling.models.*;
-import com.mutualfundtrading.fundhandling.services.EntitlementService;
+import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,7 +53,10 @@ public class EntitlementControllerUnitTests {
     private EntitlementParser entitlement;
 
     @MockBean
-    private EntitlementService service;
+    private EntitlementServiceModel service;
+
+    @MockBean
+    private ServiceUtils serviceUtils;
 
     @Before
     public void setUp(){
@@ -77,6 +87,24 @@ public class EntitlementControllerUnitTests {
     }
 
     @Test
+    public void updateEntitlementsTest() throws Exception{
+        URI uri = new URI(baseUrl + "/update");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + token);
+
+        Mockito.when(service.updateEntitlements(Mockito.any(EntitlementParser.class)))
+                .thenReturn(Response.status(200).entity("Update entitlements called").build());
+
+        HttpEntity<EntitlementParser> request = new HttpEntity<>(entitlement, headers);
+        ResponseEntity<String> entity= this.restTemplate.postForEntity(uri, request, String.class);
+
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(entity.getBody()).isEqualTo("Update entitlements called");
+    }
+
+    @Test
     public void deleteEntitlementTest() throws Exception{
         URI uri = new URI(baseUrl + "/delete");
 
@@ -87,7 +115,7 @@ public class EntitlementControllerUnitTests {
                 .thenReturn(Response.status(200).entity("Delete entitlements called").build());
 
         HttpEntity<EntitlementParser> request = new HttpEntity<>(entitlement, headers);
-        ResponseEntity<String> entity= this.restTemplate.postForEntity(uri, request, String.class);
+        ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.DELETE ,request, String.class);
 
         assertThat(entity.getBody()).isEqualTo("Delete entitlements called");
     }
@@ -100,8 +128,8 @@ public class EntitlementControllerUnitTests {
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", "Bearer " + token);
 
-        List<ImmutableFund> entitlements = new ArrayList<>();
-        entitlements.add((ImmutableFund)fundDb);
+        List<Fund> entitlements = new ArrayList<>();
+        entitlements.add(fundDb);
 
         Mockito.when(service.getEntitlements(Mockito.anyString()))
                 .thenReturn(entitlements);
@@ -118,7 +146,7 @@ public class EntitlementControllerUnitTests {
 
     @Test
     public void searchEntitlementsTest() throws Exception{
-        URI uri = new URI(baseUrl + "/get?field=any&term=any");
+        URI uri = new URI(baseUrl + "/search?field=any&term=any");
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
@@ -190,11 +218,30 @@ public class EntitlementControllerUnitTests {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+        Mockito.when(serviceUtils.fileUpload(Mockito.any(), Mockito.any())).thenReturn(404);
         HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(parameters, headers);
         ResponseEntity<String> response = this.restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         Assertions.assertThat(response.getBody()).isEqualTo("Provide excel or csv files");
 
+        resource = new ClassPathResource("test.xlsx");
+        parameters.remove("file");
+        parameters.add("file", resource);
+
+        Mockito.when(serviceUtils.fileUpload(Mockito.any(), Mockito.any())).thenReturn(200);
+        Mockito.when(serviceUtils.addEntitlementsFromCSV(Mockito.any()))
+                .thenReturn(Response.status(200).entity("File upload successful").build());
+
+        entity = new HttpEntity<>(parameters, headers);
+        response = this.restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isEqualTo("File upload successful");
+
+        Mockito.when(serviceUtils.fileUpload(Mockito.any(), Mockito.any())).thenReturn(400);
+
+        response = this.restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+        Assertions.assertThat(response.getStatusCode().value()).isEqualTo(400);
+        Assertions.assertThat(response.getBody()).isEqualTo("Error while uploading file. Try again");
     }
 }

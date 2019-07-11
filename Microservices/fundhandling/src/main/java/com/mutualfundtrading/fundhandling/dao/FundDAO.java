@@ -19,15 +19,11 @@ public class FundDAO {
     }
 
     // Insert query method
-    public String insert(FundParser fund) {
-        String message = "Successfully added";
+    public boolean insert(FundParser fund) {
         boolean exists = repository.findByFundNumber(fund.fundNumber()).fetchFirst().getUnchecked().isPresent();
         if (exists) {
-            message = "Fund with this fund number already exists";
+            return false;
         } else {
-            if (fund.invManager().isPresent() && fund.setCycle().isPresent()
-                    && fund.moodysRating().isPresent() && fund.sAndPRating().isPresent()
-                    && fund.fundName().isPresent() && fund.invCurrency().isPresent() && fund.nav().isPresent()) {
                 // Constructing the fund
                 Fund f = ImmutableFund.builder()
                         .fundName(fund.fundName().get())
@@ -39,15 +35,12 @@ public class FundDAO {
                         .nav(fund.nav().get())
                         .sAndPRating(fund.sAndPRating().get()).build();
                 repository.insert(f);
-            } else {
-                return "Some fields are missing";
             }
-        }
-        return message;
+        return true;
     }
 
     // Fetch fund query
-    public ImmutableFund getFund(String fundNumber) {
+    public Fund getFund(String fundNumber) {
         Optional<Fund> fund = repository.find(where.fundNumber(fundNumber)).fetchFirst().getUnchecked();
         if (fund.isPresent()) {
             return ImmutableFund.builder().from(fund.get()).build();
@@ -56,13 +49,9 @@ public class FundDAO {
     }
 
     // Fetch all funds query
-    public List<ImmutableFund> getAll() {
+    public List<Fund> getAll() {
         List<Fund> funds = repository.findAll().fetchAll().getUnchecked();
-        List<ImmutableFund> f = new ArrayList<>();
-        for (Fund fund: funds) {
-            f.add(ImmutableFund.builder().from(fund).build());
-        }
-        return f;
+        return funds;
     }
 
     // Update fund query

@@ -13,6 +13,8 @@ export class FundItem extends Component {
         }
     }
     
+    
+
     onChangeHandlerQuantity = (event) => {
         this.setState({
             quantity: event.target.value
@@ -41,6 +43,19 @@ export class FundItem extends Component {
         })       
     }
 
+    delHandler = () => {
+        this.props.delFund(this.props.fundNumber)
+    }
+
+    componentDidMount(){
+        const trade = {
+            fundNumber: this.props.fundNumber,
+            quantity: this.state.quantity,
+            status: this.state.status
+        }
+        this.props.callBack(trade)
+    }
+
     render() {
         const {fundName, fundNumber, invManager} = this.props;
         return (
@@ -48,16 +63,21 @@ export class FundItem extends Component {
                 <td>{fundName}</td>
                 <td>{fundNumber}</td>
                 <td>{invManager}</td>
-                <td><input id={"quantity-" + fundNumber} type="number" onChange={this.onChangeHandlerQuantity}></input></td>
-                <td>
+                <td><input id={"quantity-" + fundNumber} className="quantity-field" type="number" placeholder="Enter quantity"  onChange={this.onChangeHandlerQuantity}></input></td>
+                <td class="purchase-sell-switch">
                     <select onChange={this.onChangeHandlerStatus}>
                         <option value="sell">Sell</option>
                         <option value="purchase">Buy</option>
                     </select>
                 </td>
+                <td className="remove-button"><button id="x-button" onClick={this.delHandler}>x</button></td>
             </tr> 
+              
         )
     }
+
+
+    
 }
 
 export default FundItem

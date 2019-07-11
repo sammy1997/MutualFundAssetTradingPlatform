@@ -1,8 +1,10 @@
 package com.mutualfundtrading.fundhandling.utils;
 import com.mutualfundtrading.fundhandling.dao.EntitlementDAO;
 import com.mutualfundtrading.fundhandling.dao.FundDAO;
+import com.mutualfundtrading.fundhandling.models.EntitlementParser;
 import com.mutualfundtrading.fundhandling.models.FundParser;
 import com.mutualfundtrading.fundhandling.models.ImmutableFundParser;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,10 +14,11 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ServiceUtils {
     public static String BASE_URL = "http://localhost:8762/create/";
-    private static String FILE_PATH = "C:\\Users\\somchakr\\Desktop\\upload\\";
+    public static String FILE_PATH = "\\src\\main\\java\\com\\mutualfundtrading\\fundhandling\\upload\\";
     public static String decodeJWTForUserId(String jwtToken) {
 
         String[] split_string = jwtToken.split("\\.");
@@ -34,9 +37,10 @@ public class ServiceUtils {
         return userId;
     }
 
-    private static ArrayList<ArrayList<String>> readCsvFile(String fileName) {
+    private ArrayList<ArrayList<String>> readCsvFile(String fileName) {
         try {
-            FileInputStream excelFile = new FileInputStream(new File(FILE_PATH + fileName));
+            FileInputStream excelFile = new FileInputStream(new File(System.getProperty("user.dir")
+                    + FILE_PATH + fileName));
 
             Workbook workbook = new XSSFWorkbook(excelFile);
             Sheet datatypeSheet = workbook.getSheetAt(0);
@@ -75,8 +79,8 @@ public class ServiceUtils {
         }
     }
 
-    public static Response addFundsFromCSV(String fileName) {
-        ArrayList<ArrayList<String>> rows = readCsvFile(fileName);
+    public Response addFundsFromCSV(FormDataContentDisposition fileName) {
+        ArrayList<ArrayList<String>> rows = readCsvFile(fileName.getFileName());
         FundDAO dao = new FundDAO();
         if (rows == null) {
             return Response.status(422).entity("Cannot process the provided file. Ensure the format and rows are correct")
@@ -97,9 +101,8 @@ public class ServiceUtils {
                         .sAndPRating(Float.parseFloat(row.get(6)))
                         .moodysRating(Float.parseFloat(row.get(7)))
                         .build();
-                String message = dao.insert(fund);
-                if (message.equals("Fund with this fund number already exists")) {
-                    System.out.println(fund.fundNumber());
+                boolean status = dao.insert(fund);
+                if (!status) {
                     dao.update(fund);
                 }
             }
@@ -109,8 +112,8 @@ public class ServiceUtils {
         return Response.status(200).entity("Funds successfully added").build();
     }
 
-    public static Response addEntitlementsFromCSV(String fileName) {
-        ArrayList<ArrayList<String>> rows = readCsvFile(fileName);
+    public Response addEntitlementsFromCSV(FormDataContentDisposition fileName) {
+        ArrayList<ArrayList<String>> rows = readCsvFile(fileName.getFileName());
         EntitlementDAO dao = new EntitlementDAO();
         if (rows == null) {
             return Response.status(422).entity("Cannot process the provided file. Ensure the format and rows are correct")
@@ -134,7 +137,7 @@ public class ServiceUtils {
         return Response.status(200).entity("Entitlements successfully added").build();
     }
 
-    public static int fileUpload(InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
+    public int fileUpload(InputStream fileInputStream, FormDataContentDisposition fileMetaData) {
         try {
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -143,8 +146,8 @@ public class ServiceUtils {
             if (!(fileName.contains("xlx") || fileName.contains("xlsx")  || fileName.contains("csv"))) {
                 return 404;
             }
-
-            OutputStream out = new FileOutputStream(new File(FILE_PATH + fileName));
+            OutputStream out = new FileOutputStream(new File(System.getProperty("user.dir")
+                    + FILE_PATH + fileName));
 
             while ((read = fileInputStream.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
@@ -156,5 +159,15 @@ public class ServiceUtils {
         } catch (IOException e) {
             return 422;
         }
+    }
+
+    public List<String> checkFunds(FundServiceModel fundService, EntitlementParser entitlement){
+        List<String> temp = new ArrayList<>();
+        for (String fundId : entitlement.entitledTo().get()) {
+            if (fundService.getFund(fundId) != null) {
+                temp.add(fundId);
+            }
+        }
+        return temp;
     }
 }

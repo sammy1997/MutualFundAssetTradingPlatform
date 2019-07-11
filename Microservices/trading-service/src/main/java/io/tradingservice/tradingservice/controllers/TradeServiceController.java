@@ -12,14 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+<<<<<<< HEAD
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collections;
+=======
+>>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "users")
+
 @Path("/")
 @Consumes("application/json")
 @Produces("application/json")
@@ -32,7 +34,7 @@ public class TradeServiceController {
 
     // View Trades Api
     @GET
-    @Path("/view")
+    @Path(Constants.viewEndPoint)
     public List<ImmutableTrade> getAllTrades(@HeaderParam("Authorization") String header) {
         String userId = ServiceUtils.decodeJWTForUserId(header);
         List<ImmutableTrade> trades = userTradeService.getAllTrades(userId);
@@ -41,48 +43,56 @@ public class TradeServiceController {
 
     // Exchange trades Api
     @POST
-    @Path("/exchange")
+    @Path(Constants.exchangeEndPoint)
     public Response exchangeTrade(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers) {
         if (tradeParsers.size() <= 5) {
             String userId = ServiceUtils.decodeJWTForUserId(header);
-            List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
+            List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
             System.out.println(trades);
+<<<<<<< HEAD
             if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
+=======
+            if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
+>>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
             float res = userTradeService.exchangeTrade(userId, trades, header);
-            if (res == 0) return Response.status(400).entity("Trades not verified").build();
+            if (res == -1) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
+            else if (res == -2) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified: Enter quantity greater than 0").build();
             else {
                 System.out.println(res);
-                userTradeService.updateUser(userId, header, res-1);
-                return Response.status(201).entity("Exchanged Requested trade").build();
+                userTradeService.updateUser(userId, header, res);
+                return Response.status(Response.Status.CREATED).entity("Exchanged Requested trade").build();
             }
-        } else return Response.status(400).entity("Max trade request is 5").build();
+        } else return Response.status(Response.Status.BAD_REQUEST).entity("Max trade request is 5").build();
     }
 
     // Verify trades Api
     @POST
-    @Path("/verify")
+    @Path(Constants.verifyEndPoint)
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
+<<<<<<< HEAD
         List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
         if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
+=======
+        List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
+        if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
+>>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
-        if (isVerified) return Response.status(200).entity("Verified Trades").build();
-        return Response.status(400).entity("Trades not verified").build();
+        if (isVerified) return Response.status(Response.Status.ACCEPTED).entity("Verified Trades").build();
+        return Response.status(Response.Status.ACCEPTED).entity("Trades not verified").build();
     }
 
     // Add user
     @POST
-    @Path("/addUser")
+    @Path(Constants.addUserEndPoint)
     public Response addUserById(@HeaderParam("Authorization") String header, @QueryParam("secret") String key) {
         if (key.equals(Constants.SECRET_KEY)) {
             String userId = ServiceUtils.decodeJWTForUserId(header);
             boolean success = userTradeService.addUserById(userId);
-            if (success) return Response.status(201).entity("User Created")
+            if (success) return Response.status(Response.Status.CREATED).entity("User Created")
                                                 .build();
-            else return Response.status(400).entity("Bad request").build();
-        } else return Response.status(403).entity("Unauthorized request")
+            else return Response.status(Response.Status.BAD_REQUEST).entity("Bad request").build();
+        } else return Response.status(Response.Status.FORBIDDEN).entity("Forbidden request")
                                             .build();
     }
-
-
 }

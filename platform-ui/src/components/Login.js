@@ -45,7 +45,7 @@ class Login extends Component {
             }
         })
         .catch(error => {
-            if(error.response){ //The request was made and the server responded with a status code that falls out of the range of 2xx
+            if(error.response){ 
                 //  console.log("Response Status: " + error.response.status);
                 if(error.response.status === 401 ){
                     this.setState({
@@ -79,7 +79,7 @@ class Login extends Component {
                         <form className="form-custom" onSubmit={this.handleSubmit}>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="userId" type="text" value={this.state.userId} onChange={this.handleChange}/>
+                                    <input id="userId" autofocus="true" type="text" value={this.state.userId} onChange={this.handleChange}/>
                                     <label htmlFor="userId">User Id</label>
                                 </div>
                             </div>

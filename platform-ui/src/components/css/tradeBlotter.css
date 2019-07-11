@@ -93,3 +93,26 @@ button:hover {
   float: right;
   margin-top: 15px;
 }
+
+#x-button {
+  border: none !important 
+}
+
+.remove-button {
+  background-color: #ffffff;
+  border: none;
+  border-right: 2px solid white;
+    border-bottom: 2px solid white !important;
+}
+
+.purchase-sell-switch{
+  border-right: 2px solid #26a69a;
+}
+
+.loading {
+  margin: 0 auto;
+}
+
+.loader-container{
+  display: flex;
+}

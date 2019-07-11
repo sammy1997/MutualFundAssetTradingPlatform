@@ -18,17 +18,26 @@ class TradeBlotter extends Component {
         super(props)
     
         this.state = {
-            funds: [],
-            trades: []
+            funds: this.props.funds,
+            fundsPrevious: [], 
+            trades: [],
+            verified: false 
+
         }
     }
 
     // Set funds from fund finder page ui 
-    componentDidMount () {
-        this.setState({
-            funds: this.props.funds 
+    componentDidMount = (prevState) => {
+        this.setState({ 
+            verified: false 
+        }, () => {
+            console.log(this.state.funds)
         })
     }
+
+    unVerify = function() {
+        this.child.unVerifyHandler()
+    }.bind(this)
 
     // Add Trade method
     addTrade = function (fundName, fundNumber, invManager) {
@@ -44,13 +53,27 @@ class TradeBlotter extends Component {
             })
     }.bind(this);
 
+    delTrade = (fundNumber) => {
+        var getFunds = [...this.state.funds]
+        var obj = getFunds.find(o => o.fundNumber === fundNumber)
+        getFunds.splice(obj, 1)
+
+        var getTrades = [...this.state.trades]
+        var obj = getTrades.find(o => o.fundNumber === fundNumber)
+        getTrades.splice(obj, 1)
+        this.setState({
+            funds: getFunds,
+            trades: getTrades
+        }, () => {console.log(this.state.funds)})
+    }
+
     callBackFund = (trade) => {
         const newTrade = {
             fundNumber: trade.fundNumber,
             quantity: trade.quantity,
             status: trade.status
         }
-        
+    
         var newTrades = [...this.state.trades]
         var index = newTrades.indexOf(newTrades.find(t => t.fundNumber === newTrade.fundNumber))
 
@@ -63,10 +86,8 @@ class TradeBlotter extends Component {
 
         this.setState({
             trades: newTrades   
-        }, () => {
-            console.log(this.state.trades)
         })
-        
+    
     }
     
 
@@ -89,15 +110,16 @@ class TradeBlotter extends Component {
                     <tbody> {
                         // Render all the funds 
                         this.state.funds.map((f) => (
-                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} invManager={f.invManager} 
-                            callBack={this.callBackFund}/> 
+                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} 
+                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>
                 </table>
                         
-                <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length}/>
-                <VerifyButton numberOfTrades={this.props.funds.length} trades={this.state.trades}/> 
+                <AddTrade addTrade={this.addTrade} numberOfTrades={this.state.funds.length} unverify={this.unVerify}/>
+                <VerifyButton numberOfTrades={this.props.funds.length} trades={this.state.trades} 
+                verified={this.state.verified} onRef={ref => (this.child = ref)}/> 
     
             </div>
         )

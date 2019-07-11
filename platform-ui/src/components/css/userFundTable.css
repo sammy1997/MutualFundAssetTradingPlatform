@@ -21,10 +21,6 @@
     margin-top: 100px;
   }
 
-  .search-form{
-    display: flex;
-    justify-content: stretch;
-  }
 
   .search-icon{ 
     position: absolute;
