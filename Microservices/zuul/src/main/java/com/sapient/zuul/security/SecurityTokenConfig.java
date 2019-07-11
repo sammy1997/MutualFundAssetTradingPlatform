@@ -48,7 +48,8 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/portfolio/update/**").hasAnyRole( "TRADER", "VIEWER")
                 .antMatchers("/portfolio/add/user**").hasAnyRole( "TRADER", "VIEWER")
                 .antMatchers("/portfolio/delete/**").hasRole( "ADMIN")
-                .antMatchers("/portfolio/**").hasRole( "TRADER")
+                .antMatchers("/portfolio/**").hasAnyRole( "TRADER", "VIEWER")
+                .antMatchers("/trade/**").hasRole( "TRADER")
                 // Any other request must be authenticated
                 .anyRequest().authenticated();
     }
