@@ -12,13 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "users")
+
 @Path("/")
 @Consumes("application/json")
 @Produces("application/json")

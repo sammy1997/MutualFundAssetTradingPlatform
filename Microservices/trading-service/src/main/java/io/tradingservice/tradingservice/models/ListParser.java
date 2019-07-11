@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ListParser {
 
-    List<ImmutableFund> entitlements;
+    private List<ImmutableFund> entitlements;
 
     public ListParser() {
     }

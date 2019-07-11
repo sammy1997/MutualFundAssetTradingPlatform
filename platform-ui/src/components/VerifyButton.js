@@ -30,8 +30,8 @@ class VerifyButton extends Component {
             verified: false,
             submitLoading: false,    
             verifyLoading: false,
-            trades: []
-        })
+            trades: this.props.trades
+        }, () => {console.log(this.state.trades)})
         this.props.onRef(this)
     }
 
@@ -59,7 +59,15 @@ class VerifyButton extends Component {
                 trades: this.props.trades
                 }, () => {
                     var getTrades = [...this.state.trades]
-                    var index = getTrades.indexOf(getTrades.find(o => o.quantity === 0))
+                    console.log(getTrades)
+                    var obj; 
+                    for(var i=0; i< getTrades.length; i++) {
+                        if (getTrades[i].quantity == 0){
+                            obj = getTrades[i]
+                            break
+                        }
+                    }
+                    var index = getTrades.indexOf(obj)
                     if (index!=-1){
                         alert(`Please enter quantity`)
                         console.log(index)

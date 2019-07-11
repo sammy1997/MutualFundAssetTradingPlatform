@@ -193,7 +193,7 @@ public class UserTradeService {
         try {
             TimeUnit.MILLISECONDS.sleep(500);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         // Create the updated attributes of funds' list

@@ -8,7 +8,7 @@ export class FundItem extends Component {
         super(props)
     
         this.state = {
-            quantity: undefined,
+            quantity: 0,
             status: "sell"
         }
     }
