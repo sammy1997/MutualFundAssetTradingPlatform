@@ -1,7 +1,5 @@
 package io.tradingservice.tradingservice.repositories;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.utils.Constants;
@@ -11,12 +9,11 @@ import org.immutables.mongo.repository.RepositorySetup;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonSerialize(as = ImmutableUser.class)
-@JsonDeserialize(as = ImmutableUser.class)
+
 public class UserAccessObject {
 
     // Create instance of user repository
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
 
     // Constructor of dao when called

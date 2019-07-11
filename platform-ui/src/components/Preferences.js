@@ -131,9 +131,12 @@ class Preferences extends Component {
                                         Base Currency :
                                     </label>
                                     <select id="baseCurr" className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
-                                        <option value="INR">INR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="GBP">GBP</option>
+                                        <option value="INR">Indian Rupees</option>
+                                        <option value="USD">United States Dollars</option>
+                                        <option value="GBP">Great Britain Pounds</option>
+                                        <option value="EUR">Euros</option>
+                                        <option value="AED">Arab Emirates Dollar</option>
+                                        <option value="SAR">Saudi Arabian Riyal</option>
                                     </select>
                                 </div>
                                 

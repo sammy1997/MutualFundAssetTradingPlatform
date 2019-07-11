@@ -98,7 +98,8 @@ class VerifyButton extends Component {
         })
     }
 
-    noClickhandler = () => {
+    noClickhandler = (e) => {
+        e.preventDefault()
         this.setState({
             open: false 
         })
@@ -144,7 +145,7 @@ class VerifyButton extends Component {
         if (submitLoading) {
             submitContent = <div><p align="center">Placing requested Trade...</p><img className="loading" src={require('./loader2.gif')}/></div>
         } else {
-            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form onSubmit={this.submitHandler}><button className='submitTrade' type="submit" disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
+            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form ><button className='submitTrade' onClick={this.submitHandler} disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
         }
         
         return this.state.verified ? 

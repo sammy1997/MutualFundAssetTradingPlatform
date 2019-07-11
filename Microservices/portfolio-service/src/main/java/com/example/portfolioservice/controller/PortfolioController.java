@@ -52,7 +52,7 @@ public class PortfolioController {
     @Produces("application/json")
     @Path("/getBalance")
     public BalanceInfo getBalanceById(@HeaderParam("Authorization") String token) {
-        return portfolioService.getBalanceById(token).get();
+        return portfolioService.getBalanceById(ServiceUtils.decodeJWTForUserId(token)).get();
     }
 
     // Update user balance

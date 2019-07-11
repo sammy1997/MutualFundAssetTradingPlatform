@@ -27,13 +27,12 @@ import java.util.concurrent.TimeUnit;
 public class UserTradeService {
 
     // Create an instance of DAO
-    UserAccessObject userAccessObject = new UserAccessObject();
-
-
+    @Autowired
+    private UserAccessObject userAccessObject;
 
     // Create instance of Webclient
     @Autowired
-    WebClient.Builder webClientBuilder;
+    private WebClient.Builder webClientBuilder;
 
     // Helper function to check entitlements
     private boolean isEntitled(List<ImmutableFund> entitlements, Trade t){
