@@ -120,20 +120,20 @@ class Preferences extends Component {
                         </div>
                         <div className="card-content black-text">
                             <form className="row" onSubmit={this.handleSubmit}>
-                                <div className="col s12 form-content">
+                                {/* <div className="col s12 form-content">
                                     <label htmlFor="fullName" className="label-content">
                                         Name :
                                     </label>
                                     <textarea type="text" id="fullName" value={this.state.fullName} disabled readOnly></textarea>
-                                </div>
+                                </div> */}
                                 <div className="col s12 form-content">
                                     <label className="label-content">
                                         Base Currency :
                                     </label>
-                                    <select id="baseCurr" className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
-                                        <option value="INR">INR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="GBP">GBP</option>
+                                    <select id="baseCurr" className="" value={this.state.baseCurr} onChange={this.handleChange} required>
+                                        <option value="INR">Indian Rupee</option>
+                                        <option value="USD">United States Dollar</option>
+                                        <option value="GBP">Pounds</option>
                                     </select>
                                 </div>
                                 

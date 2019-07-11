@@ -20,6 +20,10 @@ class Header extends Component {
     }
     
     render() {
+        var tabClass=["tab"];
+        if(this.props.active){
+            tabClass.push('active');
+        }
         M.updateTextFields();
         return (
             <nav>
@@ -31,9 +35,12 @@ class Header extends Component {
                     <a href="#" className="right username">{this.props.name}</a>
 
                     <ul id="nav-mobile" className="left hide-on-med-and-down">
-                        <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                        {/* <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                         <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
-                        <li onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
+                        <li onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li> */}
+                        <li className="tab active" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                        <li className="tab" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
+                        <li className="tab" onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
                     </ul>
                 </div>
             </nav>

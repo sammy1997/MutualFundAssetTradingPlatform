@@ -178,7 +178,7 @@ class UserFunds extends Component
                         {this.props.portfolio?<th>Quantity</th>:""}
                         {this.props.portfolio?<th>Purchase NAV</th>:""}
                         <th>Current NAV</th>
-                        {this.props.portfolio?<th>Profit/Loss Difference Amount</th>:""}
+                        {this.props.portfolio?<th>Total Profit/Loss</th>:""}
                         {this.props.portfolio?<th>Profit %</th>:""}
                         {this.props.portfolio?<th>Indicator</th>:""}
                     </tr>
