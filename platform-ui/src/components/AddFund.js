@@ -45,37 +45,39 @@ class AddFund extends Component {
         event.preventDefault()
         this.setState({
             fundNumber: document.getElementById('fundNumber').value
-        })
-        var baseUrl = "http://localhost:8762/fund-handling/api/funds/";
-        var token =getCookie('token');
-        
-        if(!token){
-            this.props.history.push('/');
-        }
-        var headers ={
-            Authorization: 'Bearer ' + token
-        }
-        axios({
-            method: (this.state.update? 'patch': 'post'),
-            url: baseUrl + (this.state.update? 'update': 'create'),
-            headers: headers,
-            data: this.state
-        }).then(response =>{
-            console.log(response.data)
-            alert(response.data)
-        }).catch(error =>{
-            // console.log(error.response);
-            if(error.response.status === 401 || error.response.status === 403){
-                document.cookie = "token=;"
-                window.location = "/";
-            }else if (error.response.status === 500){
-                this.setState({
-                    errorResponse: [<p>The server is down. Please try again later.</p>]
-                })
-            }else{
-                alert(error.response.data)
+        }, () =>{
+            var baseUrl = "http://localhost:8762/fund-handling/api/funds/";
+            var token =getCookie('token');
+            
+            if(!token){
+                this.props.history.push('/');
             }
-        });
+            var headers ={
+                Authorization: 'Bearer ' + token
+            }
+            axios({
+                method: (this.state.update? 'patch': 'post'),
+                url: baseUrl + (this.state.update? 'update': 'create'),
+                headers: headers,
+                data: this.state
+            }).then(response =>{
+                console.log(response.data)
+                alert(response.data)
+            }).catch(error =>{
+                // console.log(error.response);
+                if(error.response.status === 401 || error.response.status === 403){
+                    document.cookie = "token=;"
+                    window.location = "/";
+                }else if (error.response.status === 500){
+                    this.setState({
+                        errorResponse: [<p>The server is down. Please try again later.</p>]
+                    })
+                }else{
+                    alert(error.response.data)
+                }
+            });
+        })
+        
     }
 
     onSwitchChanged = (event) =>{

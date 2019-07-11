@@ -56,6 +56,7 @@ class UserFunds extends Component
                         open: true 
                     })
                 }
+                
                 selected.push(temp);
             }
             this.setState({
@@ -232,7 +233,8 @@ class UserFunds extends Component
                     </tbody>
                 </table>
 
-                <h5>You have selected {this.state.numberOfSelectedFunds} funds. Start trading?</h5>
+
+                {this.state.list.length!=0?<h5>You have selected {this.state.numberOfSelectedFunds} funds. Start trading?</h5>:<h5>You don't have any funds to trade at the moment. Please head to the fund finder page</h5>}
                 <button className="btn waves-effect waves-light" onClick = {() => this.placeTradeClicked()}>
                     Place trade
                 </button>

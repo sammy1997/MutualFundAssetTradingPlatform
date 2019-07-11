@@ -85,7 +85,7 @@ public class PortfolioController {
     // Internal access
     @PATCH
     @Produces("application/json")
-    @Path("/update/userParser")
+    @Path("/update/user")
     public Response updateUserById(@HeaderParam("Authorization") String token,
                                                 @QueryParam("secret") String secret_key,
                                                 UserParser userParser) {

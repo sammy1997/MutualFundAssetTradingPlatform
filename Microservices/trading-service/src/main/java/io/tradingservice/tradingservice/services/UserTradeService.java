@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 //import static com.sun.tools.doclint.Entity.trade;
@@ -27,6 +28,8 @@ public class UserTradeService {
 
     // Create an instance of DAO
     UserAccessObject userAccessObject = new UserAccessObject();
+
+
 
     // Create instance of Webclient
     @Autowired
@@ -43,13 +46,21 @@ public class UserTradeService {
 
     // Helper function to find the fund details
     private ImmutableFund existFunds(List<ImmutableFund> entitlements, TradeParser tradeParser){
-
         for (ImmutableFund fund: entitlements){
             if (fund.fundNumber().equals(tradeParser.getFundNumber())){
                 return fund;
             }
         }
-        return null;
+        return ImmutableFund.builder()
+                .fundNumber("None")
+                .fundName("None")
+                .invManager("None")
+                .nav(-1)
+                .invCurrency("None")
+                .setCycle(-1)
+                .sAndPRating(-1)
+                .moodysRating(-1)
+                .build();
     }
 
     // Helper function to get balance
@@ -96,27 +107,27 @@ public class UserTradeService {
     }
 
     // To make the trades
-    public List<Trade> makeTrades(String userId, List<TradeParser> tradeParsers, String header){
+    public List<Trade> makeTrades(List<TradeParser> tradeParsers, String header){
 
         List<ImmutableFund> entitlements = getEntitlements(header);
         List<Trade> trades = new ArrayList<>();
-        for (TradeParser t: tradeParsers){
+        for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-            if (oldFund!=null){
-                Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
-                                            .fundName(oldFund.fundName())
-                                            .avgNav(oldFund.nav())
-                                            .status(t.getStatus())
-                                            .quantity(t.getQuantity())
-                                            .invManager(oldFund.invManager())
-                                            .setCycle(oldFund.setCycle())
-                                            .invCurr(oldFund.invCurrency())
-                                            .sAndPRating(oldFund.sAndPRating())
-                                            .moodysRating(oldFund.moodysRating())
-                                            .build();
-                trades.add(newTrade);
+                if (oldFund.setCycle()!=-1){
+                    Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
+                                                .fundName(oldFund.fundName())
+                                                .avgNav(oldFund.nav())
+                                                .status(t.getStatus())
+                                                .quantity(t.getQuantity())
+                                                .invManager(oldFund.invManager())
+                                                .setCycle(oldFund.setCycle())
+                                                .invCurr(oldFund.invCurrency())
+                                                .sAndPRating(oldFund.sAndPRating())
+                                                .moodysRating(oldFund.moodysRating())
+                                                .build();
+                    trades.add(newTrade);
             } else {
-                return null;
+                return new ArrayList<>();
             }
         }
         return trades;
@@ -168,13 +179,14 @@ public class UserTradeService {
 
             // Add trades
             for (Trade t : trades) {
+                if (t.quantity()==0) return -2;
                 balance += userAccessObject.addTrade(userId, t, balance, baseCurr);
             }
-
+            System.out.println("YOUR BALANCE HERE IS " + balance);
             // Create the funds for sending update request
-             updateUser(userId, header, balance);
+            // updateUser(userId, header, balance);
             return balance;
-        } else return 0;
+        } else return -1;
     }
 
     public void updateUser(String userId, String header, float newBalance){
