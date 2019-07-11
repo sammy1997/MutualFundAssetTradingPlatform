@@ -79,7 +79,7 @@ class Login extends Component {
                         <form className="form-custom" onSubmit={this.handleSubmit}>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="userId" type="text" value={this.state.userId} onChange={this.handleChange}/>
+                                    <input id="userId" autofocus="true" type="text" value={this.state.userId} onChange={this.handleChange}/>
                                     <label htmlFor="userId">User Id</label>
                                 </div>
                             </div>
