@@ -52,17 +52,17 @@ public class EntitlementDAO {
         }
     }
 
-    public void update(EntitlementParser entitlement){
+    public boolean update(EntitlementParser entitlement){
         Optional<Entitlements> entitlementsOptional = repository.findByUserId(entitlement.userId().get())
                 .fetchFirst().getUnchecked();
 
         if (entitlementsOptional.isPresent()) {
-
             repository.upsert(ImmutableEntitlements.builder()
                     .userId(entitlement.userId().get())
                     .entitledTo(entitlement.entitledTo().get()).build());
-
+            return true;
         }
+        return false;
     }
 
     public boolean delete(String userId, List<String> deleteEntitlements) {

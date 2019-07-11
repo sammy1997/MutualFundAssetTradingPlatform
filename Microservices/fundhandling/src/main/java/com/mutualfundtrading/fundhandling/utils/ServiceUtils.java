@@ -160,7 +160,7 @@ public class ServiceUtils {
         }
     }
 
-    public static List<String> checkFunds(FundServiceModel fundService, EntitlementParser entitlement){
+    public List<String> checkFunds(FundServiceModel fundService, EntitlementParser entitlement){
         List<String> temp = new ArrayList<>();
         for (String fundId : entitlement.entitledTo().get()) {
             if (fundService.getFund(fundId) != null) {

@@ -21,7 +21,7 @@ import java.util.List;
 @Path("/entitlements")
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
-public class EntitlementController implements EntitlementControllerModel{
+public class EntitlementController implements EntitlementControllerModel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FundController.class);
 
@@ -35,6 +35,7 @@ public class EntitlementController implements EntitlementControllerModel{
     @POST
     public Response createEntitlement(@HeaderParam("Authorization") String token, EntitlementParser entitlement) {
         LOGGER.info("Entitlement add endpoint hit.");
+        System.out.println(service.addEntitlements(entitlement, token).getStatus());
         return service.addEntitlements(entitlement, token);
     }
 

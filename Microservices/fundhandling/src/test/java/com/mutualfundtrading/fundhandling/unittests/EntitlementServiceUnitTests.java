@@ -6,7 +6,7 @@ import com.mutualfundtrading.fundhandling.dao.FundDAO;
 import com.mutualfundtrading.fundhandling.models.*;
 import com.mutualfundtrading.fundhandling.services.EntitlementService;
 import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
-import com.mutualfundtrading.fundhandling.services.FundServiceModel;
+import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -31,6 +30,9 @@ public class EntitlementServiceUnitTests {
 
     @Mock
     private FundDAO fundDAO;
+
+    @Mock
+    private ServiceUtils serviceUtils;
 
     @InjectMocks
     private EntitlementServiceModel service = new EntitlementService();
@@ -57,6 +59,60 @@ public class EntitlementServiceUnitTests {
         entitledTo.add("1234");
         entitlement = ImmutableEntitlementParser.builder().userId("sammy1997")
                 .entitledTo(entitledTo).build();
+    }
+
+    @Test
+    public void updateEntitlementsServiceTest(){
+        EntitlementParser entitlementParser = ImmutableEntitlementParser.builder().build();
+        Response response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity()).isEqualTo("User ID missing in request");
+
+        entitlementParser = ImmutableEntitlementParser.builder().userId("sammy1997").build();
+        response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getEntity()).isEqualTo("Fund list cannot be empty");
+
+        List<String> entitledTo  = new ArrayList<>();
+        entitlementParser = ImmutableEntitlementParser.builder().userId("sammy1997")
+                .entitledTo(entitledTo).build();
+
+        Mockito.when(serviceUtils.checkFunds(Mockito.any(), Mockito.any())).thenReturn(entitledTo);
+        Mockito.when(dao.update(Mockito.any())).thenReturn(true);
+
+        response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity()).isEqualTo("None of the funds exists in the database");
+
+        entitledTo.add("1234");
+        entitlementParser = ImmutableEntitlementParser.builder().userId("sammy1997")
+                .entitledTo(entitledTo).build();
+        Mockito.when(serviceUtils.checkFunds(Mockito.any(), Mockito.any())).thenReturn(entitledTo);
+        response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getEntity()).isEqualTo("All entitlements added");
+
+        entitledTo.add("123");
+        entitlementParser = ImmutableEntitlementParser.builder().userId("sammy1997")
+                .entitledTo(entitledTo).build();
+        List<String> temp = new ArrayList<>();
+        temp.add("1234");
+        Mockito.when(serviceUtils.checkFunds(Mockito.any(), Mockito.any())).thenReturn(temp);
+        response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getEntity()).isEqualTo("Some of the funds were not found in the database." +
+                " Remaining were added");
+
+        Mockito.when(dao.update(Mockito.any())).thenReturn(false);
+        response = service.updateEntitlements(entitlementParser);
+
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getEntity()).isEqualTo("User not found in DB");
     }
 
     @Test

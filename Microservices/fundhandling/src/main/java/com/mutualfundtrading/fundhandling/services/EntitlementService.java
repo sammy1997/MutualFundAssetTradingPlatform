@@ -30,6 +30,9 @@ public class EntitlementService implements EntitlementServiceModel {
     @Autowired
     private WebClient.Builder webClient;
 
+    @Autowired
+    private ServiceUtils serviceUtils;
+
     // Add entitlements
     public Response addEntitlements(EntitlementParser entitlement, String token) {
         String response = webClient.build().get()
@@ -60,7 +63,7 @@ public class EntitlementService implements EntitlementServiceModel {
         }
 
         if (entitlement.entitledTo().isPresent()) {
-            List<String> temp = ServiceUtils.checkFunds(fundService, entitlement);
+            List<String> temp = serviceUtils.checkFunds(fundService, entitlement);
             if (temp.size() == 0) {
                 return Response.status(404).entity("None of the funds exists in the database").build();
             }
@@ -82,19 +85,22 @@ public class EntitlementService implements EntitlementServiceModel {
             return Response.status(400).entity("User ID missing in request").build();
 
         if (entitlements.entitledTo().isPresent()) {
-            List<String> temp = ServiceUtils.checkFunds(fundService, entitlements);
+            List<String> temp = serviceUtils.checkFunds(fundService, entitlements);
 
             if (temp.size() == 0) {
                 return Response.status(404).entity("None of the funds exists in the database").build();
             }
 
-            dao.update(entitlements);
-
-            if (temp.size() < entitlements.entitledTo().get().size()) {
-                return Response.status(200)
-                        .entity("Some of the funds were not found in the database. Remaining were added").build();
+            boolean status = dao.update(entitlements);
+            if (status){
+                if (temp.size() < entitlements.entitledTo().get().size()) {
+                    return Response.status(200)
+                            .entity("Some of the funds were not found in the database. Remaining were added").build();
+                }
+                return Response.status(200).entity("All entitlements added").build();
+            }else {
+                return Response.status(404).entity("User not found in DB").build();
             }
-            return Response.status(200).entity("All entitlements added").build();
         }
         return Response.status(400).entity("Fund list cannot be empty").build();
     }
@@ -136,7 +142,6 @@ public class EntitlementService implements EntitlementServiceModel {
             } else if (field.equals("Manager")) {
                 return fundDAO.searchInvManagerInEntitlements(searchTerm, entitlements);
             }
-            return null;
         }
         return null;
     }
