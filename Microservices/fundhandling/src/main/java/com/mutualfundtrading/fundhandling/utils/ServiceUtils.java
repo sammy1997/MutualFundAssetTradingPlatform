@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ServiceUtils {
     public static String BASE_URL = "http://localhost:8762/create/";
-    private static String FILE_PATH = "C:\\Users\\somchakr\\Desktop\\upload\\";
+    public static String FILE_PATH = "\\src\\main\\java\\com\\mutualfundtrading\\fundhandling\\upload\\";
     public static String decodeJWTForUserId(String jwtToken) {
 
         String[] split_string = jwtToken.split("\\.");
@@ -39,7 +39,8 @@ public class ServiceUtils {
 
     private ArrayList<ArrayList<String>> readCsvFile(String fileName) {
         try {
-            FileInputStream excelFile = new FileInputStream(new File(FILE_PATH + fileName));
+            FileInputStream excelFile = new FileInputStream(new File(System.getProperty("user.dir")
+                    + FILE_PATH + fileName));
 
             Workbook workbook = new XSSFWorkbook(excelFile);
             Sheet datatypeSheet = workbook.getSheetAt(0);
@@ -145,8 +146,8 @@ public class ServiceUtils {
             if (!(fileName.contains("xlx") || fileName.contains("xlsx")  || fileName.contains("csv"))) {
                 return 404;
             }
-
-            OutputStream out = new FileOutputStream(new File(FILE_PATH + fileName));
+            OutputStream out = new FileOutputStream(new File(System.getProperty("user.dir")
+                    + FILE_PATH + fileName));
 
             while ((read = fileInputStream.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
