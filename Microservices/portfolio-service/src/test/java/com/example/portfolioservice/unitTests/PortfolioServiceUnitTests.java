@@ -23,6 +23,7 @@ public class PortfolioServiceUnitTests {
     private User user;
     private UserParser userParser;
     private BalanceInfo balance = new BalanceInfo();
+    private String token;
 
     @Before
     public void init() {
@@ -33,13 +34,18 @@ public class PortfolioServiceUnitTests {
     public void initialize() {
         List<Fund> funds =  new ArrayList<>();
 
+        token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzb21idWRkaGEyMCIsImF1dGhvcml0"
+                + "aWVzIjpbIlJPTEVfVFJBREVSIl0sImlhdCI6MTU2MjIzNjY4OSwibmFtZSI6"
+                + "IlNvbWJ1ZGRoYSBDaGFrcmF2YXJ0aHkiLCJleHAiOjE1NjIyNDAyODl9.oct7"
+                + "z-0NzNkgXbqW6mipjkiA6_UsLnIrO_yDYZVX8TvM5MqftwN525gtdVYtO45jbY"
+                + "mqFT74DXanArHkYEGLoQ";
         user = ImmutableUser.builder()
-                .userId("1")
+                .userId(token)
                 .currBal(34)
                 .all_funds(funds)
                 .baseCurr("INR").build();
         userParser = ImmutableUserParser.builder()
-                .userId("1")
+                .userId(token)
                 .currBal(34)
                 .all_funds(funds)
                 .baseCurr("INR").build();
@@ -54,14 +60,14 @@ public class PortfolioServiceUnitTests {
         assertEquals(message, "UserParser Created");
     }
 
-    @Test
-    public void test_getUser() {
-        Mockito.doReturn(Optional.of(this.user)).when(dao).getUser("1");
-        Optional<User> user = Optional.of(this.user);
-        user = portfolioService.getUser("1");
-        assertEquals(user.get(), this.user);
-
-    }
+//    @Test
+//    public void test_getUser() {
+//        Mockito.doReturn(Optional.of(this.user)).when(dao).getUser(Mockito.anyString());
+//        Optional<User> user = Optional.of(this.user);
+//        user = portfolioService.getUser("1");
+//        assertEquals(user.get(), this.user);
+//
+//    }
 
     @Test
     public void test_update() {
