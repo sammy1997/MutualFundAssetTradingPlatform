@@ -16,7 +16,7 @@ public interface Fund {
     String fundNumber();
     Optional<String> fundName();
     Optional<String> invManager();
-    Optional<Integer> setCycle();
+    Optional<String> setCycle();
     Optional<Float> presentNav();
     Optional<Float> originalNav();
     Optional<Integer> quantity();
