@@ -1,7 +1,5 @@
 package io.tradingservice.tradingservice.controllers;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.tradingservice.tradingservice.models.ImmutableTrade;
 import io.tradingservice.tradingservice.models.Trade;
 import io.tradingservice.tradingservice.models.TradeParser;
@@ -12,21 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-<<<<<<< HEAD
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collections;
-=======
->>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
+
 import java.util.List;
 
 
 @Path("/")
 @Consumes("application/json")
 @Produces("application/json")
-@JsonSerialize(as = ImmutableTrade.class)
-@JsonDeserialize(as = ImmutableTrade.class)
 public class TradeServiceController {
 
     @Autowired
@@ -49,11 +39,7 @@ public class TradeServiceController {
             String userId = ServiceUtils.decodeJWTForUserId(header);
             List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
             System.out.println(trades);
-<<<<<<< HEAD
-            if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
-=======
             if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
->>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
             float res = userTradeService.exchangeTrade(userId, trades, header);
             if (res == -1) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
             else if (res == -2) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified: Enter quantity greater than 0").build();
@@ -70,13 +56,8 @@ public class TradeServiceController {
     @Path(Constants.verifyEndPoint)
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
         String userId = ServiceUtils.decodeJWTForUserId(header);
-<<<<<<< HEAD
-        List<Trade> trades = userTradeService.makeTrades(userId, tradeParsers, header);
-        if (trades.isEmpty()) return Response.status(400).entity("Trades not verified").build();
-=======
         List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
         if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
->>>>>>> de1af22f9a3fbfa4d6344c2b4647c434dbd03a7e
         boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
         if (isVerified) return Response.status(Response.Status.ACCEPTED).entity("Verified Trades").build();
         return Response.status(Response.Status.ACCEPTED).entity("Trades not verified").build();

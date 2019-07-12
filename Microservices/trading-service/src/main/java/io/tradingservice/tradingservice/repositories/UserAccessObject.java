@@ -2,9 +2,11 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.services.FXRateService;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.ArrayList;
@@ -16,7 +18,9 @@ public class UserAccessObject {
 
     // Create instance of user repository
     private UserRepository userRepository;
-    private FXRateRepository fxRateRepository;
+
+    @Autowired
+    private FXRateService fxRateService;
 
 
     // Constructor of dao when called
@@ -61,7 +65,7 @@ public class UserAccessObject {
             if (t.fundNumber().equals(fundId)){
 
                 // Drop the funds
-                FluentFuture<Optional<User>> x =userRepository.findByUserId(userId)
+                FluentFuture<Optional<User>> x = userRepository.findByUserId(userId)
                         .andModifyFirst()
                         .removeTrades(t)
                         .upsert();
@@ -74,13 +78,13 @@ public class UserAccessObject {
     // Helper function for conversion rate
     private float getConversionRate(String baseCurr, String invCurr){
 
+        // Get the conversion rates
+        FXRate base = fxRateService.getFXRateBYCurrency(baseCurr);
+        FXRate inv = fxRateService.getFXRateBYCurrency(invCurr);
+
         // Calculate the conversion rate ratio
-        float convRate;
-        Optional<FXRate> base = fxRateRepository.find(baseCurr).fetchFirst().getUnchecked();
-        Optional<FXRate> inv = fxRateRepository.find(invCurr).fetchFirst().getUnchecked();
-        if (base.isPresent() && inv.isPresent()){
-            convRate = base.get().rate()/inv.get().rate();
-            return convRate;
+        if (!(base.currency().equals("None") && inv.currency().equals("None"))){
+            return base.rate()/inv.rate();
         }
 
         return 0;
@@ -226,8 +230,9 @@ public class UserAccessObject {
                                 .build();
                 userRepository.findByUserId(userId).andModifyFirst()
                         .addTrades(newT).upsert();
-                userRepository.findByUserId(userId).andModifyFirst()
+                FluentFuture<Optional<User>> doneUser = userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
+
                 return -debit;
             }
         }
