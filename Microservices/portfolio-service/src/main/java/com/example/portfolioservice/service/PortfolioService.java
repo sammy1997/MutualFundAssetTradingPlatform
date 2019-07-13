@@ -29,10 +29,8 @@ public class PortfolioService {
 
     public Optional<User> getUser(final String token) {
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        System.out.println(userId);
         Optional<User> user = userDAO.getUser(userId);
         if (user.isPresent()){
-            System.out.println(user.get());
             List<Fund> currFunds = user.get().all_funds();
             List<Fund> updateProfitsOfFunds = new ArrayList<>();
             for (Fund fund: currFunds) {

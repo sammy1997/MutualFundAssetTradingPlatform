@@ -18,7 +18,7 @@ class TradeBlotter extends Component {
         super(props)
     
         this.state = {
-            funds: [],
+            funds: this.props.funds,
             fundsPrevious: [], 
             trades: [],
             verified: false 
@@ -26,17 +26,19 @@ class TradeBlotter extends Component {
         }
     }
 
+
     // Set funds from fund finder page ui 
-    componentDidMount () {
-        this.setState({
-            funds: this.props.funds, 
+    componentDidMount = (prevState) => {
+        this.setState({ 
             verified: false 
+        }, () => {
+            console.log(this.state.funds)
         })
     }
 
-    unVerify = () => {
+    unVerify = function() {
         this.child.unVerifyHandler()
-    }
+    }.bind(this)
 
     // Add Trade method
     addTrade = function (fundName, fundNumber, invManager) {
@@ -53,12 +55,17 @@ class TradeBlotter extends Component {
     }.bind(this);
 
     delTrade = (fundNumber) => {
-        var getTrades = [...this.state.funds]
+        var getFunds = [...this.state.funds]
+        var obj = getFunds.find(o => o.fundNumber === fundNumber)
+        getFunds.splice(obj, 1)
+
+        var getTrades = [...this.state.trades]
         var obj = getTrades.find(o => o.fundNumber === fundNumber)
         getTrades.splice(obj, 1)
         this.setState({
-            funds: getTrades
-        })
+            funds: getFunds,
+            trades: getTrades
+        }, () => {console.log(this.state.funds)})
     }
 
     callBackFund = (trade) => {
@@ -81,9 +88,7 @@ class TradeBlotter extends Component {
         this.setState({
             trades: newTrades   
         })
-
-        this.unVerify()
-        
+    
     }
     
 
