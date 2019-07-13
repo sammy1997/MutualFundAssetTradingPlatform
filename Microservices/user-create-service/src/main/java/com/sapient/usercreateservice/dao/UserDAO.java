@@ -1,6 +1,7 @@
 package com.sapient.usercreateservice.dao;
 
 
+import com.google.common.base.Optional;
 import com.sapient.usercreateservice.entities.ImmutableUser;
 
 import com.sapient.usercreateservice.entities.ParsedUser;
@@ -28,6 +29,7 @@ public class UserDAO {
 
     public Response insert(ParsedUser user){
         boolean exists = repository.findByUserId(user.userId()).fetchFirst().getUnchecked().isPresent();
+        System.out.println(user);
         if(exists){
             return Response.status(406).entity("Not Acceptable").build();
         }else{
@@ -54,5 +56,14 @@ public class UserDAO {
             }
         }
         return tempList;
+    }
+
+    public Optional<User> getUser(String userId){
+        return repository.findByUserId(userId).fetchFirst().getUnchecked();
+    }
+
+    public boolean updateUser(User user){
+        repository.upsert(user);
+        return true;
     }
 }

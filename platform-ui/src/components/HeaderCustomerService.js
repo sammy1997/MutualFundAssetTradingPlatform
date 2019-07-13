@@ -10,7 +10,9 @@ class Header extends Component {
         this.state = {
              li1: "FUND FINDER",
              li2: "ADD FUND",
-             li3: "ADD ENTITLEMENTS"
+             li3: "ADD ENTITLEMENTS",
+             li4: "ADD USER",
+             li5: "ADD CURRENCY"
         }
     }
 
@@ -41,6 +43,8 @@ class Header extends Component {
                         <li className="tab active" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                         <li className="tab" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
                         <li className="tab" onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
+                        <li className="tab" onClick = {()=> this.props.tabHandler(3)}><a>{this.state.li4}</a></li>
+                        <li className="tab" onClick = {()=> this.props.tabHandler(4)}><a>{this.state.li5}</a></li>
                     </ul>
                 </div>
             </nav>
