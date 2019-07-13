@@ -29,6 +29,10 @@ public class Constants {
     public static final String verifyEndPoint = "/verify";
     public static final String exchangeEndPoint = "/exchange";
     public static final String addUserEndPoint = "/addUser";
+    public static final String addCurrencyEndpoint = "/add";
+    public static final String getCurrencyEndpoint = "/get";
+    public static final String getAllCurrencyEndpoint = "/all";
+    public static final String updateCurrencyEndpoint = "/update";
 
     public static final String mongoPort = "mongodb://localhost:27017/UserTrades";
 
