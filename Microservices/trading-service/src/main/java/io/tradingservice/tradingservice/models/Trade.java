@@ -21,7 +21,7 @@ public interface Trade {
     String status();
     float quantity();
     String invManager();
-    int setCycle();
+    String setCycle();
     String invCurr();
     float sAndPRating();
     float moodysRating();

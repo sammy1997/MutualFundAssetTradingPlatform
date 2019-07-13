@@ -1,6 +1,9 @@
 package io.tradingservice.tradingservice.utils;
 
+import io.tradingservice.tradingservice.models.FXRate;
 import org.apache.tomcat.util.codec.binary.Base64;
+
+import java.util.List;
 
 public class ServiceUtils {
     public static String decodeJWTForUserId(String jwtToken){
@@ -21,4 +24,5 @@ public class ServiceUtils {
         System.out.println(userId);
         return userId;
     }
+
 }
