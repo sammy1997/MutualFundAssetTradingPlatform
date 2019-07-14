@@ -17,30 +17,30 @@ import java.util.List;
 public class FXRateController {
 
     @Autowired
-    private FXRateService service;
+    private FXRateService fxRateService;
 
     @POST
     @Path(Constants.addCurrencyEndpoint)
-    public Response addCurr(FXRate fxRate){
+    public Response addCurr(FXRate newFXRate){
         System.out.println("Here");
-        return service.addCurrency(fxRate);
+        return fxRateService.addCurrency(newFXRate);
     }
 
     @GET
     @Path(Constants.getCurrencyEndpoint)
-    public FXRate getCurr(@QueryParam("currency") String currency){
-        return service.getCurrency(currency);
+    public Response getCurr(@QueryParam("currency") String currency){
+        return fxRateService.getCurrencyResponse(currency);
     }
 
     @GET
     @Path(Constants.getAllCurrencyEndpoint)
-    public List<FXRate> getAllCurr(){
-        return service.getAll();
+    public Response getAllCurr(){
+        return fxRateService.getAll();
     }
 
     @POST
     @Path(Constants.updateCurrencyEndpoint)
     public Response updateCurr(FXRate newFXRate){
-        return service.updateCurrency(newFXRate);
+        return fxRateService.updateCurrency(newFXRate);
     }
 }
