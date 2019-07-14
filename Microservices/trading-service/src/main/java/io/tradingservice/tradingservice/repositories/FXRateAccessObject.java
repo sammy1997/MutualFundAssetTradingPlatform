@@ -10,25 +10,25 @@ import java.util.List;
 
 public class FXRateAccessObject {
 
-    private FXRateRepository repository;
+    private FXRateRepository fxRateRepository;
 
     public FXRateAccessObject(){
-        repository = new FXRateRepository(RepositorySetup.forUri(Constants.mongoPort));
+        fxRateRepository = new FXRateRepository(RepositorySetup.forUri(Constants.mongoPort));
     }
 
     public void addCurrency(FXRate fxRate){
-        repository.insert(fxRate);
+        fxRateRepository.insert(fxRate);
     }
 
     public void updateCurrency(FXRate fxRate){
-        repository.upsert(fxRate);
+        fxRateRepository.upsert(fxRate);
     }
 
     public Optional<FXRate> getCurrency(String currency){
-        return repository.findByCurrency(currency).fetchFirst().getUnchecked();
+        return fxRateRepository.findByCurrency(currency).fetchFirst().getUnchecked();
     }
 
     public List<FXRate> getAll(){
-        return repository.findAll().fetchAll().getUnchecked();
+        return fxRateRepository.findAll().fetchAll().getUnchecked();
     }
 }
