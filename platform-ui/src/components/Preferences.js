@@ -135,7 +135,7 @@ class Preferences extends Component {
                                         <option value="USD">United States Dollars</option>
                                         <option value="GBP">Great Britain Pounds</option>
                                         <option value="EUR">Euros</option>
-                                        <option value="AED">Arab Emirates Dollar</option>
+                                        <option value="AED">Arab Emirates Dirham</option>
                                         <option value="SAR">Saudi Arabian Riyal</option>
                                     </select>
                                 </div>

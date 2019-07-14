@@ -68,7 +68,7 @@ public class EntitlementControllerUnitTests {
         baseUrl = "http://localhost:"+randomServerPort+"/api/entitlements";
         fundDb = ImmutableFund.builder().fundName("Hedge").fundNumber("1234")
                 .sAndPRating((float)23.2).nav(22).invCurrency("INR")
-                .setCycle(2).invManager("GS").moodysRating(12).build();
+                .setCycle("T+2").invManager("GS").moodysRating(12).build();
         List<String> entitledTo  = new ArrayList<>();
         entitledTo.add("1234");
         entitlement = ImmutableEntitlementParser.builder().userId("sammy1997")

@@ -74,11 +74,11 @@ class VerifyButton extends Component {
                         headers: {Authorization: `Bearer ${jwt}`}, 
                         data: getTrades 
                     }).then(Response => {
-                        (Response.data === `Verified Trades`) ? (
+                        (Response.data === `Trades are verified`) ? (
                             this.setState({
                                 verified: true  
                             })
-                        ) : (alert(`Trades not verified`))
+                        ) : (alert(`${Response.data}`))
                         }).catch(error => {
                             if(error.response) 
                                 if(error.response.status === 403 ){

@@ -44,7 +44,7 @@ public class FXRateService {
         return Response.status(Response.Status.OK).entity("Currency updated").build();
     }
 
-    private FXRate getCurrency(String currency){
+    public FXRate getCurrency(String currency){
         Optional<FXRate> fxRateOptional = fxRateAccessObject.getCurrency(currency);
         if (fxRateOptional.isPresent()){
             return fxRateOptional.get();

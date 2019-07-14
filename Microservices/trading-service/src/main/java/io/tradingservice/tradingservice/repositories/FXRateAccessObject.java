@@ -31,4 +31,5 @@ public class FXRateAccessObject {
     public List<FXRate> getAll(){
         return fxRateRepository.findAll().fetchAll().getUnchecked();
     }
+
 }

@@ -46,7 +46,7 @@ public class UserAccessObject {
 
         // Create the immutable instance and append
         ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
-        userRepository.findByUserId(userId)
+        FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId)
             .andModifyFirst()
             .addTrades(t)
             .upsert();
@@ -77,11 +77,12 @@ public class UserAccessObject {
     // Helper function for conversion rate
     private float getConversionRate(String baseCurr, String tradeCurr){
 
+        float convRate = 0;
         float baseRate = fxRateService.getCurrency(baseCurr).rate();
         float tradeRate = fxRateService.getCurrency(tradeCurr).rate();
 
         // Calculate the conversion rate ratio
-        float convRate = baseRate / tradeRate;
+        if (baseRate!=0 && tradeRate!=0) convRate = baseRate / tradeRate;
         return convRate;
 
     }
@@ -163,7 +164,7 @@ public class UserAccessObject {
                             }
                             count++;
                             break;
-                        }
+                        } else return -5;
                     }
                 }
             }
@@ -224,11 +225,11 @@ public class UserAccessObject {
                                 .sAndPRating(trade.sAndPRating())
                                 .moodysRating(trade.moodysRating())
                                 .build();
-                userRepository.findByUserId(userId).andModifyFirst()
+                FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId).andModifyFirst()
                         .addTrades(newT).upsert();
-                userRepository.findByUserId(userId).andModifyFirst()
+                FluentFuture<Optional<User>> removal = userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
-                return -debit;
+                if(addition.isDone() && removal.isDone()) return -debit;
             }
         }
 
@@ -264,11 +265,11 @@ public class UserAccessObject {
                                     .sAndPRating(trade.sAndPRating())
                                     .moodysRating(trade.moodysRating())
                                     .build();
-                    userRepository.findByUserId(userId).andModifyFirst()
+                    FluentFuture<Optional<User>> removal = userRepository.findByUserId(userId).andModifyFirst()
                             .removeTrades(t).upsert();
-                    userRepository.findByUserId(userId).andModifyFirst()
+                    FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId).andModifyFirst()
                             .addTrades(newT).upsert();
-                    return credit;
+                    if(removal.isDone() && addition.isDone()) return credit;
                 } else return 0;   // Bad request wherein sell quantity strictly greater than existing
             }
         } return 0;
