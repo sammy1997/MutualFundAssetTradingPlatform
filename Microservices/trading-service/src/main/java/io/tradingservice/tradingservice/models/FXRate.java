@@ -8,9 +8,10 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 @Mongo.Repository(collection = "rates")
-@JsonDeserialize(as = ImmutableFXRate.class)
 @JsonSerialize(as = ImmutableFXRate.class)
+@JsonDeserialize(as = ImmutableFXRate.class)
 public interface FXRate {
+
     @Mongo.Id
     String currency();
     float rate();

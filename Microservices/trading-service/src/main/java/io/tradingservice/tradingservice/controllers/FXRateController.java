@@ -2,8 +2,7 @@ package io.tradingservice.tradingservice.controllers;
 
 
 import io.tradingservice.tradingservice.models.FXRate;
-import io.tradingservice.tradingservice.models.FXRateParser;
-import io.tradingservice.tradingservice.services.CurrencyService;
+import io.tradingservice.tradingservice.services.FXRateService;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,14 +14,14 @@ import java.util.List;
 @Path("/currency")
 @Consumes("application/json")
 @Produces("application/json")
-public class CurrencyController {
+public class FXRateController {
 
     @Autowired
-    private CurrencyService service;
+    private FXRateService service;
 
     @POST
     @Path(Constants.addCurrencyEndpoint)
-    public Response addCurr(FXRateParser fxRate){
+    public Response addCurr(FXRate fxRate){
         System.out.println("Here");
         return service.addCurrency(fxRate);
     }
@@ -41,7 +40,7 @@ public class CurrencyController {
 
     @POST
     @Path(Constants.updateCurrencyEndpoint)
-    public Response updateCurr(FXRateParser parser){
-        return service.updateCurrency(parser);
+    public Response updateCurr(FXRate newFXRate){
+        return service.updateCurrency(newFXRate);
     }
 }

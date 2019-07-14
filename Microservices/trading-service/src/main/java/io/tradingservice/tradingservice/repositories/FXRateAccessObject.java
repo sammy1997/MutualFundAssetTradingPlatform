@@ -8,10 +8,11 @@ import org.immutables.mongo.repository.RepositorySetup;
 
 import java.util.List;
 
-public class CurrencyDAO {
+public class FXRateAccessObject {
+
     private FXRateRepository repository;
 
-    public CurrencyDAO(){
+    public FXRateAccessObject(){
         repository = new FXRateRepository(RepositorySetup.forUri(Constants.mongoPort));
     }
 

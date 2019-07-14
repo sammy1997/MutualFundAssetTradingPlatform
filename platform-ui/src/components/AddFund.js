@@ -190,9 +190,13 @@ class AddFund extends Component {
                             </div>
                             <div className="row">
                                 <div className="input-field col s12">
-                                    <input id="setCycle" value={this.state.setCycle} type="number" 
-                                        onChange={this.onChange} className="validate"/>
-                                    <label htmlFor="setCycle">Settlement Cycle(in days)</label>
+                                    <select id="setCycle" defaultValue=""  onChange={this.onChange}>
+                                    <option value="" disabled>Settlement Cycle</option>
+                                    <option value="T">0 days</option>
+                                    <option value="T+1">1 day</option>
+                                    <option value="T+2">2 days</option>
+                                    <option value="T+3">3 days</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="row">

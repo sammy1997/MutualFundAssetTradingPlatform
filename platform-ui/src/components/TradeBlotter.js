@@ -47,11 +47,18 @@ class TradeBlotter extends Component {
             fundName,
             fundNumber,
             invManager
-           }
-           this.setState (
-            {
+        }
+
+        var currFunds = [...this.state.funds]
+        var index = currFunds.findIndex(obj => obj.fundNumber === newFund.fundNumber)
+        if (index!=-1) {
+            alert('Fund already selected')
+        } else {
+            this.setState ({
                 funds: [...this.state.funds, newFund]
             })
+            this.unVerify()
+        }       
     }.bind(this);
 
     delTrade = (fundNumber) => {

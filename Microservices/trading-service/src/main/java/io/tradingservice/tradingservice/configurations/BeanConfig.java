@@ -1,6 +1,6 @@
 package io.tradingservice.tradingservice.configurations;
 
-import io.tradingservice.tradingservice.repositories.CurrencyDAO;
+import io.tradingservice.tradingservice.repositories.FXRateAccessObject;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public CurrencyDAO currencyDAO(){
-        return new CurrencyDAO();
+    public FXRateAccessObject getFXRateAccessObject(){
+        return new FXRateAccessObject();
     }
 }

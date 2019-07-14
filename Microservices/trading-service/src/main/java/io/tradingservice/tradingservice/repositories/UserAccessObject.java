@@ -2,9 +2,11 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.services.FXRateService;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.ArrayList;
@@ -16,8 +18,9 @@ public class UserAccessObject {
 
     // Create instance of user repository
     private UserRepository userRepository;
-    private FXRateRepository fxRateRepository;
 
+    @Autowired
+    private FXRateService fxRateService;
 
     // Constructor of dao when called
     public UserAccessObject() {
@@ -72,18 +75,14 @@ public class UserAccessObject {
 
 
     // Helper function for conversion rate
-    private float getConversionRate(String baseCurr, String invCurr){
+    private float getConversionRate(String baseCurr, String tradeCurr){
+
+        float baseRate = fxRateService.getCurrency(baseCurr).rate();
+        float tradeRate = fxRateService.getCurrency(tradeCurr).rate();
 
         // Calculate the conversion rate ratio
-        float convRate;
-        Optional<FXRate> base = fxRateRepository.find(baseCurr).fetchFirst().getUnchecked();
-        Optional<FXRate> inv = fxRateRepository.find(invCurr).fetchFirst().getUnchecked();
-        if (base.isPresent() && inv.isPresent()){
-            convRate = base.get().rate()/inv.get().rate();
-            return convRate;
-        }
-
-        return 0;
+        float convRate = baseRate / tradeRate;
+        return convRate;
 
     }
 
@@ -117,7 +116,7 @@ public class UserAccessObject {
     }
 
     // Verify Trades
-    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr) {
+    public int verify(String userId, List<Trade> newTrades, float balance, String baseCurr) {
 
         // Count is used to make sure all trades are verified
         int count = 0;
@@ -133,7 +132,7 @@ public class UserAccessObject {
                 float convRate = getConversionRate(baseCurr, t.invCurr());
                 if (convRate == 0) {
                     System.out.println("One (or more) currencies does not exist in database");
-                    return false;
+                    return -4;
                 }
 
 
@@ -172,18 +171,19 @@ public class UserAccessObject {
             System.out.println("Size = " + newTrades.size());
             System.out.println("Balance = " + balance);
 
+            if(balance < 0) return -1;
+
             // If all trades are carried out and positive balance
             if (count == newTrades.size() && balance >= 0){
                 System.out.println("Trades verified");
-                return true;
-            }
-            else {
+                return 1;
+            } else {
                 System.out.println("Not veri");
-                return false;
+                return -2;
             }
         } else {
             System.out.println("not verified");
-            return false;
+            return 0;
         }
     }
 

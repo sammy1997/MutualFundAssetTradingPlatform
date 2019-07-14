@@ -95,7 +95,7 @@ public class ServiceUtils {
                         .fundNumber(String.valueOf((int)Double.parseDouble(row.get(0))))
                         .fundName(row.get(1))
                         .invManager(row.get(2))
-                        .setCycle((int)Double.parseDouble(row.get(3)))
+                        .setCycle(row.get(3))
                         .nav(Float.parseFloat(row.get(4)))
                         .invCurrency(row.get(5))
                         .sAndPRating(Float.parseFloat(row.get(6)))
