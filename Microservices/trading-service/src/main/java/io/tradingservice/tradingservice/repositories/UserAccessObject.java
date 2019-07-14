@@ -8,8 +8,10 @@ import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class UserAccessObject {
@@ -75,12 +77,13 @@ public class UserAccessObject {
     // Helper function for conversion rate
     private float getConversionRate(String baseCurr, String tradeCurr){
 
-        float baseRate = fxRateService.getFXRateBYCurrency(baseCurr).rate();
-        float tradeRate = fxRateService.getFXRateBYCurrency(tradeCurr).rate();
+        float baseRate = fxRateService.getCurrency(baseCurr).rate();
+        float tradeRate = fxRateService.getCurrency(tradeCurr).rate();
 
         // Calculate the conversion rate ratio
         float convRate = baseRate / tradeRate;
         return convRate;
+
     }
 
 
@@ -125,12 +128,19 @@ public class UserAccessObject {
 
             for (Trade t: newTrades) {
 
+                // To ensure valid presence of Currencies
+                float convRate = getConversionRate(baseCurr, t.invCurr());
+                if (convRate == 0) {
+                    System.out.println("One (or more) currencies does not exist in database");
+                    return -4;
+                }
+
 
                 // If the trade status is set to purchase
                 if (t.status().equals("purchase")) {
 
                     // Calculate new balance after the trade
-                    float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                    float debit = t.quantity() * t.avgNav() * convRate;
                     System.out.println(t.quantity());
                     balance -= debit;
                     count++;
@@ -148,7 +158,7 @@ public class UserAccessObject {
 
                             // Calculate new balance after the trade
                             if (t.setCycle().equals("T")) {
-                                float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                                float credit = t.quantity() * t.avgNav() * convRate;
                                 balance += credit;
                             }
                             count++;
@@ -281,8 +291,9 @@ public class UserAccessObject {
             }
             // Fund doesn't exist
             if (count==trades.size()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                float debit = trade.quantity() * trade.avgNav() * convRate;
                 directAddFund(userId, trade);
-                float debit = trade.quantity()*trade.avgNav()*getConversionRate(baseCurr, trade.invCurr());
                 return -debit;
             }
         }

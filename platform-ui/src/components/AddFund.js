@@ -31,11 +31,13 @@ class AddFund extends Component {
 
     onChange = event =>{
         var value = event.target.value;
+        
         if(event.target.type==='number' && event.target.id!=='seCycle'){
             value = parseFloat(value)
-        }else if(event.target.type==='number'){
+        } else if(event.target.type==='number'){
             value = parseInt(value)
         }
+        
         this.setState({
             [event.target.id]: value
         })

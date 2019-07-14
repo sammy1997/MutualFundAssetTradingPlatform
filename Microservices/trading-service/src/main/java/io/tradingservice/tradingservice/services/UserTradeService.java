@@ -273,6 +273,8 @@ public class UserTradeService {
                 return Response.status(Response.Status.OK).entity("Trades not verified: Cannot do all trades today").build();
             case -3:
                 return Response.status(Response.Status.OK).entity("Trades not verified: Not entitled to one or more fund(s)").build();
+            case -4:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Currency does not exist").build();
             default:
                 return Response.status(Response.Status.OK).entity("Trades not verified: Unknown Error").build();
         }

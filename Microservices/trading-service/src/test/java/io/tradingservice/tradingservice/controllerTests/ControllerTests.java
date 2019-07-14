@@ -57,7 +57,7 @@ public class ControllerTests {
 
         baseUrl = "http://localhost:" + randomServerPort;
         trade = ImmutableTrade.builder().fundNumber("1234").fundName("Hedge").avgNav((float)22)
-                .status("purchase").quantity((float)7).invManager("GS").setCycle("T").invCurr("INR")
+                .status("purchase").quantity((float)7).invManager("GS").setCycle("T+2").invCurr("INR")
                 .sAndPRating((float)23.2).moodysRating((float)12).build();
     }
 

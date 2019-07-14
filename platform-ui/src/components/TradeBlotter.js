@@ -26,6 +26,7 @@ class TradeBlotter extends Component {
         }
     }
 
+
     // Set funds from fund finder page ui 
     componentDidMount = (prevState) => {
         this.setState({ 

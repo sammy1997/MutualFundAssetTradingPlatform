@@ -4,6 +4,7 @@ import com.mutualfundtrading.fundhandling.controllers.EntitlementController;
 import com.mutualfundtrading.fundhandling.controllers.EntitlementControllerModel;
 import com.mutualfundtrading.fundhandling.models.*;
 import com.mutualfundtrading.fundhandling.services.EntitlementServiceModel;
+import com.mutualfundtrading.fundhandling.services.FundServiceModel;
 import com.mutualfundtrading.fundhandling.utils.ServiceUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertNull;
 
 
 @RunWith(SpringRunner.class)
@@ -54,6 +56,9 @@ public class EntitlementControllerUnitTests {
 
     @MockBean
     private EntitlementServiceModel service;
+
+    @MockBean
+    private FundServiceModel fundService;
 
     @MockBean
     private ServiceUtils serviceUtils;
@@ -176,12 +181,9 @@ public class EntitlementControllerUnitTests {
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", "Bearer " + token);
 
-        List<Fund> entitlements = new ArrayList<>();
-        entitlements.add(fundDb);
-
         //Test for fund found
-        Mockito.when(service.searchEntitlements(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(entitlements);
+        Mockito.when(fundService.getFund(Mockito.anyString()))
+                .thenReturn(fundDb);
 
         HttpEntity<EntitlementParser> request = new HttpEntity<>(null, headers);
         ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
@@ -193,17 +195,14 @@ public class EntitlementControllerUnitTests {
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         // Test for fund not found
-        Mockito.when(service.searchEntitlements(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(fundService.getFund(Mockito.anyString()))
                 .thenReturn(null);
 
         request = new HttpEntity<>(null, headers);
         entity= this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
 
-        expected = "{\"fundNumber\":\"\",\"fundName\":\"\",\"invManager\":\"\"" +
-                ",\"setCycle\":0,\"nav\":0.0,\"invCurrency\":\"\",\"sAndPRating\":0.0" +
-                ",\"moodysRating\":0.0}";
-        assertThat(entity.getBody()).isEqualTo(expected);
-        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNull(entity.getBody());
+        assertThat(entity.getStatusCode().value()).isEqualTo(204);
     }
 
     @Test
