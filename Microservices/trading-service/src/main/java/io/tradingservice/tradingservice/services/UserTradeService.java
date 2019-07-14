@@ -151,6 +151,10 @@ public class UserTradeService {
                 return -1;
             case -2:
                 return -2;
+            case -4:
+                return -4;
+            case -5:
+                return -5;
         }
 
         // Verify Entitlements
@@ -170,6 +174,7 @@ public class UserTradeService {
         if(!isEntitled) return -3;
         // Set verification status
         if (exchangePossible == 1){
+            System.out.println("GEredrtcfv");
             return 1;
         } else return 0;
     }
@@ -275,6 +280,8 @@ public class UserTradeService {
                 return Response.status(Response.Status.OK).entity("Trades not verified: Not entitled to one or more fund(s)").build();
             case -4:
                 return Response.status(Response.Status.OK).entity("Trades not verified: Currency does not exist").build();
+            case -5:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Insufficient Assets").build();
             default:
                 return Response.status(Response.Status.OK).entity("Trades not verified: Unknown Error").build();
         }

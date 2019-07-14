@@ -92,7 +92,7 @@ class Login extends Component {
 
                             <div className="row">
                                 <div className="button-container">
-                                    <button className="btn waves-effect" type="submit">Submit</button>
+                                    <button className="btn waves-effect" type="submit">Login</button>
                                 </div>
                             </div>
                         </form>
