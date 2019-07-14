@@ -74,7 +74,7 @@ class AddTrade extends Component {
                 {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
                 this.props.addTrade(res.data.fundName, res.data.fundNumber, res.data.invManager)
-                this.props.unverify()
+                // this.props.unverify()
             })
         }
         this.onCloseModal() 

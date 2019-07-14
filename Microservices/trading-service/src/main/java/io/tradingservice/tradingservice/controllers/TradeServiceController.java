@@ -30,40 +30,21 @@ public class TradeServiceController {
     @Path(Constants.viewEndPoint)
     public List<ImmutableTrade> getAllTrades(@HeaderParam("Authorization") String header) {
         String userId = ServiceUtils.decodeJWTForUserId(header);
-        List<ImmutableTrade> trades = userTradeService.getAllTrades(userId);
-        return trades;
+        return userTradeService.getAllTrades(userId);
     }
 
     // Exchange trades Api
     @POST
     @Path(Constants.exchangeEndPoint)
     public Response exchangeTrade(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers) {
-        if (tradeParsers.size() <= 5) {
-            String userId = ServiceUtils.decodeJWTForUserId(header);
-            List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
-            System.out.println(trades);
-            if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
-            float res = userTradeService.exchangeTrade(userId, trades, header);
-            if (res == -1) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
-            else if (res == -2) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified: Enter quantity greater than 0").build();
-            else {
-                System.out.println(res);
-                userTradeService.updateUser(userId, header, res);
-                return Response.status(Response.Status.CREATED).entity("Exchanged Requested trade").build();
-            }
-        } else return Response.status(Response.Status.BAD_REQUEST).entity("Max trade request is 5").build();
+        return userTradeService.exchangeResponse(header, tradeParsers);
     }
 
     // Verify trades Api
     @POST
     @Path(Constants.verifyEndPoint)
     public  Response verifyTrades(@HeaderParam("Authorization") String header, List<TradeParser> tradeParsers){
-        String userId = ServiceUtils.decodeJWTForUserId(header);
-        List<Trade> trades = userTradeService.makeTrades(tradeParsers, header);
-        if (trades.isEmpty()) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
-        boolean isVerified = userTradeService.verifyTrades(userId, trades, header);
-        if (isVerified) return Response.status(Response.Status.ACCEPTED).entity("Verified Trades").build();
-        return Response.status(Response.Status.ACCEPTED).entity("Trades not verified").build();
+        return userTradeService.verifyResponse(header, tradeParsers);
     }
 
     // Add user

@@ -47,7 +47,7 @@ public class ServiceTests {
     public void setUp() {
 
         trade = ImmutableTrade.builder().fundNumber("1234").fundName("Hedge").avgNav((float) 22)
-                .status("purchase").quantity((float) 7).invManager("GS").setCycle(2).invCurr("INR")
+                .status("purchase").quantity((float) 7).invManager("GS").setCycle("T").invCurr("INR")
                 .sAndPRating((float) 23.2).moodysRating((float) 12).build();
     }
 
