@@ -27,7 +27,8 @@ class AddFund extends Component {
             funds: [],
             open: false,
             fundSuggestions: [],
-            errorResponse: []
+            errorResponse: [],
+            currencies: []
         }
     }
     
@@ -134,6 +135,23 @@ class AddFund extends Component {
                 window.location = "/";
             }
         });
+
+        axios({
+            method: 'get',
+            url: baseUrl + 'trade/currency/all',
+            headers: headers
+        }).then(response =>{
+            console.log(response.data);
+            this.setState({
+                currencies: response.data
+            })
+        }).catch(error =>{
+            console.log(error);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+        });
     }
 
     componentDidUpdate(){
@@ -224,13 +242,11 @@ class AddFund extends Component {
                                 <div className="input-field col s12">
                                     <select id="invCurrency" defaultValue="" onChange={this.onChange}>
                                         <option value="" disabled>Investment currency</option>
-                                        <option value="INR">INR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="EUR">EUR</option>
-                                        <option value="AED">AED</option>
-                                        <option value="GBP">GBP</option>
-                                        <option value="SAR">SAR</option>
-                                        <option value="JPY">JPY</option>
+                                        {
+                                            this.state.currencies.map(currency =>
+                                                <option value={currency.currency}>{currency.currency}</option>
+                                            )
+                                        }
                                     </select>
                                 </div>
                             </div>

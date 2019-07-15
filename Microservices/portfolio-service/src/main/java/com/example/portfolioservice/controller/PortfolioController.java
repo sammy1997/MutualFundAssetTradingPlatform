@@ -134,7 +134,7 @@ public class PortfolioController
     {
 
         String userId = ServiceUtils.decodeJWTForUserId(token);
-        return portfolioService.updateBaseCurrency(userId, newCurrency);
+        return portfolioService.updateBaseCurrency(userId, newCurrency, token);
 
     }
 

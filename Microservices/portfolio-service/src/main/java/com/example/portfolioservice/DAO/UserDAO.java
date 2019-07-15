@@ -4,8 +4,6 @@ import com.example.portfolioservice.models.*;
 import com.google.common.base.Optional;
 import org.immutables.mongo.repository.RepositorySetup;
 
-import static com.example.portfolioservice.utils.Constants.FX_USD;
-
 
 @SuppressWarnings("ALL")
 public class UserDAO {
@@ -86,13 +84,13 @@ public class UserDAO {
         }
         return 0;
     }
-    public String updateBaseCurrency(final String userId, final String newCurrency) {
+    public String updateBaseCurrency(final String userId, float originalValue,
+                                     float newValue, String newCurrency) {
         Optional<User> user = repository.find(where.userId(userId))
-                                        .fetchFirst().getUnchecked();
+                .fetchFirst().getUnchecked();
         if(user.isPresent()) {
             float newBalance = user.get().currBal()
-                               * (FX_USD.get(newCurrency)
-                               / FX_USD.get(user.get().baseCurr()));
+                    * (newValue / originalValue);
             repository.upsert(
                     ImmutableUser.builder()
                             .userId(user.get().userId())

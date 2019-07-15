@@ -21,8 +21,7 @@ public class FXRateController {
 
     @POST
     @Path(Constants.addCurrencyEndpoint)
-    public Response addCurr(FXRate newFXRate){
-        System.out.println("Here");
+    public Response addCurr(FXRate newFXRate) {
         return fxRateService.addCurrency(newFXRate);
     }
 
