@@ -73,7 +73,7 @@ class AddTrade extends Component {
             axios.get('http://localhost:8762/fund-handling/api/entitlements/get/fund?fundNumber=' + this.state.fundNumber, 
                 {headers : { Authorization: `Bearer ${jwt}` } })
             .then(res => {
-                this.props.addTrade(res.data.fundName, res.data.fundNumber, res.data.invManager)
+                this.props.addTrade(res.data.fundName, res.data.fundNumber, res.data.invManager, res.data.nav)
                 this.props.unverify()
             })
         }

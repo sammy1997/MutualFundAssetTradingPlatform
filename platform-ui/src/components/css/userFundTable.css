@@ -24,9 +24,10 @@
 
   .search-icon{ 
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 22px;
+    right: -1px;
     color: grey;
+    font-size: 16px;
   }
 
   
@@ -59,4 +60,16 @@
   .fundname-label{
     font-size: 18px;
     color: rgba(0,0,0,0.87);
+  }
+
+  .loss{
+    color:red
+  }
+
+  .profit{
+    color:green
+  }
+
+  .search-icon-container{
+    position: relative
   }

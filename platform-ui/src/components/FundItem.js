@@ -57,13 +57,14 @@ export class FundItem extends Component {
     }
 
     render() {
-        const {fundName, fundNumber, invManager} = this.props;
+        const {fundName, fundNumber, invManager, currentNav} = this.props;
         return (
-            <tr id="trading-fund-list"> 
+            <tr id="trading-fund-list" key={fundNumber}> 
                 <td>{fundName}</td>
                 <td>{fundNumber}</td>
                 <td>{invManager}</td>
                 <td><input id={"quantity-" + fundNumber} className="quantity-field" type="number" placeholder="Enter quantity"  onChange={this.onChangeHandlerQuantity}></input></td>
+                <td>{currentNav}</td>
                 <td class="purchase-sell-switch">
                     <select onChange={this.onChangeHandlerStatus}>
                         <option value="sell">Sell</option>

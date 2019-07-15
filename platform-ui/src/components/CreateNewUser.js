@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import 'materialize-css/dist/css/materialize.min.css'
 import M from 'materialize-css/dist/js/materialize.min.js'
-import axios from 'axios';
-import getCookie from './Cookie';
+import $ from 'jquery'
+import './css/createNewUser.css'
 
 class CreateNewUser extends Component{
     constructor(props){
@@ -14,18 +14,35 @@ class CreateNewUser extends Component{
             fullName: "",
             currBal: undefined,
             baseCurr: undefined,
-            role: undefined
+            role: undefined,
+            expanded: false
+        }
+    }
+
+    showCheckboxes() {
+        
+        var checkboxes = document.getElementById("checkboxes");
+        if (!this.state.expanded) {
+            checkboxes.style.display = "block";
+            this.setState({
+                expanded : true
+            })
+        } else {
+            checkboxes.style.display = "none";
+            this.setState({
+                expanded : false
+            })
         }
     }
 
     render(){
         M.updateTextFields();
-        document.addEventListener('DOMContentLoaded', function() {
-            var elem = document.querySelectorAll('select');
-            // var instances = M.FormSelect.init(elems, options);
-            var instance = M.FormSelect.getInstance(elem);
-            var roles = instance.getSelectedValues() // Array of selected values
-          });
+        
+        
+    
+        
+
+        
         
         return(
             <div className="form-container center-align">
@@ -77,13 +94,23 @@ class CreateNewUser extends Component{
                                 </div>
                             </div>
                             <div className="row">
-                                <div className="input-field col s12">
-                                    <select multiple className="browser-default" id="role" onChange={this.onChange}>
-                                        <option value="" >Role</option>
-                                        <option value="ROLE_VIEWER">Viewer</option>
-                                        <option value="ROLE_TRADER">Trader</option>
-                                        <option value="ROLE_ADMIN">Administrator</option>
-                                    </select>
+                                <div class="input-field col s12">
+                                    <div class="multiselect">
+                                        <div class="selectBox" onclick={this.showCheckboxes}>
+                                        <select>
+                                            <option>Select an option</option>
+                                        </select>
+                                        <div class="overSelect"></div>
+                                        </div>
+                                        <div id="checkboxes">
+                                            <label for="one">
+                                                <input type="checkbox" id="one" />First checkbox</label>
+                                            <label for="two">
+                                                <input type="checkbox" id="two" />Second checkbox</label>
+                                            <label for="three">
+                                                <input type="checkbox" id="three" />Third checkbox</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>

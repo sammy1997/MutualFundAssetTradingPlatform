@@ -38,19 +38,19 @@ class UserFunds extends Component
     }
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
-        if (checked.length === 0) {
-            alert('Please select atleast 1 fund to trade');
-        } else {
+        // if (checked.length === 0) {
+        //     alert('Please select atleast 1 fund to trade');
+        // } else {
             var selected = [];
             for(var i = 0; i< checked.length; i++){
                 var tr = checked[i].parentNode.parentNode.parentNode;
                 var table_cells = tr.getElementsByTagName('td')
                 
-                var fieldName = ['fundName', 'invManager', 'fundNumber']
+                var fieldName = ['fundName', 'invManager', 'fundNumber', 'presentNav']
                 var temp = {};
                 for(var j = 0; j< table_cells.length; j++){
                     console.log(table_cells[j].textContent);
-                    if(j<3){
+                    if(j<4){
                         temp[fieldName[j]] = table_cells[j].textContent;
                     }
                     
@@ -64,9 +64,7 @@ class UserFunds extends Component
             this.setState({
                 selectedFunds: selected
             }, () => {console.log(this.state.selectedFunds)})
-            
-              
-        }
+
     }
 
     loadAssets(res){
@@ -93,7 +91,7 @@ class UserFunds extends Component
                     searchableFields: [0,1,2,4],
                     role: parseJwt(jwt).authorities[0]
                 })
-                // console.log(this.state.role);
+                console.log(this.state.list);
             })
             .catch( error => {
                 if(error.response){
@@ -186,13 +184,13 @@ class UserFunds extends Component
                         <th>Fund Name</th>
                         <th>Investment Manager</th>
                         <th>Fund Number</th>
+                        <th>Current NAV</th>
+                        {this.props.portfolio?<th>Purchase NAV</th>:""}
                         <th>Settlement Cycle</th>
                         <th>Investment Currency</th>
                         <th>S&P Rating</th>
                         <th>Moody's Rating</th>
                         {this.props.portfolio?<th>Quantity</th>:""}
-                        {this.props.portfolio?<th>Purchase NAV</th>:""}
-                        <th>Current NAV</th>
                         {this.props.portfolio?<th>Expected Profit/Loss</th>:""}
                         {this.props.portfolio?<th>Profit %</th>:""}
                         {this.props.portfolio?<th>Indicator</th>:""}
@@ -201,20 +199,30 @@ class UserFunds extends Component
 
                     <tbody>
                         <tr>
-                            <td><input type="text" id="myInput0"  
+                            <td>
+                                <div className="search-icon-container">
+                                    <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                                </div>
+                                <input type="text" id="myInput0"  
                                 onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> 
-                            <td><input type="text" id="myInput1" 
+                            <td>
+                                <div className="search-icon-container">
+                                    <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                                </div><input type="text" id="myInput1" 
                                 onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td>
-                            { <td><input type="text" id="myInput2"  
+                            { <td>
+                                <div className="search-icon-container">
+                                    <i class="fa fa-search search-icon" aria-hidden="true"></i>
+                                </div><input type="text" id="myInput2"  
                             onKeyUp={() => searchContent('myInput', 'myTable', this.state.searchableFields)} /></td> }
                             { <td></td>}
                             {this.props.portfolio?<td></td>:""}
                             <td></td>
                             <td></td>
-                            {this.props.portfolio?<td></td>:""}
-                            {this.props.portfolio?<td></td>:""}
                             <td></td>
                             <td></td>
+                            {this.props.portfolio?<td></td>:""}
+                            {this.props.portfolio?<td></td>:""}
                             {this.props.portfolio?<td></td>:""}
                             {this.props.portfolio?<td></td>:""} 
                         </tr>
@@ -228,18 +236,21 @@ class UserFunds extends Component
                             </td>
                             <td>{item.invManager}</td>
                             <td>{item.fundNumber}</td>
+                            {this.props.portfolio?<td>{item.presentNav}</td>:<td>{item.nav}</td>}
+                            {this.props.portfolio?<td>{item.originalNav}</td>:""}
                             <td>{item.setCycle}</td>
                             <td>{item.invCurrency}</td>
                             <td>{item.sAndPRating}</td>
                             <td>{item.moodysRating}</td>
                             {this.props.portfolio?<td>{item.quantity}</td>:""}
-                            {this.props.portfolio?<td>{item.originalNav}</td>:""}
-                            {this.props.portfolio?<td>{item.presentNav}</td>:<td>{item.nav}</td>}
-                            {this.props.portfolio?<td>{item.profitAmount}</td>:""}
-                            {this.props.portfolio?<td>{item.profitPercent * 100}</td>:""}
+                            {this.props.portfolio?
+                                (item.profitAmount>0)?<td className="profit">{item.profitAmount}</td>:<td className="loss">{item.profitAmount}</td>:""}
+                            {/* {this.props.portfolio?<td>{item.profitPercent * 100}</td>:""} */}
+                            {this.props.portfolio?
+                                (item.profitAmount > 0)?<td className="profit">{item.profitPercent*100}</td>:<td className="loss">{item.profitPercent*100}</td>:""}
                             {this.props.portfolio?
                                 <td>{
-                                    (item.profitAmount>0 && item.profitPercent>0)?<i className="fa fa-arrow-up"></i>: <i className="fa fa-arrow-down"></i>
+                                    (item.profitAmount>0)?<i className="fa fa-arrow-up profit"></i>: <i className="fa fa-arrow-down loss"></i>
                                     }
                                 </td>:""
                             }

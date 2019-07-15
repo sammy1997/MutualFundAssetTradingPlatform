@@ -40,12 +40,13 @@ class TradeBlotter extends Component {
     }.bind(this)
 
     // Add Trade method
-    addTrade = function (fundName, fundNumber, invManager) {
+    addTrade = function (fundName, fundNumber, invManager, presentNav) {
         // console.log({fundName}, {fundNumber}); 
         const newFund = {
             fundName,
             fundNumber,
-            invManager
+            invManager,
+            presentNav
            }
            this.setState (
             {
@@ -93,6 +94,7 @@ class TradeBlotter extends Component {
 
 
     render() {
+        console.log(this.props.funds);
         return (
             <div className="page-content">
                 <h3 align="center">Trade Blotter</h3>
@@ -103,6 +105,7 @@ class TradeBlotter extends Component {
                             <th>Fund Number</th>
                             <th>Investment Manager</th>
                             <th>Quantity</th>
+                            <th>Current NAV</th>
                             <th>Buy/Sell</th>
                         </tr>
                     </thead>
@@ -111,7 +114,7 @@ class TradeBlotter extends Component {
                         // Render all the funds 
                         this.state.funds.map((f) => (
                             <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} 
-                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
+                            invManager={f.invManager} currentNav={f.presentNav} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>
