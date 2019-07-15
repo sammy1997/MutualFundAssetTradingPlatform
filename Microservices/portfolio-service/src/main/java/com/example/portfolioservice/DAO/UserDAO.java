@@ -86,13 +86,13 @@ public class UserDAO {
         }
         return 0;
     }
-    public String updateBaseCurrency(final String userId, final String newCurrency) {
+    public String updateBaseCurrency(final String userId, float originalValue,
+                                     float newValue, String newCurrency) {
         Optional<User> user = repository.find(where.userId(userId))
                                         .fetchFirst().getUnchecked();
         if(user.isPresent()) {
             float newBalance = user.get().currBal()
-                               * (FX_USD.get(newCurrency)
-                               / FX_USD.get(user.get().baseCurr()));
+                               * (newValue / originalValue);
             repository.upsert(
                     ImmutableUser.builder()
                             .userId(user.get().userId())

@@ -5,6 +5,7 @@ import com.example.portfolioservice.DAO.UserDAO;
 import com.example.portfolioservice.models.*;
 import com.example.portfolioservice.utils.ServiceUtils;
 import com.google.common.base.Optional;
+import com.sun.javafx.robot.impl.FXRobotHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -96,7 +97,31 @@ public class PortfolioService {
     }
 
     public String updateBaseCurrency(final String userId,
-                                     final String newCurrency) {
-        return userDAO.updateBaseCurrency(userId, newCurrency);
+                                     final String newCurrency, String token)
+    {
+        Optional<User> user = userDAO.getUser(userId);
+        float originalValue=0, newValue=0;
+        ClientResponse response = client.get()
+                .uri("http://localhost:8762/trade/currency/get/currency="+user.get().baseCurr())
+                .header("Authorization", "Bearer "+token)
+                .exchange()
+                .block();
+        FXRate parsedRate = response.bodyToMono(FXRate.class).block();
+        if(parsedRate!=null)
+        {
+            originalValue = parsedRate.rate();
+        }
+        response = client.get()
+                .uri("http://localhost:8762/trade/currency/get/currency="+newCurrency)
+                .header("Authorization", "Bearer "+token)
+                .exchange()
+                .block();
+        parsedRate = response.bodyToMono(FXRate.class).block();
+        if(parsedRate!=null)
+        {
+            newValue = parsedRate.rate();
+        }
+        return userDAO.updateBaseCurrency(userId, originalValue, newValue, newCurrency);
     }
 }
+//String currency, float rate
