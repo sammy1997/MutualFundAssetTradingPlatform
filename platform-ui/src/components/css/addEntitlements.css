@@ -96,11 +96,18 @@
 
   .finalized-funds{
       height: 100%;
-      padding: 10px;
+      margin-top: 12px;
   }
+
+  .selected-funds{
+      text-align: center;
+      font-size: 25px;
+      /* margin-top:5px; */
+  }
+
   #added-funds{
       margin: 10px;
-      height: 90%;
+      height: 81%;
       overflow: auto;
       background-color: #F5F5F5;
   }

@@ -7,6 +7,8 @@ import getCookie from './Cookie';
 import { withRouter } from 'react-router-dom';
 import FileUpload from './FileUploadComponent';
 import autocomplete from './utility/Autocomplete';
+import Modal from 'react-responsive-modal';
+
 
 class AddFund extends Component {
     constructor(props) {
@@ -23,6 +25,7 @@ class AddFund extends Component {
             moodysRating: "",
             update: false,
             funds: [],
+            open: false,
             fundSuggestions: [],
             errorResponse: [],
             currencies: []
@@ -42,6 +45,16 @@ class AddFund extends Component {
         this.setState({
             [event.target.id]: value
         })
+    }
+
+    closeModalHandler = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    closePopUp = () => {
+        window.location="/admin";
     }
 
     addFundRequest = (event) =>{
@@ -64,8 +77,9 @@ class AddFund extends Component {
                 headers: headers,
                 data: this.state
             }).then(response =>{
-                console.log(response.data)
-                alert(response.data)
+                this.setState({
+                    open: true
+                })
             }).catch(error =>{
                 // console.log(error.response);
                 if(error.response.status === 401 || error.response.status === 403){
@@ -112,7 +126,7 @@ class AddFund extends Component {
             });
             this.setState({
                 funds: response.data,
-                fundSuggestions: fundNumbers
+                fundSuggestions: fundNumbers,
             })
         }).catch(error =>{
             console.log(error);
@@ -128,9 +142,12 @@ class AddFund extends Component {
             headers: headers
         }).then(response =>{
             console.log(response.data);
-            this.setState({
-                currencies: response.data
-            })
+            if(Array.isArray(response.data)){
+                this.setState({
+                    currencies: response.data
+                })
+            }
+            
         }).catch(error =>{
             console.log(error);
             if(error.response.status === 401 || error.response.status === 403){
@@ -210,10 +227,10 @@ class AddFund extends Component {
                                 <div className="input-field col s12">
                                     <select id="setCycle" defaultValue=""  onChange={this.onChange}>
                                     <option value="" disabled>Settlement Cycle</option>
-                                    <option value="T">0 days</option>
-                                    <option value="T+1">1 day</option>
-                                    <option value="T+2">2 days</option>
-                                    <option value="T+3">3 days</option>
+                                    <option value="T">T</option>
+                                    <option value="T+1">T+1 </option>
+                                    <option value="T+2">T+2 </option>
+                                    <option value="T+3">T+3 </option>
                                     </select>
                                 </div>
                             </div>
@@ -253,6 +270,14 @@ class AddFund extends Component {
                             <button className="btn waves-effect waves-light" type="submit" 
                                 onClick={this.addFundRequest}>Submit</button>
                         </form>
+                        <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                            <div>
+                                {this.state.update? <h5 align="center"><b>{this.state.fundNumber}: {this.state.fundName}</b> has been updated.</h5> : <h5 align="center"><b>{this.state.fundNumber}: {this.state.fundName}</b> has been successfully added to the database.</h5>}
+                                <div align="center">
+                                    <button type="button" className="btn" onClick={this.closePopUp}>OK</button>
+                                </div>
+                            </div>
+                        </Modal>
                     </div>
                 </div>
             </div>

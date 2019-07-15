@@ -81,14 +81,14 @@ class FundFinder extends Component {
                                 <SearchBar index={2} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Manager"></SearchBar>
                             </th>
-                            <td>-N/A-</td>
-                            <td>-N/A-</td>
+                            <td></td>
+                            <td></td>
                             <th scope="row">
                                 <SearchBar index={3} searchHandler={searchContent} tableId='all-funds' finder={true}
                                     searchableFields={this.state.searchableFields} searchTerm = "Search Currency"></SearchBar>
                             </th>
-                            <td>-N/A-</td>
-                            <td>-N/A-</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         
                         {

@@ -45,11 +45,13 @@
 
 .submitTrade {
   display: inline-block; 
-  position: relative;
-  left: 38%;
-  transform: translateX(40%);
+  margin: auto;
+  /* transform: translateX(40%); */
+  
   margin-inline-end: 10px;
 }  
+
+
 
 .popup-container{
   margin-top: 20px;
@@ -98,11 +100,10 @@ button:hover {
   border: none !important 
 }
 
-.remove-button {
-  background-color: #ffffff;
-  border: none;
-  border-right: 2px solid white;
-    border-bottom: 2px solid white !important;
+
+
+.delete-button{
+  margin: 0 auto;
 }
 
 .purchase-sell-switch{

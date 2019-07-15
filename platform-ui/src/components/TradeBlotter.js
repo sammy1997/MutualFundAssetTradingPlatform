@@ -44,17 +44,19 @@ class TradeBlotter extends Component {
         })
     }
 
-    unVerify = function() {
+    unVerify = () => {
+        console.log(this)
         this.child.unVerifyHandler()
-    }.bind(this)
+    }
 
     // Add Trade method
-    addTrade = function (fundName, fundNumber, invManager) {
+    addTrade = function (fundName, fundNumber, invManager, presentNav) {
         // console.log({fundName}, {fundNumber}); 
         const newFund = {
             fundName,
             fundNumber,
-            invManager
+            invManager,
+            presentNav
         }
 
         var currFunds = [...this.state.funds]
@@ -103,12 +105,13 @@ class TradeBlotter extends Component {
         this.setState({
             trades: newTrades   
         })
-    
+        this.unVerify()
     }
     
 
 
     render() {
+        console.log(this.props.funds);
         return (
             <div className="page-content">
                 <h3 align="center">Trade Blotter</h3>
@@ -119,7 +122,9 @@ class TradeBlotter extends Component {
                             <th>Fund Number</th>
                             <th>Investment Manager</th>
                             <th>Quantity</th>
+                            <th>Current NAV</th>
                             <th>Buy/Sell</th>
+                            <th>Delete Fund</th>
                         </tr>
                     </thead>
 
@@ -127,7 +132,7 @@ class TradeBlotter extends Component {
                         // Render all the funds 
                         this.state.funds.map((f) => (
                             <FundItem className = "fund-item" key={f.fundNumber} fundName={f.fundName} fundNumber={f.fundNumber} 
-                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
+                            invManager={f.invManager} currentNav={f.presentNav} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>

@@ -13,7 +13,7 @@ public class JwtConfig {
     private String prefix;
 
 
-    @Value("${security.jwt.expiration:#{60*60}}") //Token expires after 60 min
+    @Value("${security.jwt.expiration:#{60*60*60}}") //Token expires after 60 min
     private int expiration;
 
     @Value("${security.jwt.secret:JwtSecretKey}")
