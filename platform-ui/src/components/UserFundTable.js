@@ -303,7 +303,7 @@ class UserFunds extends Component
                 {content2}
                 {this.state.role !== "ROLE_VIEWER" ? content3 : content}
                 
-                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                <Modal classNames="modal" stateCacher={this.stateCacheHandler} open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
                         <TradeBlotter  stateCacher={this.stateCacheHandler} funds = {this.state.prevSelectedFunds.length ? this.state.prevSelectedFunds : this.state.selectedFunds}/> 
                     </div> 

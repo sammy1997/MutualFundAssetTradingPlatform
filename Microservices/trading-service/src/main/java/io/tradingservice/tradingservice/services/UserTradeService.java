@@ -31,7 +31,7 @@ public class UserTradeService {
     private UserAccessObject userAccessObject;
 
     @Autowired
-    private TransactionAccessObject transactionAccessObject;
+    private TransactionService transactionService;
 
     // Create instance of Webclient
     @Autowired
@@ -198,6 +198,7 @@ public class UserTradeService {
             for (Trade t : trades) {
                 if (t.quantity()==0) return -2;
                 balance += userAccessObject.addTrade(userId, t, balance, baseCurr);
+                transactionService.addTransactionById(userId, t);
             }
             System.out.println("YOUR BALANCE HERE IS " + balance);
             // Create the funds for sending update request

@@ -19,7 +19,7 @@ import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 
-public class ServiceTests {
+public class TradeServiceTests {
 
     @Mock
     UserAccessObject userAccessObject;
