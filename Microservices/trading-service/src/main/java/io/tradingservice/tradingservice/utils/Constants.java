@@ -34,6 +34,10 @@ public class Constants {
     public static final String getAllCurrencyEndpoint = "/all";
     public static final String updateCurrencyEndpoint = "/update";
 
+    // Transaction Controller paths
+    public static final String transactionHistoryEndPoint = "/history";
+    public static final String addTransactionEndPoint = "/addTransaction";
+
     public static final String mongoPort = "mongodb://localhost:27017/UserTrades";
 
 

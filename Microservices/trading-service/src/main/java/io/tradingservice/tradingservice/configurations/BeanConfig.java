@@ -1,6 +1,5 @@
 package io.tradingservice.tradingservice.configurations;
 
-import io.tradingservice.tradingservice.models.UserTransactionRepository;
 import io.tradingservice.tradingservice.repositories.FXRateAccessObject;
 import io.tradingservice.tradingservice.repositories.TransactionAccessObject;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
