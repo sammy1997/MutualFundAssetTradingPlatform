@@ -26,50 +26,36 @@ class UserFunds extends Component
         }
     }
 
-    // New code right here
-    stateCacheHandler = (newSelectedFunds) => {
-        var selected = [...this.state.selectedFunds]
-        var prevSelected = [...this.state.prevSelectedFunds]
-        if (prevSelected.length == 0) {
-            this.setState({
-                prevSelectedFunds: newSelectedFunds
-            })
-        } else {
-            // var count = 0; 
-            var newSelected = []
-            newSelectedFunds.forEach(fund => {
-                var isPresent = false; 
-                for (var i = 0; i<selected.length; i++) {
-                    if (fund.fundNumber === selected[i].fundNumber) {
-                        isPresent = true; 
-                        break; 
-                    }
-                }   
-                if (isPresent) newSelected.push(fund); 
-            });
-            prevSelected.forEach(fund => {
-                for (var i=0; i<newSelected.length; i++) {
-                    var isPresent = false; 
-                    if (fund.fundNumber === newSelected[i].fundNumber) {
-                        isPresent = true; 
-                        break; 
-                    }
-                }
-                if (!isPresent) {
-                    selected.splice(fund, 1); 
-                }
-            })
-            this.setState({
-                selectedFunds: selected,
-                prevSelectedFunds: newSelectedFunds
-            })
-        }
+    // // New code right here
+    // stateCacheHandler = (newSelectedFunds) => {
+    //     var selected = [...this.state.selectedFunds]
+    //     var prevSelected = [...this.state.prevSelectedFunds]
+    //     if (prevSelected.length == 0) {
+    //         this.setState({
+    //             prevSelectedFunds: newSelectedFunds
+    //         })
+    //     } else {
+    //         // var count = 0; 
+    //         var newSelected = []
+    //         selected.forEach(fund => {
+    //             newSelected.push(fund)
+    //         })
+    //         newSelectedFunds.forEach(fund => {
+    //             var isPresent = false; 
+    //             for (var i = 0; i<selected.length; i++) {
+    //                 if (fund.fundNumber === selected[i].fundNumber) {
+    //                     isPresent = true; 
+    //                     break; 
+    //                 }
+    //             }   
+    //             if (!isPresent) newSelected.push(fund); 
+    //         });
+    //         this.setState({
+    //             prevSelectedFunds: newSelected
+    //         })
+    //     }
         
-    }
-
-    stateCacheHandler2 = () => {
-
-    }
+    // }
     // New code right here
 
     closeModalHandler = () => {
@@ -305,7 +291,7 @@ class UserFunds extends Component
                 
                 <Modal classNames="modal" stateCacher={this.stateCacheHandler} open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
-                        <TradeBlotter  stateCacher={this.stateCacheHandler} funds = {this.state.prevSelectedFunds.length ? this.state.prevSelectedFunds : this.state.selectedFunds}/> 
+                        <TradeBlotter  stateCacher={this.stateCacheHandler} funds = {this.state.selectedFunds}/> 
                     </div> 
                 </Modal>
           </div>

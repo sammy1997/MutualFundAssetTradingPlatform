@@ -164,7 +164,8 @@ public class UserAccessObject {
                             }
                             count++;
                             break;
-                        } else return -5;
+                        }
+                        else return -5;
                     }
                 }
             }
@@ -172,7 +173,7 @@ public class UserAccessObject {
             System.out.println("Size = " + newTrades.size());
             System.out.println("Balance = " + balance);
 
-            if(balance < 0) return -1;
+            if (balance < 0) return -1;
 
             // If all trades are carried out and positive balance
             if (count == newTrades.size() && balance >= 0){

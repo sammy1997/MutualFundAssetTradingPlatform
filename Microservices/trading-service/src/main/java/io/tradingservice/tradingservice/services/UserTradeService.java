@@ -115,7 +115,6 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-                if (!oldFund.setCycle().equals("None")){
                     Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                                 .fundName(oldFund.fundName())
                                                 .avgNav(oldFund.nav())
@@ -128,15 +127,28 @@ public class UserTradeService {
                                                 .moodysRating(oldFund.moodysRating())
                                                 .build();
                     trades.add(newTrade);
-            } else {
-                return new ArrayList<>();
             }
-        }
         return trades;
-    }
+        }
+
 
     // For verifying the trades
     private int verifyTrades(String userId, List<Trade> trades, String header){
+
+        // Verify Entitlements
+        List<ImmutableFund> entitlements = getEntitlements(header);
+        int count = 0;
+        for (Trade t: trades){
+            if (isEntitled(entitlements,t)){
+                count++;
+            }
+        }
+        boolean isEntitled = false;
+        if (count == trades.size()) {
+            isEntitled = true;
+        }
+        System.out.println(isEntitled);
+        if(!isEntitled) return -3;
 
         // Verify Possibility of trades
         BalanceInfo balanceInfo = getBalance(header);
@@ -161,21 +173,7 @@ public class UserTradeService {
                 return -5;
         }
 
-        // Verify Entitlements
-        List<ImmutableFund> entitlements = getEntitlements(header);
-        int count = 0;
-        for (Trade t: trades){
-            if (isEntitled(entitlements,t)){
-                count++;
-            }
-        }
-        boolean isEntitled = false;
-        if (count == trades.size()) {
-            isEntitled = true;
-        }
-        System.out.println(isEntitled);
 
-        if(!isEntitled) return -3;
         // Set verification status
         if (exchangePossible == 1){
             System.out.println("GEredrtcfv");
