@@ -16,7 +16,7 @@ class CustomerService extends Component {
              childComponents: [<FundFinder/>, <AddFund/>, <AddEntitlements/>, <AddUser/>, <AddCurrency/>],
              userId: "-",
              name: "",
-             currTab: 1
+             currTab: 0
         }
     }
 

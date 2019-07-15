@@ -21,7 +21,8 @@ class AddUser extends Component {
              users: [],
              userSuggestions: [],
              open: false,
-             currencies: []
+             currencies: [],
+             modalContent: []
         }
     }
 
@@ -166,9 +167,11 @@ class AddUser extends Component {
             headers: headers
         }).then(response =>{
             console.log(response.data);
-            this.setState({
-                currencies: response.data
-            })
+            if(Array.isArray(response.data)){
+                this.setState({
+                    currencies: response.data
+                })
+            }
         }).catch(error =>{
             console.log(error);
             if(error.response.status === 401 || error.response.status === 403){
@@ -203,7 +206,8 @@ class AddUser extends Component {
             })
         }
         this.setState({
-            userId: document.getElementById("userId").value
+            userId: document.getElementById("userId").value,
+            baseCurr: document.getElementById("baseCurr").value
         }, () =>{
             var token = getCookie('token');
             if(!token){
@@ -220,11 +224,20 @@ class AddUser extends Component {
                 url: "http://localhost:8762/create/" + (this.state.update? 'update': ''),
                 headers: headers,
                 data: this.state
-            }).then(
-                this.setState({
-                    open: true
-                })
-            ).catch(error =>{
+            }).then(response => {
+                console.log(response);
+                if(response.data == "User already exists in the database. Cannot add another instance."){
+                    this.setState({
+                        open: true,
+                        modalContent: [<h5 align="center"><b>{this.state.userId}</b> already exists</h5>]
+                    })
+                }else if(response.status === 200){
+                    this.setState({
+                        open: true,
+                        modalContent: [<h5 align="center"><b>{this.state.userId}</b> created</h5>]
+                    })
+                }
+            }).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
                     document.cookie = "token=;"
@@ -316,7 +329,7 @@ class AddUser extends Component {
                     </form>
                     <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div>
-                        {this.state.update ? <h5 align="center"><b>{this.state.userId}</b> has been updated</h5> : <h5 align="center"><b>{this.state.userId}</b> created</h5>}
+        {this.state.update ? <h5 align="center"><b>{this.state.userId}</b> has been updated</h5> : this.state.modalContent}
                         <div align="center">
                             <button type="button" className="btn" onClick={this.closePopUp}>OK</button>
                         </div>

@@ -37,8 +37,12 @@ class HeaderPortfolio extends Component {
         }else{
             axios.get('http://localhost:8762/portfolio', {headers : { Authorization: `Bearer ${jwt}` } })
             .then( res => {
+                var currBal = res.data.currBal;
+                if(!isNaN(parseFloat(currBal))){
+                    currBal = res.data.currBal.toFixed(2)
+                }
                 this.setState({
-                    currBal: res.data.currBal,
+                    currBal: currBal,
                     baseCurr: res.data.baseCurr,
                     fullName: parseJwt(jwt).name
                 })

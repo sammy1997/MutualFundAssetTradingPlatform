@@ -24,6 +24,9 @@ class VerifyButton extends Component {
         }
     }
 
+    componentWillMount(){
+        this.props.onRef(this)
+    }
 
     componentDidMount = () => {
         this.setState({
@@ -152,7 +155,7 @@ class VerifyButton extends Component {
             </div>
         </div>
         } else {
-            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form ><button className='submitTrade' onClick={this.submitHandler} disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
+            submitContent = <div><p align="center">Are you sure you want to place trades?</p><form align="center"><button className='submitTrade' onClick={this.submitHandler} disabled={this.state.disabled}>Yes</button> <button className='submitTrade' onClick={this.noClickhandler}>No</button></form></div>
         }
         
         return this.state.verified ? 

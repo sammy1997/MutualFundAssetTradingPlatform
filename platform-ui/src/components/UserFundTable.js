@@ -21,7 +21,8 @@ class UserFunds extends Component
             searchableFields: [],
             open: false,
             errorResponse: [],
-            role: undefined
+            role: undefined,
+            currencies: []
         }
     }
 
@@ -68,11 +69,50 @@ class UserFunds extends Component
     }
 
     loadAssets(res){
-        var assetsValue = 0;
-        for(var i=0; i<res.data.all_funds.length; i++){
-            assetsValue += res.data.all_funds[i].quantity*res.data.all_funds[i].presentNav;
+        var baseUrl = "http://localhost:8762/";
+        var token = getCookie('token');
+        var dict = {};
+        if(!token){
+            this.props.history.push('/');
         }
-        this.props.updateAssets(assetsValue);
+        // Setting headers
+        var headers ={
+            Authorization: 'Bearer ' + token
+        }
+        axios({
+            method: 'get',
+            url: baseUrl + 'trade/currency/all',
+            headers: headers
+        }).then(response =>{
+            console.log(response.data);
+            if(Array.isArray(response.data)){
+                for(var x=0;x<response.data.length; x++){
+                    dict["" + response.data[x].currency] = response.data[x].rate;
+                }
+                this.setState({
+                    currencies: response.data
+                })
+                console.log(dict);
+                var assetsValue = 0;
+                var baseVal = dict[res.data.baseCurr]
+                console.log(baseVal);
+                for(var i=0; i<res.data.all_funds.length; i++){
+                    var currFund = res.data.all_funds[i]
+                    console.log(currFund);
+
+                    console.log(dict[currFund.invCurrency]);
+                    assetsValue += currFund.quantity*currFund.presentNav*baseVal/dict[currFund.invCurrency];
+                }
+                this.props.updateAssets(assetsValue.toFixed(2));
+            }
+        }).catch(error =>{
+            console.log(error);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+        });
+        
         
     }
 
@@ -243,16 +283,16 @@ class UserFunds extends Component
                             <td>{item.sAndPRating}</td>
                             <td>{item.moodysRating}</td>
                             {this.props.portfolio?<td>{item.quantity}</td>:""}
-                            {this.props.portfolio?
-                                (item.profitAmount>0)?<td className="profit">{item.profitAmount}</td>:<td className="loss">{item.profitAmount}</td>:""}
+                            {this.props.portfolio?(item.profitAmount == 0?<td>{item.profitAmount}</td>:
+                            (item.profitAmount>0)?<td className="profit">{item.profitAmount}</td>:<td className="loss">{item.profitAmount}</td>):""}
                             {/* {this.props.portfolio?<td>{item.profitPercent * 100}</td>:""} */}
-                            {this.props.portfolio?
-                                (item.profitAmount > 0)?<td className="profit">{item.profitPercent*100}</td>:<td className="loss">{item.profitPercent*100}</td>:""}
-                            {this.props.portfolio?
+                            {this.props.portfolio?(item.profitAmount == 0?<td>{item.profitAmount}</td>:
+                            (item.profitAmount > 0)?<td className="profit">{item.profitPercent*100}</td>:<td className="loss">{item.profitPercent*100}</td>):""}
+                            {this.props.portfolio?(item.profitAmount == 0?<td> - </td>:
                                 <td>{
                                     (item.profitAmount>0)?<i className="fa fa-arrow-up profit"></i>: <i className="fa fa-arrow-down loss"></i>
                                     }
-                                </td>:""
+                            </td>):""
                             }
                             </tr>) 
                         }

@@ -47,9 +47,11 @@ class AddCurrency extends Component {
             headers: headers
         }).then(response =>{
             console.log(response.data);
-            this.setState({
-                currencies: response.data            
-            })
+            if(Array.isArray(response.data)){
+                this.setState({
+                    currencies: response.data
+                })
+            }
         }).catch(error =>{
             console.log(error);
             if(error.response.status === 401 || error.response.status === 403){

@@ -40,8 +40,8 @@ class Header extends Component {
                         {/* <li onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
                         <li onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
                         <li onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li> */}
-                        <li className="tab" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
-                        <li className="tab active" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
+                        <li className="tab active" onClick = {()=> this.props.tabHandler(0)}><a>{this.state.li1}</a></li>
+                        <li className="tab" onClick = {()=> this.props.tabHandler(1)}><a>{this.state.li2}</a></li>
                         <li className="tab" onClick = {()=> this.props.tabHandler(2)}><a>{this.state.li3}</a></li>
                         <li className="tab" onClick = {()=> this.props.tabHandler(3)}><a>{this.state.li4}</a></li>
                         <li className="tab" onClick = {()=> this.props.tabHandler(4)}><a>{this.state.li5}</a></li>

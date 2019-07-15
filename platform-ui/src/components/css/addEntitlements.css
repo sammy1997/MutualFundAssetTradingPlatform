@@ -96,13 +96,13 @@
 
   .finalized-funds{
       height: 100%;
-      margin-top: 15px;
+      margin-top: 12px;
   }
 
   .selected-funds{
       text-align: center;
-      font-size: 18px;
-      margin-top:8px;
+      font-size: 25px;
+      /* margin-top:5px; */
   }
 
   #added-funds{

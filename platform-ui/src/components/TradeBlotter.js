@@ -36,9 +36,10 @@ class TradeBlotter extends Component {
         })
     }
 
-    unVerify = function() {
+    unVerify = () => {
+        console.log(this)
         this.child.unVerifyHandler()
-    }.bind(this)
+    }
 
     // Add Trade method
     addTrade = function (fundName, fundNumber, invManager, presentNav) {
@@ -46,7 +47,8 @@ class TradeBlotter extends Component {
         const newFund = {
             fundName,
             fundNumber,
-            invManager
+            invManager,
+            presentNav
         }
 
         var currFunds = [...this.state.funds]
@@ -95,7 +97,7 @@ class TradeBlotter extends Component {
         this.setState({
             trades: newTrades   
         })
-    
+        this.unVerify()
     }
     
 

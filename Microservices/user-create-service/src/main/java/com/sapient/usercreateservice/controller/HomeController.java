@@ -96,7 +96,7 @@ public class HomeController {
         } else if (response.getStatus() == 400) {
             return "Some field(s) missing. If not, please validate your fields";
         }else if(response.getStatus() == 406){
-            return user.userId() + " already exists in the database. Cannot add another instance.";
+            return "User already exists in the database. Cannot add another instance.";
         }else if (user.role().get().equals("ROLE_ADMIN")) {
             return "Admin role created";
         }else {

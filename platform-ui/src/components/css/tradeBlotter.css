@@ -45,11 +45,13 @@
 
 .submitTrade {
   display: inline-block; 
-  position: relative;
-  left: 38%;
-  transform: translateX(40%);
+  margin: auto;
+  /* transform: translateX(40%); */
+  
   margin-inline-end: 10px;
 }  
+
+
 
 .popup-container{
   margin-top: 20px;
