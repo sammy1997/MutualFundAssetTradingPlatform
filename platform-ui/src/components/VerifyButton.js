@@ -33,7 +33,7 @@ class VerifyButton extends Component {
             verified: false,
             submitLoading: false,    
             verifyLoading: false,
-            trades: this.props.trades
+            trades: this.props.trades,
         }, () => {console.log(this.state.trades)})
         this.props.onRef(this)
     }
@@ -53,6 +53,7 @@ class VerifyButton extends Component {
     verifyHandler = () => {
         this.setState({
             verifyLoading: true,
+            disabled: true
         })
         var jwt = getCookie('token');
         if (!jwt) {
@@ -94,13 +95,18 @@ class VerifyButton extends Component {
                     }
                 }
             )
+            this.setState({
+                verifyLoading: false,
+                disabled: false
+            })
         }
     }
     
     unVerifyHandler = () =>{
         this.setState({
             verified: false, 
-            verifyLoading: false 
+            verifyLoading: false,
+            disabled: false 
         })
     }
 
@@ -148,6 +154,10 @@ class VerifyButton extends Component {
     render() { 
         const {open, submitLoading, verifyLoading} = this.state  
         let submitContent;
+        let verifyContent; 
+        if (this.state.verifyLoading) {
+            verifyContent = <plaintext>Verifying...</plaintext>
+         } else  verifyContent = <plaintext></plaintext> 
         if (submitLoading) {
             submitContent = <div><p align="center">Placing requested Trade...</p>
             <div className="loader-container">
@@ -162,13 +172,13 @@ class VerifyButton extends Component {
         (
             <div>
                 <button className='verifyTrade' onClick={this.onOpenModal}>PLACE TRADES</button> 
-                <p align='center'> Successfully Verified trades! </p>
                 <Modal open={open} onClose={this.onCloseModal} center>
                     {submitContent} 
                 </Modal>
             </div> )
         : ( <div>
-                <button className='verifyTrade' onClick={this.verifyHandler}>VERIFY TRADES</button>
+                <button className='verifyTrade' onClick={this.verifyHandler} disabled={this.state.disabled}>VERIFY TRADES</button>
+                <p align='center'> {verifyContent} </p>
             </div> )
     }
 }

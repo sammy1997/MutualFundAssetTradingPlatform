@@ -26,6 +26,38 @@ class UserFunds extends Component
         }
     }
 
+    // // New code right here
+    // stateCacheHandler = (newSelectedFunds) => {
+    //     var selected = [...this.state.selectedFunds]
+    //     var prevSelected = [...this.state.prevSelectedFunds]
+    //     if (prevSelected.length == 0) {
+    //         this.setState({
+    //             prevSelectedFunds: newSelectedFunds
+    //         })
+    //     } else {
+    //         // var count = 0; 
+    //         var newSelected = []
+    //         selected.forEach(fund => {
+    //             newSelected.push(fund)
+    //         })
+    //         newSelectedFunds.forEach(fund => {
+    //             var isPresent = false; 
+    //             for (var i = 0; i<selected.length; i++) {
+    //                 if (fund.fundNumber === selected[i].fundNumber) {
+    //                     isPresent = true; 
+    //                     break; 
+    //                 }
+    //             }   
+    //             if (!isPresent) newSelected.push(fund); 
+    //         });
+    //         this.setState({
+    //             prevSelectedFunds: newSelected
+    //         })
+    //     }
+        
+    // }
+    // New code right here
+
     closeModalHandler = () => {
         this.setState({
             open: false
@@ -37,6 +69,7 @@ class UserFunds extends Component
             numberOfSelectedFunds: document.querySelectorAll('input[type="checkbox"]:checked').length
         })
     }
+    
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
         // if (checked.length === 0) {
@@ -63,7 +96,8 @@ class UserFunds extends Component
                 selected.push(temp);
             }
             this.setState({
-                selectedFunds: selected
+                selectedFunds: selected,
+
             }, () => {console.log(this.state.selectedFunds)})
 
     }
@@ -305,7 +339,7 @@ class UserFunds extends Component
                 {this.state.role !== "ROLE_VIEWER" ? content3 : content}
                 <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
-                        <TradeBlotter funds = {this.state.selectedFunds}/> 
+                        <TradeBlotter  stateCacher={this.stateCacheHandler} funds = {this.state.selectedFunds}/> 
                     </div> 
                 </Modal>
           </div>
