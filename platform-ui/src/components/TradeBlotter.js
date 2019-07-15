@@ -26,6 +26,7 @@ class TradeBlotter extends Component {
         }
     }
 
+
     // Set funds from fund finder page ui 
     componentDidMount = (prevState) => {
         this.setState({ 
@@ -45,26 +46,40 @@ class TradeBlotter extends Component {
         const newFund = {
             fundName,
             fundNumber,
+<<<<<<< HEAD
             invManager,
             presentNav
            }
            this.setState (
             {
+=======
+            invManager
+        }
+
+        var currFunds = [...this.state.funds]
+        var index = currFunds.findIndex(obj => obj.fundNumber === newFund.fundNumber)
+        if (index!=-1) {
+            alert('Fund already selected')
+        } else {
+            this.setState ({
+>>>>>>> 8b88b1cb93f22aecc135b20fba80a7694aa608ce
                 funds: [...this.state.funds, newFund]
             })
+            this.unVerify()
+        }       
     }.bind(this);
 
-    delTrade = (fundNumber) => {
-        var getFunds = [...this.state.funds]
-        var obj = getFunds.find(o => o.fundNumber === fundNumber)
-        getFunds.splice(obj, 1)
+    delTrade = (fundNum) => {
+        // var getFunds = [...this.state.funds]
+        // var obj = getFunds.find(o => o.fundNumber === fundNumber)
+        // getFunds.splice(obj, 1)
 
-        var getTrades = [...this.state.trades]
-        var obj = getTrades.find(o => o.fundNumber === fundNumber)
-        getTrades.splice(obj, 1)
+        // var getTrades = [...this.state.trades]
+        // var obj = getTrades.find(o => o.fundNumber === fundNumber)
+        // getTrades.splice(obj, 1)
         this.setState({
-            funds: getFunds,
-            trades: getTrades
+            funds: [...this.state.funds.filter(fund => fund.fundNumber !== fundNum)],
+            trades: [...this.state.trades.filter(trade => trade.fundNumber !== fundNum)]
         }, () => {console.log(this.state.funds)})
     }
 
@@ -113,8 +128,8 @@ class TradeBlotter extends Component {
                     <tbody> {
                         // Render all the funds 
                         this.state.funds.map((f) => (
-                            <FundItem className = "fund-item" fundName={f.fundName} fundNumber={f.fundNumber} 
-                            invManager={f.invManager} currentNav={f.presentNav} callBack={this.callBackFund} delFund = {this.delTrade} />
+                            <FundItem className = "fund-item" key={f.fundNumber} fundName={f.fundName} fundNumber={f.fundNumber} 
+                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>

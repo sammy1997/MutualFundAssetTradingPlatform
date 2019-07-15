@@ -35,6 +35,13 @@ public class HomeController {
         return userService.getAllUsers();
     }
 
+    @Path("/update")
+    @POST
+    @Consumes("application/json")
+    public Response updateUser(@RequestBody ParsedUser user){
+        return userService.updateUser(user);
+    }
+
     @POST
     @Consumes("application/json")
     public String addUser(@RequestBody ParsedUser user) {

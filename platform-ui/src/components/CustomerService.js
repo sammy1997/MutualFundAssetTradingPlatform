@@ -5,14 +5,15 @@ import AddFund from './AddFund';
 import AddEntitlements from './AddEntitlements';
 import parseJwt from './utility/JwtParser';
 import getCookie from './Cookie';
-import CreateNewUser from './CreateNewUser'
+import AddUser from './AddUser';
+import AddCurrency from './AddCurrency';
 
 class CustomerService extends Component {
     constructor(props) {
         super(props)
     
         this.state = {
-             childComponents: [<CreateNewUser/>,<FundFinder/>, <AddFund/>, <AddEntitlements/>],
+             childComponents: [<FundFinder/>, <AddFund/>, <AddEntitlements/>, <AddUser/>, <AddCurrency/>],
              userId: "-",
              name: "",
              currTab: 1

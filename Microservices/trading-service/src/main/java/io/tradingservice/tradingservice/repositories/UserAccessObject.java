@@ -2,12 +2,16 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.google.common.base.Optional;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.services.FXRateService;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class UserAccessObject {
@@ -15,6 +19,8 @@ public class UserAccessObject {
     // Create instance of user repository
     private UserRepository userRepository;
 
+    @Autowired
+    private FXRateService fxRateService;
 
     // Constructor of dao when called
     public UserAccessObject() {
@@ -40,7 +46,7 @@ public class UserAccessObject {
 
         // Create the immutable instance and append
         ImmutableTrade t = ImmutableTrade.builder().from(trade).build();
-        userRepository.findByUserId(userId)
+        FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId)
             .andModifyFirst()
             .addTrades(t)
             .upsert();
@@ -71,9 +77,14 @@ public class UserAccessObject {
     // Helper function for conversion rate
     private float getConversionRate(String baseCurr, String tradeCurr){
 
+        float convRate = 0;
+        float baseRate = fxRateService.getCurrency(baseCurr).rate();
+        float tradeRate = fxRateService.getCurrency(tradeCurr).rate();
+
         // Calculate the conversion rate ratio
-        float convRate = Constants.FX_USD.get(baseCurr)/ Constants.FX_USD.get(tradeCurr);
+        if (baseRate!=0 && tradeRate!=0) convRate = baseRate / tradeRate;
         return convRate;
+
     }
 
 
@@ -106,7 +117,7 @@ public class UserAccessObject {
     }
 
     // Verify Trades
-    public boolean verify(String userId, List<Trade> newTrades, float balance, String baseCurr) {
+    public int verify(String userId, List<Trade> newTrades, float balance, String baseCurr) {
 
         // Count is used to make sure all trades are verified
         int count = 0;
@@ -118,12 +129,19 @@ public class UserAccessObject {
 
             for (Trade t: newTrades) {
 
+                // To ensure valid presence of Currencies
+                float convRate = getConversionRate(baseCurr, t.invCurr());
+                if (convRate == 0) {
+                    System.out.println("One (or more) currencies does not exist in database");
+                    return -4;
+                }
+
 
                 // If the trade status is set to purchase
                 if (t.status().equals("purchase")) {
 
                     // Calculate new balance after the trade
-                    float debit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                    float debit = t.quantity() * t.avgNav() * convRate;
                     System.out.println(t.quantity());
                     balance -= debit;
                     count++;
@@ -140,13 +158,13 @@ public class UserAccessObject {
                         if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
 
                             // Calculate new balance after the trade
-                            if (t.setCycle() == 0) {
-                                float credit = t.quantity() * t.avgNav() * getConversionRate(baseCurr, t.invCurr());
+                            if (t.setCycle().equals("T")) {
+                                float credit = t.quantity() * t.avgNav() * convRate;
                                 balance += credit;
                             }
                             count++;
                             break;
-                        }
+                        } else return -5;
                     }
                 }
             }
@@ -154,18 +172,19 @@ public class UserAccessObject {
             System.out.println("Size = " + newTrades.size());
             System.out.println("Balance = " + balance);
 
+            if(balance < 0) return -1;
+
             // If all trades are carried out and positive balance
             if (count == newTrades.size() && balance >= 0){
                 System.out.println("Trades verified");
-                return true;
-            }
-            else {
+                return 1;
+            } else {
                 System.out.println("Not veri");
-                return false;
+                return -2;
             }
         } else {
             System.out.println("not verified");
-            return false;
+            return 0;
         }
     }
 
@@ -206,11 +225,11 @@ public class UserAccessObject {
                                 .sAndPRating(trade.sAndPRating())
                                 .moodysRating(trade.moodysRating())
                                 .build();
-                userRepository.findByUserId(userId).andModifyFirst()
+                FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId).andModifyFirst()
                         .addTrades(newT).upsert();
-                userRepository.findByUserId(userId).andModifyFirst()
+                FluentFuture<Optional<User>> removal = userRepository.findByUserId(userId).andModifyFirst()
                         .removeTrades(t).upsert();
-                return -debit;
+                if(addition.isDone() && removal.isDone()) return -debit;
             }
         }
 
@@ -246,11 +265,11 @@ public class UserAccessObject {
                                     .sAndPRating(trade.sAndPRating())
                                     .moodysRating(trade.moodysRating())
                                     .build();
-                    userRepository.findByUserId(userId).andModifyFirst()
+                    FluentFuture<Optional<User>> removal = userRepository.findByUserId(userId).andModifyFirst()
                             .removeTrades(t).upsert();
-                    userRepository.findByUserId(userId).andModifyFirst()
+                    FluentFuture<Optional<User>> addition = userRepository.findByUserId(userId).andModifyFirst()
                             .addTrades(newT).upsert();
-                    return credit;
+                    if(removal.isDone() && addition.isDone()) return credit;
                 } else return 0;   // Bad request wherein sell quantity strictly greater than existing
             }
         } return 0;
@@ -273,8 +292,9 @@ public class UserAccessObject {
             }
             // Fund doesn't exist
             if (count==trades.size()){
+                float convRate = getConversionRate(baseCurr, trade.invCurr());
+                float debit = trade.quantity() * trade.avgNav() * convRate;
                 directAddFund(userId, trade);
-                float debit = trade.quantity()*trade.avgNav()*getConversionRate(baseCurr, trade.invCurr());
                 return -debit;
             }
         }

@@ -3,6 +3,7 @@ package com.example.portfolioservice;
 import com.example.portfolioservice.controller.PortfolioController;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.ApplicationPath;

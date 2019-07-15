@@ -15,7 +15,7 @@ public interface FundParser {
     String fundNumber();
     Optional<String> fundName();
     Optional<String> invManager();
-    Optional<Integer> setCycle();
+    Optional<String> setCycle();
     Optional<Float> nav();
     Optional<String> invCurrency();
     Optional<Float> sAndPRating();

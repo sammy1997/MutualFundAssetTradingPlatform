@@ -7,6 +7,7 @@ import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.tradingservice.tradingservice.utils.Constants;
+import io.tradingservice.tradingservice.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,14 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-//import static com.sun.tools.doclint.Entity.trade;
 
 @Service                                        // Service annotation
-@JsonSerialize(as = ImmutableTrade.class)       // Serialisation
-@JsonDeserialize(as = ImmutableTrade.class)     //      and deserialization
 public class UserTradeService {
 
     // Create an instance of DAO
@@ -56,7 +55,7 @@ public class UserTradeService {
                 .invManager("None")
                 .nav(-1)
                 .invCurrency("None")
-                .setCycle(-1)
+                .setCycle("None")
                 .sAndPRating(-1)
                 .moodysRating(-1)
                 .build();
@@ -112,7 +111,7 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-                if (oldFund.setCycle()!=-1){
+                if (!oldFund.setCycle().equals("None")){
                     Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                                 .fundName(oldFund.fundName())
                                                 .avgNav(oldFund.nav())
@@ -133,7 +132,7 @@ public class UserTradeService {
     }
 
     // For verifying the trades
-    public boolean verifyTrades(String userId, List<Trade> trades, String header){
+    private int verifyTrades(String userId, List<Trade> trades, String header){
 
         // Verify Possibility of trades
         BalanceInfo balanceInfo = getBalance(header);
@@ -141,8 +140,22 @@ public class UserTradeService {
         System.out.println(balance);
         String baseCurr = balanceInfo.getBaseCurr();
         System.out.println(baseCurr);
-        boolean exchangePossible = userAccessObject.verify(userId, trades, balance, baseCurr);
+        int exchangePossible = userAccessObject.verify(userId, trades, balance, baseCurr);
         System.out.println(exchangePossible);
+
+        switch (exchangePossible)
+        {
+            case 0:
+                return 0;
+            case -1:
+                return -1;
+            case -2:
+                return -2;
+            case -4:
+                return -4;
+            case -5:
+                return -5;
+        }
 
         // Verify Entitlements
         List<ImmutableFund> entitlements = getEntitlements(header);
@@ -158,18 +171,19 @@ public class UserTradeService {
         }
         System.out.println(isEntitled);
 
+        if(!isEntitled) return -3;
         // Set verification status
-        if (exchangePossible && isEntitled){
-            return true;
-        }
-        else return false;
+        if (exchangePossible == 1){
+            System.out.println("GEredrtcfv");
+            return 1;
+        } else return 0;
     }
 
     // For purchasing / selling trades
-    public float exchangeTrade(String userId, List<Trade> trades, String header) {
+    private float exchangeTrade(String userId, List<Trade> trades, String header) {
 
         // Trade happens only after verification
-        if (verifyTrades(userId, trades, header)) {
+        if (verifyTrades(userId, trades, header) == 1) {
 
             // Get balance and base Currency of the user
             BalanceInfo balanceInfo = getBalance(header);
@@ -233,6 +247,43 @@ public class UserTradeService {
         System.out.println(response2.statusCode().value());
     }
 
+    public Response exchangeResponse(String header, List<TradeParser> tradeParsers) {
+        if (tradeParsers.size() <= 5) {
+            String userId = ServiceUtils.decodeJWTForUserId(header);
+            List<Trade> trades = makeTrades(tradeParsers, header);
+            System.out.println(trades);
+            if (trades.isEmpty()) return Response.status(Response.Status.OK).entity("No trades requested").build();
+            float res = exchangeTrade(userId, trades, header);
+            if (res == (float)-1) return Response.status(Response.Status.BAD_REQUEST).entity("Trades not verified").build();
+            else if (res == (float)-2) return Response.status(Response.Status.BAD_REQUEST).entity("Enter non zero quantity").build();
+            else {
+                System.out.println(res);
+                updateUser(userId, header, res);
+                return Response.status(Response.Status.CREATED).entity("Exchanged Requested trade").build();
+            }
+        } else return Response.status(Response.Status.BAD_REQUEST).entity("Only upto 5 trades can be placed at once").build();
+    }
 
-    /////////////////////////////////////////////////  END OF SERVICE  /////////////////////////////////////////////
+    public Response verifyResponse(String header, List<TradeParser> tradeParsers) {
+        String userId = ServiceUtils.decodeJWTForUserId(header);
+        List<Trade> trades = makeTrades(tradeParsers, header);
+        if (trades.isEmpty()) return Response.status(Response.Status.OK).entity("No trades are requested").build();
+        int isVerified = verifyTrades(userId, trades, header);
+        switch (isVerified){
+            case 1:
+                return Response.status(Response.Status.OK).entity("Trades are verified").build();
+            case -1:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Insufficient balance").build();
+            case -2:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Cannot do all trades today").build();
+            case -3:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Not entitled to one or more fund(s)").build();
+            case -4:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Currency does not exist").build();
+            case -5:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Insufficient Assets").build();
+            default:
+                return Response.status(Response.Status.OK).entity("Trades not verified: Unknown Error").build();
+        }
+    }
 }

@@ -14,7 +14,7 @@ public interface Fund {
     String fundNumber();
     String fundName();
     String invManager();
-    int setCycle();
+    String setCycle();
     float nav();
     String invCurrency();
     float sAndPRating();
