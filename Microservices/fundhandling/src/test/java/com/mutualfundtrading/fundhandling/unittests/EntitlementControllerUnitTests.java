@@ -143,7 +143,7 @@ public class EntitlementControllerUnitTests {
         ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
 
         String expected = "[{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"invManager\":\"GS\"" +
-                ",\"setCycle\":2,\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
+                ",\"setCycle\":\"T+2\",\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
                 ",\"moodysRating\":12.0}]";
         assertThat(entity.getBody()).isEqualTo(expected);
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -167,7 +167,7 @@ public class EntitlementControllerUnitTests {
         ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
 
         String expected = "[{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"invManager\":\"GS\"" +
-                ",\"setCycle\":2,\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
+                ",\"setCycle\":\"T+2\",\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
                 ",\"moodysRating\":12.0}]";
         assertThat(entity.getBody()).isEqualTo(expected);
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -189,7 +189,7 @@ public class EntitlementControllerUnitTests {
         ResponseEntity<String> entity= this.restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
 
         String expected = "{\"fundNumber\":\"1234\",\"fundName\":\"Hedge\",\"invManager\":\"GS\"" +
-                ",\"setCycle\":2,\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
+                ",\"setCycle\":\"T+2\",\"nav\":22.0,\"invCurrency\":\"INR\",\"sAndPRating\":23.2" +
                 ",\"moodysRating\":12.0}";
         assertThat(entity.getBody()).isEqualTo(expected);
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -18,7 +18,8 @@ class AddUser extends Component {
              role: null,
              currBal: 0,
              users: [],
-             userSuggestions: []
+             userSuggestions: [],
+             currencies: []
         }
     }
 
@@ -138,6 +139,23 @@ class AddUser extends Component {
             this.setState({
                 users: response.data,
                 userSuggestions: userIds
+            })
+        }).catch(error =>{
+            console.log(error);
+            if(error.response.status === 401 || error.response.status === 403){
+                document.cookie = "token=;"
+                window.location = "/";
+            }
+        });
+
+        axios({
+            method: 'get',
+            url: baseUrl + 'trade/currency/all',
+            headers: headers
+        }).then(response =>{
+            console.log(response.data);
+            this.setState({
+                currencies: response.data
             })
         }).catch(error =>{
             console.log(error);
@@ -269,13 +287,11 @@ class AddUser extends Component {
                         <div className="row" id= "currency">
                             <div className="input-field col s12">
                                 <select id="baseCurr" defaultValue="INR" onChange={this.onChange}>
-                                        <option value="INR">INR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="EUR">EUR</option>
-                                        <option value="AED">AED</option>
-                                        <option value="GBP">GBP</option>
-                                        <option value="SAR">SAR</option>
-                                        <option value="JPY">JPY</option>
+                                    {
+                                        this.state.currencies.map(currency =>
+                                            <option value={currency.currency}>{currency.currency}</option>
+                                        )
+                                    }
                                 </select>
                             </div>
                         </div>
