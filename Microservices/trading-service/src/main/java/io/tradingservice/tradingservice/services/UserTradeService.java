@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.Gson;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.repositories.TransactionAccessObject;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.tradingservice.tradingservice.utils.Constants;
@@ -28,6 +29,9 @@ public class UserTradeService {
     // Create an instance of DAO
     @Autowired
     private UserAccessObject userAccessObject;
+
+    @Autowired
+    private TransactionAccessObject transactionAccessObject;
 
     // Create instance of Webclient
     @Autowired

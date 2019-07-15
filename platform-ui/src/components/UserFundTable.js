@@ -28,9 +28,43 @@ class UserFunds extends Component
 
     // New code right here
     stateCacheHandler = (newSelectedFunds) => {
-        this.setState({
-            prevSelectedFunds: newSelectedFunds
-        })
+        var selected = [...this.state.selectedFunds]
+        var prevSelected = [...this.state.prevSelectedFunds]
+        if (prevSelected.length == 0) {
+            this.setState({
+                prevSelectedFunds: newSelectedFunds
+            })
+        } else {
+            // var count = 0; 
+            var newSelected = []
+            newSelectedFunds.forEach(fund => {
+                var isPresent = false; 
+                for (var i = 0; i<selected.length; i++) {
+                    if (fund.fundNumber === selected[i].fundNumber) {
+                        isPresent = true; 
+                        break; 
+                    }
+                }   
+                if (isPresent) newSelected.push(fund); 
+            });
+            prevSelected.forEach(fund => {
+                for (var i=0; i<newSelected.length; i++) {
+                    var isPresent = false; 
+                    if (fund.fundNumber === newSelected[i].fundNumber) {
+                        isPresent = true; 
+                        break; 
+                    }
+                }
+                if (!isPresent) {
+                    selected.splice(fund, 1); 
+                }
+            })
+            this.setState({
+                selectedFunds: selected,
+                prevSelectedFunds: newSelectedFunds
+            })
+        }
+        
     }
 
     stateCacheHandler2 = () => {
@@ -49,6 +83,7 @@ class UserFunds extends Component
             numberOfSelectedFunds: document.querySelectorAll('input[type="checkbox"]:checked').length
         })
     }
+    
     placeTradeClicked(){
         var checked = document.querySelectorAll('input:checked');
         if (checked.length === 0) {
@@ -268,9 +303,9 @@ class UserFunds extends Component
                 {content2}
                 {this.state.role !== "ROLE_VIEWER" ? content3 : content}
                 
-                <Modal classNames="modal" stateCacher={this.stateCacheHandler} open ={this.state.open} onClose={this.closeModalHandler} center >
+                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
-                        <TradeBlotter funds = {this.state.selectedFunds}/> 
+                        <TradeBlotter  stateCacher={this.stateCacheHandler} funds = {this.state.prevSelectedFunds.length ? this.state.prevSelectedFunds : this.state.selectedFunds}/> 
                     </div> 
                 </Modal>
           </div>

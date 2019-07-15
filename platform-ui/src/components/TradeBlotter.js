@@ -28,8 +28,8 @@ class TradeBlotter extends Component {
 
     // New code right here
     componentWillUnmount = () => {
-        if (verified === false) {
-            this.props.stateCacher(funds) 
+        if (this.state.verified === false) {
+            this.props.stateCacher(this.state.funds) 
         }
     }
 
