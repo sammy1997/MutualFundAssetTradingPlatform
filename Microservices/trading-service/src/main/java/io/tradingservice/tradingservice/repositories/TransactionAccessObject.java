@@ -1,10 +1,7 @@
 package io.tradingservice.tradingservice.repositories;
 
-
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
 import io.tradingservice.tradingservice.models.Transaction;
-import io.tradingservice.tradingservice.models.TransactionRepository;
 import io.tradingservice.tradingservice.models.UserTransaction;
 import io.tradingservice.tradingservice.models.UserTransactionRepository;
 import io.tradingservice.tradingservice.utils.Constants;
