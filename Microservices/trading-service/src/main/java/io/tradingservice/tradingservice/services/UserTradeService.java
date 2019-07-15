@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.Gson;
 import io.tradingservice.tradingservice.models.*;
+import io.tradingservice.tradingservice.repositories.TransactionAccessObject;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.tradingservice.tradingservice.utils.Constants;
@@ -28,6 +29,9 @@ public class UserTradeService {
     // Create an instance of DAO
     @Autowired
     private UserAccessObject userAccessObject;
+
+    @Autowired
+    private TransactionService transactionService;
 
     // Create instance of Webclient
     @Autowired
@@ -111,7 +115,6 @@ public class UserTradeService {
         List<Trade> trades = new ArrayList<>();
         for (TradeParser t: tradeParsers) {
             ImmutableFund oldFund = existFunds(entitlements, t);
-                if (!oldFund.setCycle().equals("None")){
                     Trade newTrade = ImmutableTrade.builder().fundNumber(oldFund.fundNumber())
                                                 .fundName(oldFund.fundName())
                                                 .avgNav(oldFund.nav())
@@ -124,15 +127,28 @@ public class UserTradeService {
                                                 .moodysRating(oldFund.moodysRating())
                                                 .build();
                     trades.add(newTrade);
-            } else {
-                return new ArrayList<>();
             }
-        }
         return trades;
-    }
+        }
+
 
     // For verifying the trades
     private int verifyTrades(String userId, List<Trade> trades, String header){
+
+        // Verify Entitlements
+        List<ImmutableFund> entitlements = getEntitlements(header);
+        int count = 0;
+        for (Trade t: trades){
+            if (isEntitled(entitlements,t)){
+                count++;
+            }
+        }
+        boolean isEntitled = false;
+        if (count == trades.size()) {
+            isEntitled = true;
+        }
+        System.out.println(isEntitled);
+        if(!isEntitled) return -3;
 
         // Verify Possibility of trades
         BalanceInfo balanceInfo = getBalance(header);
@@ -157,21 +173,7 @@ public class UserTradeService {
                 return -5;
         }
 
-        // Verify Entitlements
-        List<ImmutableFund> entitlements = getEntitlements(header);
-        int count = 0;
-        for (Trade t: trades){
-            if (isEntitled(entitlements,t)){
-                count++;
-            }
-        }
-        boolean isEntitled = false;
-        if (count == trades.size()) {
-            isEntitled = true;
-        }
-        System.out.println(isEntitled);
 
-        if(!isEntitled) return -3;
         // Set verification status
         if (exchangePossible == 1){
             System.out.println("GEredrtcfv");
@@ -194,6 +196,7 @@ public class UserTradeService {
             for (Trade t : trades) {
                 if (t.quantity()==0) return -2;
                 balance += userAccessObject.addTrade(userId, t, balance, baseCurr);
+                transactionService.addTransactionById(userId, t);
             }
             System.out.println("YOUR BALANCE HERE IS " + balance);
             // Create the funds for sending update request
