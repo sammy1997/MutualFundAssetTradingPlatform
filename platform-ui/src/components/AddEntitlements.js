@@ -230,7 +230,6 @@ class AddEntitlements extends Component {
                 data: payload
             // eslint-disable-next-line no-loop-func
             }).then(response =>{
-                console.log()
                 this.setState({
                     open: true,
                     entitledUser: payload.userId,
@@ -279,7 +278,6 @@ class AddEntitlements extends Component {
                         <label id = "search-text">Search users by user id</label>
                         <Chips value={this.state.chips} onChange={this.onChipsChange} 
                                 suggestions={this.state.userSuggestions} >
-
                         </Chips>
                         <div className="switch">
                             <label>
@@ -305,6 +303,9 @@ class AddEntitlements extends Component {
                             </button>
                         </div>
                         <div className="finalized-funds">
+                            <div class="selected-funds">
+                                <span>Selected Funds</span>
+                            </div>
                             <ul id="added-funds">
                             </ul>
                             <button className="btn waves-effect waves-light add-entitlements" onClick={this.addEntitlementsToUsers}>
@@ -320,7 +321,7 @@ class AddEntitlements extends Component {
                         <ul>
                             {
                                 this.state.entitledToList.map(entitled => 
-                                    <li align="center"> {entitled} </li>
+                                    <li align="center"> <b>{entitled}</b> </li>
                                 )
                             }
                         </ul>

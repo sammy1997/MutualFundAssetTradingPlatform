@@ -91,7 +91,7 @@ class UserFunds extends Component
                     searchableFields: [0,1,2,4],
                     role: parseJwt(jwt).authorities[0]
                 })
-                console.log(this.state.list);
+                console.log(this.state.role);
             })
             .catch( error => {
                 if(error.response){

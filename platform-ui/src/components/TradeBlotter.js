@@ -46,13 +46,6 @@ class TradeBlotter extends Component {
         const newFund = {
             fundName,
             fundNumber,
-<<<<<<< HEAD
-            invManager,
-            presentNav
-           }
-           this.setState (
-            {
-=======
             invManager
         }
 
@@ -62,7 +55,6 @@ class TradeBlotter extends Component {
             alert('Fund already selected')
         } else {
             this.setState ({
->>>>>>> 8b88b1cb93f22aecc135b20fba80a7694aa608ce
                 funds: [...this.state.funds, newFund]
             })
             this.unVerify()
@@ -122,6 +114,7 @@ class TradeBlotter extends Component {
                             <th>Quantity</th>
                             <th>Current NAV</th>
                             <th>Buy/Sell</th>
+                            <th>Delete Fund</th>
                         </tr>
                     </thead>
 
@@ -129,7 +122,7 @@ class TradeBlotter extends Component {
                         // Render all the funds 
                         this.state.funds.map((f) => (
                             <FundItem className = "fund-item" key={f.fundNumber} fundName={f.fundName} fundNumber={f.fundNumber} 
-                            invManager={f.invManager} callBack={this.callBackFund} delFund = {this.delTrade} />
+                            invManager={f.invManager} currentNav={f.presentNav} callBack={this.callBackFund} delFund = {this.delTrade} />
                         ))
                         }                          
                     </tbody>

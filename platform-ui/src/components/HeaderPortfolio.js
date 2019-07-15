@@ -42,6 +42,7 @@ class HeaderPortfolio extends Component {
                     baseCurr: res.data.baseCurr,
                     fullName: parseJwt(jwt).name
                 })
+                console.log(parseJwt(jwt));
             })
         }
     }

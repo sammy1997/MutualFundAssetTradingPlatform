@@ -4,6 +4,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import axios from 'axios';
 import getCookie from './Cookie';
 import { withRouter } from 'react-router-dom';
+import Modal from 'react-responsive-modal';
 
 class AddUser extends Component {
     constructor(props) {
@@ -18,8 +19,19 @@ class AddUser extends Component {
              role: null,
              currBal: 0,
              users: [],
-             userSuggestions: []
+             userSuggestions: [],
+             open: false
         }
+    }
+
+    closeModalHandler = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    closePopUp = () => {
+        window.location="/admin";
     }
 
     autocomplete(inp, handleSearchItemClick, arr, users) {
@@ -190,9 +202,11 @@ class AddUser extends Component {
                 url: "http://localhost:8762/create/" + (this.state.update? 'update': ''),
                 headers: headers,
                 data: this.state
-            }).then(response =>{
-                alert(response.data);
-            }).catch(error =>{
+            }).then(
+                this.setState({
+                    open: true
+                })
+            ).catch(error =>{
                 console.log(error);
                 if(error.response.status === 401 || error.response.status === 403){
                     document.cookie = "token=;"
@@ -238,6 +252,13 @@ class AddUser extends Component {
                         </div>
                         <div className="row">
                             <div className="input-field col s12">
+                                <input id="fullName" value={this.state.fullName} type="text" 
+                                    onChange={this.onChange} className="validate"/>
+                                <label htmlFor="fullName">Name</label>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="input-field col s12">
                                 <input id="password" value={this.state.password} type="password" 
                                     onChange={this.onChange} className="validate"/>
                                 <label htmlFor="password">Password</label>
@@ -245,20 +266,15 @@ class AddUser extends Component {
                         </div>
                         <div className="row">
                             <div className="input-field col s12">
-                                <select id="role" defaultValue="ROLE_ADMIN" onChange={this.onChange}>
+                                <select id="role" defaultValue="" onChange={this.onChange}>
+                                    <option value="" disabled>Select Role</option>
                                     <option value="ROLE_ADMIN">Admin</option>
                                     <option value="ROLE_TRADER">Trader</option>
                                     <option value="ROLE_VIEWER">Viewer</option>
                                 </select>
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="input-field col s12">
-                                <input id="fullName" value={this.state.fullName} type="text" 
-                                    onChange={this.onChange} className="validate"/>
-                                <label htmlFor="fullName">Name</label>
-                            </div>
-                        </div>
+                        
                         <div className="row" id= "balance">
                             <div className="input-field col s12">
                                 <input id="currBal" value={this.state.currBal} type="number" 
@@ -268,7 +284,8 @@ class AddUser extends Component {
                         </div>
                         <div className="row" id= "currency">
                             <div className="input-field col s12">
-                                <select id="baseCurr" defaultValue="INR" onChange={this.onChange}>
+                                <select id="baseCurr" defaultValue="" onChange={this.onChange}>
+                                        <option value="" disabled>Base Currency</option>
                                         <option value="INR">INR</option>
                                         <option value="USD">USD</option>
                                         <option value="EUR">EUR</option>
@@ -282,6 +299,14 @@ class AddUser extends Component {
                         <button className="btn waves-effect waves-light" type="submit" 
                             onClick={this.addUserRequest}>Submit</button>
                     </form>
+                    <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                    <div>
+                        {this.state.update ? <h5 align="center"><b>{this.state.userId}</b> has been updated</h5> : <h5 align="center"><b>{this.state.userId}</b> created</h5>}
+                        <div align="center">
+                            <button type="button" className="btn" onClick={this.closePopUp}>OK</button>
+                        </div>
+                    </div>
+                </Modal>
                 </div>        
             </div>
         )
