@@ -49,10 +49,10 @@ public class FundServiceUnitTests {
         fund = ImmutableFundParser.builder().fundName("Hedge").fundNumber("1234").build();
         fundAllFields = ImmutableFundParser.builder().fundName("Hedge").fundNumber("1234")
                 .sAndPRating((float)23.2).nav(22).invCurrency("INR")
-                .setCycle(2).invManager("GS").moodysRating(12).build();
+                .setCycle("T+2").invManager("GS").moodysRating(12).build();
         fundDb = ImmutableFund.builder().fundName("Hedge").fundNumber("1234")
                 .sAndPRating((float)23.2).nav(22).invCurrency("INR")
-                .setCycle(2).invManager("GS").moodysRating(12).build();
+                .setCycle("T+2").invManager("GS").moodysRating(12).build();
     }
 
     @Test

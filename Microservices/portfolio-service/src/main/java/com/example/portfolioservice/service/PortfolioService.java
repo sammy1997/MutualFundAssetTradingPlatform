@@ -96,7 +96,30 @@ public class PortfolioService {
     }
 
     public String updateBaseCurrency(final String userId,
-                                     final String newCurrency) {
-        return userDAO.updateBaseCurrency(userId, newCurrency);
+                                     final String newCurrency, String token)
+    {
+        Optional<User> user = userDAO.getUser(userId);
+        float originalValue=0, newValue=0;
+        ClientResponse response = client.get()
+                .uri("http://localhost:8762/trade/currency/get?currency="+user.get().baseCurr())
+                .header("Authorization", "Bearer "+token)
+                .exchange()
+                .block();
+        FXRate parsedRate = response.bodyToMono(FXRate.class).block();
+        if(parsedRate!=null)
+        {
+            originalValue = parsedRate.rate();
+        }
+        response = client.get()
+                .uri("http://localhost:8762/trade/currency/get?currency="+newCurrency)
+                .header("Authorization", "Bearer "+token)
+                .exchange()
+                .block();
+        parsedRate = response.bodyToMono(FXRate.class).block();
+        if(parsedRate!=null)
+        {
+            newValue = parsedRate.rate();
+        }
+        return userDAO.updateBaseCurrency(userId, originalValue, newValue, newCurrency);
     }
 }

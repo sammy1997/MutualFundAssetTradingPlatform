@@ -153,22 +153,32 @@ class AddEntitlements extends Component {
     handleSearchItemClick(content){
         var ul = document.getElementById("selected-funds")
         var length = ul.getElementsByTagName("li").length;
-        var li = document.createElement("li");
-        li.id = 'select' + length;
-        var i = document.createElement('i');
-        i.className = 'fa fa-times';
-        li.innerHTML = content;
-        li.append(i);
-        i.onclick = event => {
-            var elem = event.target.parentNode;
-            var parent = elem.parentNode;
-            parent.removeChild(elem);
-            var updateIdList = parent.getElementsByTagName("li")
-            for(var i=0; i<updateIdList.length; i++){
-                updateIdList[i].id = 'select' + i;
+        var elements = ul.getElementsByTagName("li");
+        var flag = false;
+        for(var x = 0; x<length; x++){
+            if(elements[x].innerText == content){
+                flag = true;
+                break;
             }
         }
-        ul.appendChild(li);
+        if(!flag) {
+            var li = document.createElement("li");
+            li.id = 'select' + length;
+            var i = document.createElement('i');
+            i.className = 'fa fa-times';
+            li.innerHTML = content;
+            li.append(i);
+            i.onclick = event => {
+                var elem = event.target.parentNode;
+                var parent = elem.parentNode;
+                parent.removeChild(elem);
+                var updateIdList = parent.getElementsByTagName("li")
+                for(var i=0; i<updateIdList.length; i++){
+                    updateIdList[i].id = 'select' + i;
+                }
+            }
+            ul.appendChild(li);
+        }
     }
 
     selectFunds(){

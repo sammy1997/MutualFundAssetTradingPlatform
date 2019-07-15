@@ -24,7 +24,8 @@ class Preferences extends Component {
             userId:'',
             fullName:'',
             baseCurr:'',
-            errorResponse: []
+            errorResponse: [],
+            currencies: []
         }
     }
 
@@ -42,9 +43,9 @@ class Preferences extends Component {
         }else{
             // console.log(jwt);
             axios({
-                method: "POST",
+                method: "PATCH",
                 url: "http://localhost:8762/portfolio/update/baseCurrency?Currency=" + this.state.baseCurr, 
-                headers : { Authorization: `Bearer ${jwt}` } 
+                headers : { Authorization: `Bearer ${jwt}` }
             })
             .then( res => {
                 window.location = "/portfolio"
@@ -98,6 +99,23 @@ class Preferences extends Component {
                     }
                 }
             });
+
+            axios({
+                method: 'get',
+                url: 'http://localhost:8762/trade/currency/all',
+                headers: { Authorization: `Bearer ${jwt}` }
+            }).then(response =>{
+                console.log(response.data);
+                this.setState({
+                    currencies: response.data
+                })
+            }).catch(error =>{
+                console.log(error);
+                if(error.response.status === 401 || error.response.status === 403){
+                    document.cookie = "token=;"
+                    window.location = "/";
+                }
+            });
         }
     }
 
@@ -131,12 +149,11 @@ class Preferences extends Component {
                                         Base Currency :
                                     </label>
                                     <select id="baseCurr" className="browser-default" value={this.state.baseCurr} onChange={this.handleChange} required>
-                                        <option value="INR">Indian Rupees</option>
-                                        <option value="USD">United States Dollars</option>
-                                        <option value="GBP">Great Britain Pounds</option>
-                                        <option value="EUR">Euros</option>
-                                        <option value="AED">Arab Emirates Dirham</option>
-                                        <option value="SAR">Saudi Arabian Riyal</option>
+                                    {
+                                        this.state.currencies.map(currency =>
+                                            <option value={currency.currency}>{currency.currency}</option>
+                                        )
+                                    }
                                     </select>
                                 </div>
                                 
