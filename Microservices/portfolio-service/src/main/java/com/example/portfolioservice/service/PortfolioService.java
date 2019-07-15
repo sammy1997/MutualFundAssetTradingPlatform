@@ -100,6 +100,8 @@ public class PortfolioService {
                                      final String newCurrency, String token)
     {
         Optional<User> user = userDAO.getUser(userId);
+        if(user.get().baseCurr().equalsIgnoreCase(newCurrency))
+            return newCurrency;
         float originalValue=0, newValue=0;
         ClientResponse response = client.get()
                 .uri("http://localhost:8762/trade/currency/get/currency="+user.get().baseCurr())
@@ -124,4 +126,3 @@ public class PortfolioService {
         return userDAO.updateBaseCurrency(userId, originalValue, newValue, newCurrency);
     }
 }
-//String currency, float rate

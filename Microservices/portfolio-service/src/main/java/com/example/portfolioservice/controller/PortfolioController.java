@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+@SuppressWarnings("ALL")
 
 @Component
 @Path("/")
