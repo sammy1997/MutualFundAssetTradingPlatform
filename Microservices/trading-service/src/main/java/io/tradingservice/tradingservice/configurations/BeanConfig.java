@@ -2,6 +2,7 @@ package io.tradingservice.tradingservice.configurations;
 
 import io.tradingservice.tradingservice.models.UserTransactionRepository;
 import io.tradingservice.tradingservice.repositories.FXRateAccessObject;
+import io.tradingservice.tradingservice.repositories.TransactionAccessObject;
 import io.tradingservice.tradingservice.repositories.UserAccessObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,5 +27,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public UserTransactionRepository
+    public TransactionAccessObject getTransactionAccessObject() {
+        return new TransactionAccessObject();
+    }
 }
