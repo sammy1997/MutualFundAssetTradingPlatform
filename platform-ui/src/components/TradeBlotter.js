@@ -26,6 +26,14 @@ class TradeBlotter extends Component {
         }
     }
 
+    // New code right here
+    componentWillUnmount = () => {
+        if (verified === false) {
+            this.props.stateCacher(funds) 
+        }
+    }
+
+    // New Code right here
 
     // Set funds from fund finder page ui 
     componentDidMount = (prevState) => {

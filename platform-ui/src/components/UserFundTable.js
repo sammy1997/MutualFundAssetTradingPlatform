@@ -21,9 +21,22 @@ class UserFunds extends Component
             searchableFields: [],
             open: false,
             errorResponse: [],
-            role: undefined
+            role: undefined, 
+            prevSelectedFunds: []
         }
     }
+
+    // New code right here
+    stateCacheHandler = (newSelectedFunds) => {
+        this.setState({
+            prevSelectedFunds: newSelectedFunds
+        })
+    }
+
+    stateCacheHandler2 = () => {
+
+    }
+    // New code right here
 
     closeModalHandler = () => {
         this.setState({
@@ -62,7 +75,8 @@ class UserFunds extends Component
                 selected.push(temp);
             }
             this.setState({
-                selectedFunds: selected
+                selectedFunds: selected,
+
             }, () => {console.log(this.state.selectedFunds)})
             
               
@@ -254,7 +268,7 @@ class UserFunds extends Component
                 {content2}
                 {this.state.role !== "ROLE_VIEWER" ? content3 : content}
                 
-                <Modal classNames="modal" open ={this.state.open} onClose={this.closeModalHandler} center >
+                <Modal classNames="modal" stateCacher={this.stateCacheHandler} open ={this.state.open} onClose={this.closeModalHandler} center >
                     <div> 
                         <TradeBlotter funds = {this.state.selectedFunds}/> 
                     </div> 
