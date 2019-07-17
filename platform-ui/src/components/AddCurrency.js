@@ -160,7 +160,7 @@ class AddCurrency extends Component {
                     alert("Some of the fields might be missing");
                 }
                 if(error.response.status === 404){
-                    alert("Currenct not found");
+                    alert("Currency not found");
                 }
             });
 

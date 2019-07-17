@@ -54,7 +54,7 @@ class VerifyButton extends Component {
         this.setState({
             verifyLoading: true,
             disabled: true
-        })
+        }, () => {console.log('Verifying')})
         var jwt = getCookie('token');
         if (!jwt) {
             this.props.history.push('/');
@@ -145,7 +145,10 @@ class VerifyButton extends Component {
                      } else console.log(`Error occurred`)
                 })) : (
                     console.log(`Not verified`)
-                )   
+                ).catch(error => {
+                    window.location = "/portfolio"
+                    alert(`Trades could not be placed`);
+                })   
         
         }
          
@@ -156,8 +159,10 @@ class VerifyButton extends Component {
         let submitContent;
         let verifyContent; 
         if (this.state.verifyLoading) {
-            verifyContent = <plaintext>Verifying...</plaintext>
-         } else  verifyContent = <plaintext></plaintext> 
+            verifyContent = <p align="center">Verifying...</p>
+         } else {
+         verifyContent =  <button className='verifyTrade' onClick={this.verifyHandler} disabled={this.state.disabled}>VERIFY TRADES</button>
+        }
         if (submitLoading) {
             submitContent = <div><p align="center">Placing requested Trade...</p>
             <div className="loader-container">
@@ -177,8 +182,7 @@ class VerifyButton extends Component {
                 </Modal>
             </div> )
         : ( <div>
-                <button className='verifyTrade' onClick={this.verifyHandler} disabled={this.state.disabled}>VERIFY TRADES</button>
-                <p align='center'> {verifyContent} </p>
+                {verifyContent}
             </div> )
     }
 }

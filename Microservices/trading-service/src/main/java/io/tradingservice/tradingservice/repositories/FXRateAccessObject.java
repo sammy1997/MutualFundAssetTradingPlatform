@@ -6,6 +6,7 @@ import io.tradingservice.tradingservice.models.FXRateRepository;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.immutables.mongo.repository.RepositorySetup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FXRateAccessObject {
@@ -29,6 +30,9 @@ public class FXRateAccessObject {
     }
 
     public List<FXRate> getAll(){
+        if (fxRateRepository.findAll().fetchAll().getUnchecked().isEmpty()){
+            return new ArrayList<>();
+        }
         return fxRateRepository.findAll().fetchAll().getUnchecked();
     }
 

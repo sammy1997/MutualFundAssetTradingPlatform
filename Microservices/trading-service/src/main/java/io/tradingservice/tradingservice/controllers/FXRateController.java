@@ -33,7 +33,8 @@ public class FXRateController {
 
     @GET
     @Path(Constants.getAllCurrencyEndpoint)
-    public Response getAllCurr(){
+    public List<FXRate> getAllCurr(){
+        System.out.println("Here");
         return fxRateService.getAll();
     }
 

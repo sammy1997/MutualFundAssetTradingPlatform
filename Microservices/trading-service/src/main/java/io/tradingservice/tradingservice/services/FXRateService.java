@@ -21,7 +21,7 @@ public class FXRateService {
     public Response addCurrency(FXRate newFXRate){
         Optional<FXRate> fxRateOptional = fxRateAccessObject.getCurrency(newFXRate.currency());
         if (fxRateOptional.isPresent()){
-            return Response.status(Response.Status.fromStatusCode(422)).entity("Currency already present").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Currency already present").build();
         }
         FXRate fxRate = ImmutableFXRate.builder()
                 .currency(newFXRate.currency()).rate(newFXRate.rate())
@@ -34,7 +34,7 @@ public class FXRateService {
     public Response updateCurrency(FXRate newFXRate){
         Optional<FXRate> fxRateOptional = fxRateAccessObject.getCurrency(newFXRate.currency());
         if (!fxRateOptional.isPresent()){
-            return Response.status(Response.Status.fromStatusCode(422)).entity("Currency not present in DB").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Currency not present in DB").build();
         }
         FXRate fxRate = ImmutableFXRate.builder()
                 .currency(newFXRate.currency()).rate(newFXRate.rate())
@@ -55,10 +55,9 @@ public class FXRateService {
                     .build();
     }
 
-    public Response getAll(){
+    public List<FXRate> getAll(){
         List<FXRate> fxRates = fxRateAccessObject.getAll();
-        if (fxRates.isEmpty()) return Response.status(Response.Status.OK).entity("No currencies found").build();
-        return Response.status(Response.Status.OK).entity(fxRates).build();
+        return fxRates;
     }
 
     public Response getCurrencyResponse(String currency) {

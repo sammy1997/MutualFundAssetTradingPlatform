@@ -30,23 +30,23 @@ import java.util.List;
 
 public class TransactionControllerTest {
 
-    @MockBean
-    TransactionAccessObject transactionAccessObject;
-
-    @MockBean
-    TransactionService transactionService;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    @LocalServerPort
-    int randomServerPort;
-
-    String baseUrl;
-
-    ImmutableTrade trade;
-    ImmutableTransaction transaction;
-    List<ImmutableTrade> trades;
+//    @MockBean
+//    TransactionAccessObject transactionAccessObject;
+//
+//    @MockBean
+//    TransactionService transactionService;
+//
+//    @Autowired
+//    private TestRestTemplate restTemplate;
+//
+//    @LocalServerPort
+//    int randomServerPort;
+//
+//    String baseUrl;
+//
+//    ImmutableTrade trade;
+//    ImmutableTransaction transaction;
+//    List<ImmutableTrade> trades;
 
     @Test
     public void successTest(){
@@ -55,23 +55,23 @@ public class TransactionControllerTest {
     }
 
     //Setting up dummy trade
-    @Before
-    public void setUp(){
-
-        baseUrl = "http://localhost:" + randomServerPort;
-        trade = ImmutableTrade.builder()
-                .fundNumber("1234")
-                .fundName("Hedge")
-                .avgNav((float)22)
-                .status("purchase")
-                .quantity((float)7)
-                .invManager("GS")
-                .setCycle("T+2")
-                .invCurr("INR")
-                .sAndPRating((float)23.2)
-                .moodysRating((float)12)
-                .build();
-    }
+//    @Before
+//    public void setUp(){
+//
+//        baseUrl = "http://localhost:" + randomServerPort;
+//        trade = ImmutableTrade.builder()
+//                .fundNumber("1234")
+//                .fundName("Hedge")
+//                .avgNav((float)22)
+//                .status("purchase")
+//                .quantity((float)7)
+//                .invManager("GS")
+//                .setCycle("T+2")
+//                .invCurr("INR")
+//                .sAndPRating((float)23.2)
+//                .moodysRating((float)12)
+//                .build();
+//    }
 
     /*//Test for transactions history Api
     @Test

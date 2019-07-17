@@ -155,17 +155,17 @@ public class UserAccessObject {
                     for (ImmutableTrade tradeExist: currTrades) {
 
                         // Find the fund through existing assets
-                        if (tradeExist.fundNumber().equals(t.fundNumber()) && tradeExist.quantity() >= t.quantity()){
-
-                            // Calculate new balance after the trade
-                            if (t.setCycle().equals("T")) {
-                                float credit = t.quantity() * t.avgNav() * convRate;
-                                balance += credit;
-                            }
-                            count++;
-                            break;
+                        if (tradeExist.fundNumber().equals(t.fundNumber())) {
+                            if(tradeExist.quantity() >= t.quantity()){
+                                // Calculate new balance after the trade
+                                if (t.setCycle().equals("T")) {
+                                    float credit = t.quantity() * t.avgNav() * convRate;
+                                    balance += credit;
+                                }
+                                count++;
+                                break;
+                            } else return -5;
                         }
-                        else return -5;
                     }
                 }
             }
