@@ -34,7 +34,7 @@ public class TransactionAccessObject {
                                                 .userId(userId)
                                                 .transactions(transactions)
                                                 .build();
-            transactionRepository.insert(newUser); 
+            transactionRepository.insert(newUser);
         }
         return true;
     }

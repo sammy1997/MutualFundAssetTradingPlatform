@@ -170,6 +170,7 @@ public class UserAccessObject {
                     }
                 }
             }
+
             System.out.print("Count = " + count);
             System.out.println("Size = " + newTrades.size());
             System.out.println("Balance = " + balance);
