@@ -3,10 +3,7 @@ package io.tradingservice.tradingservice.repositories;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
-import io.tradingservice.tradingservice.models.Transaction;
-import io.tradingservice.tradingservice.models.TransactionRepository;
-import io.tradingservice.tradingservice.models.UserTransaction;
-import io.tradingservice.tradingservice.models.UserTransactionRepository;
+import io.tradingservice.tradingservice.models.*;
 import io.tradingservice.tradingservice.utils.Constants;
 import org.immutables.mongo.concurrent.FluentFuture;
 import org.immutables.mongo.repository.RepositorySetup;
@@ -23,20 +20,29 @@ public class TransactionAccessObject {
     }
 
     public boolean addTransaction(String userId, Transaction newTransaction) {
-        if (transactionRepository.find(userId).fetchFirst().getUnchecked().isPresent()) {
-            FluentFuture<Optional<UserTransaction>> addition = transactionRepository.find(userId)
+        if (transactionRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) {
+            FluentFuture<Optional<UserTransaction>> addition = transactionRepository.findByUserId(userId)
                                         .andModifyFirst()
                                         .addTransactions(newTransaction)
                                         .upsert();
-            return true;
+
         }
-        else return false;
+        else {
+            List<Transaction> transactions = new ArrayList<>();
+            transactions.add(newTransaction);
+            UserTransaction newUser = ImmutableUserTransaction.builder()
+                                                .userId(userId)
+                                                .transactions(transactions)
+                                                .build();
+            transactionRepository.insert(newUser); 
+        }
+        return true;
     }
 
     public List<Transaction> getAllTransactions(String userId) {
         List<Transaction> transactions = new ArrayList<>();
-        if (transactionRepository.find(userId).fetchFirst().getUnchecked().isPresent()) {
-            UserTransaction user = transactionRepository.find(userId).fetchFirst().getUnchecked().get();
+        if (transactionRepository.findByUserId(userId).fetchFirst().getUnchecked().isPresent()) {
+            UserTransaction user = transactionRepository.findByUserId(userId).fetchFirst().getUnchecked().get();
             for (Transaction transaction: user.transactions()) {
                 transactions.add(transaction);
             }
