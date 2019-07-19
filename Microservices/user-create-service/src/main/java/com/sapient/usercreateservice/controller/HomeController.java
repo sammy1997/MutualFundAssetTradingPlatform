@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -18,6 +20,8 @@ import java.util.List;
 
 @Path("/")
 public class HomeController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
     private UserService userService;
@@ -32,6 +36,7 @@ public class HomeController {
     @GET
     @Produces("application/json")
     public List<ImmutableUser> getAllUsers(){
+        LOGGER.info("List-all users end point accessed");
         return userService.getAllUsers();
     }
 
@@ -39,6 +44,7 @@ public class HomeController {
     @POST
     @Consumes("application/json")
     public Response updateUser(@RequestBody ParsedUser user){
+        LOGGER.info("Update a user end point accessed");
         return userService.updateUser(user);
     }
 
@@ -64,6 +70,7 @@ public class HomeController {
                         }
                     })
                     .block();
+            LOGGER.info("Create User in UserList DB end point accessed");
 
             for (String temp : header) {
                 authHeader = temp;
@@ -81,6 +88,7 @@ public class HomeController {
                     .doOnSuccess(clientResponse -> {
                         System.out.println(clientResponse.statusCode());
                     }).block();
+            LOGGER.info("Create User in portfolio end point accessed");
 
             webClientBuilder.build()
                     .post()
@@ -92,6 +100,7 @@ public class HomeController {
                     .doOnSuccess(clientResponse -> {
                         System.out.println(clientResponse.statusCode());
                     }).block();
+            LOGGER.info("Create User in UserTrades end point accessed");
             return user.userId() + " added to database";
         } else if (response.getStatus() == 400) {
             return "Some field(s) missing. If not, please validate your fields";
